@@ -1,0 +1,12 @@
+Package: libdframework-common
+Version: 0.1.2
+Section: contrib
+Priority: optional
+Architecture: all
+Depends: 
+Recommends:
+Maintainer: chk <dframework0724@gmail.com>
+Homepage: https://github.com/dframework
+Description: libdframework-common
+ 0.1.2 : new version
+

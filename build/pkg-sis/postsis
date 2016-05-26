@@ -1,0 +1,16 @@
+#!/bin/sh
+
+tmp_unamea=`uname -a`
+tmp_unameb=`expr "${tmp_unamea}" : '\(^[A-Za-z0-9]\{1,\}\)[[:blank:]]'`
+osname=`echo $tmp_unameb | tr "[A-Z]" "[a-z]"`
+
+if [ "${osname}" = "darwin" ]; then
+    curpwd=`pwd`
+    cd /usr/local/lib/
+    sudo ln -s libdframework-common.0.1.3.dylib libdframework-common.0.dylib
+    sudo ln -s libdframework-common.0.dylib libdframework-common.dylib
+    cd $curpwd
+else
+    sudo ldconfig /usr/local/lib
+fi
+

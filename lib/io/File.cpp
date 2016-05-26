@@ -1,0 +1,562 @@
+#include <dframework/io/File.h>
+#include <dframework/io/DirBox.h>
+#include <dframework/net/URI.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <utime.h>
+#include <sys/time.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+
+#ifdef _WIN32
+
+ssize_t pread (int fd, void *buf, size_t count, off_t offset)
+{
+  if (::lseek(fd, offset, SEEK_SET) != offset)
+    return -1;
+  return ::read(fd, buf, count);
+}
+
+#endif
+
+namespace dframework {
+
+
+    File::File(){
+        DFW_FILE_INIT(m_fd);
+        m_offset = 0;
+    }
+
+    File::~File(){
+        close_l();
+    }
+
+    void File::close(){
+        close_l();
+    }
+
+    sp<Retval> File::open(const char* path, int flag){
+        close_l();
+        return File::open(&m_fd, path, flag);
+    }
+
+    sp<Retval> File::open(const char* path, int flag, int mode){
+        close_l();
+        return File::open(&m_fd, path, flag, mode);
+    }
+
+    void File::close_l(){
+        DFW_FILE_CLOSE(m_fd);
+        m_offset = 0;
+    }
+
+    sp<Retval> File::read(unsigned *out_size, char* buf, unsigned size
+                        , uint64_t offset)
+    {
+        sp<Retval> retval;
+        if( (offset!=m_offset) && DFW_RET(retval, seek(offset)) )
+            return DFW_RETVAL_D(retval);
+        if( DFW_RET(retval, File::read(m_fd, out_size, buf, size)) )
+            return DFW_RETVAL_D(retval);
+        return NULL;
+    }
+
+    sp<Retval> File::seek(uint64_t offset){
+        sp<Retval> retval;
+        if( offset!=m_offset ){
+            if( DFW_RET(retval, File::seek(m_fd, offset)) )
+                return DFW_RETVAL_D(retval);
+            m_offset = offset;
+        }
+        return NULL;
+    }
+
+    sp<Retval> File::lastSeek(uint64_t offset){
+        sp<Retval> retval;
+        if( offset!=m_offset ){
+            if( DFW_RET(retval, File::lastSeek(m_fd, offset)) )
+                return DFW_RETVAL_D(retval);
+            m_offset = offset;
+        }
+        return NULL;
+    }
+
+    // --------------------------------------------------------------
+
+    DFW_STATIC
+    bool File::isAccess(const char* path){
+        if( ::access(path, R_OK)==0 )
+            return true;
+        return false;
+    }
+
+    DFW_STATIC
+    bool File::isFile(const char* path){
+        struct stat st;
+        ::memset(&st, 0, sizeof(struct stat));
+        if( -1 == ::stat(path, &st) )
+            return false;
+        return S_ISREG(st.st_mode);
+    }
+
+    DFW_STATIC
+    bool File::isDirectory(const char* path){
+        struct stat st;
+        ::memset(&st, 0, sizeof(struct stat));
+        if( -1 == ::stat(path, &st) )
+            return false;
+        return S_ISDIR(st.st_mode);
+    }
+
+    DFW_STATIC
+    sp<Retval> File::makeDirectory(const char* path, int mode){
+        if( isDirectory(path) )
+            return NULL;
+#ifdef _WIN32
+        if( -1 == ::mkdir(path) ){
+#else
+        mode_t imode = (mode_t)mode;
+        if( -1 == ::mkdir(path, imode) ){
+#endif
+            int eno = errno;
+            dfw_retno_t rno = DFW_ERROR;
+            const char* msg = Retval::errno_short(&rno, eno, "Not mkdir");
+            return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", path, msg);
+        }
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::makeDir(const char* basedir
+                           , const char* path, int mode)
+    {
+        sp<Retval> retval;
+
+        String sMakePath = basedir;
+        sp<URI::PathInfo> pi = new URI::PathInfo(path);
+
+        for(int k=1; k<pi->size(); k++){
+            String sPath = pi->path(k);
+            sMakePath.appendFmt("/%s", sPath.toChars());
+            if( DFW_RET(retval, File::makeDirectory(
+                                         sMakePath.toChars(), mode)))
+                return DFW_RETVAL_D(retval);
+        }
+
+        return NULL;
+    }
+
+    sp<Retval> File::open(int* out_fd, const char* path, int flag){
+    DFW_STATIC
+        sp<Retval> retval;
+        return DFW_RET_C(retval, open(out_fd, path, flag, 0));
+    }
+
+    DFW_STATIC
+    sp<Retval> File::open(int* out_fd, const char* path, int flag, int mode){
+        if(!out_fd)
+            return DFW_RETVAL_NEW_MSG(DFW_E_INVAL, 0
+                 , "out_fd parameter is null.");
+
+        int fd;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+#ifdef _WIN32
+        String sPath = path;
+        sPath.replace('/','\\');
+        if( -1 == (fd = ::_open(sPath.toChars(), flag)) ){
+#else
+        if( -1 == (fd = ::open(path, flag, mode)) ){
+#endif
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not open file");
+            return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", path, msg);
+        }
+
+        *out_fd = fd;
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::truncate(const char* path, uint64_t size){
+        sp<Retval> retval;
+        int res;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+#ifdef _WIN32
+        String sPath = path;
+        sPath.replace('/','\\');
+        if( -1 == (res = ::truncate(sPath.toChars(), size)) ){
+#else
+        if( -1 == (res = ::truncate(path, size)) ){
+#endif
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not truncate file");
+            return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, size=%ld, %s"
+                                              , path, size, msg);
+        }
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::truncate(int fd, uint64_t size, const char* path){
+        sp<Retval> retval;
+        int res;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        if( -1 == (res = ::ftruncate(fd, size)) ){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not truncate file");
+            if(path)
+                return DFW_RETVAL_NEW_MSG(rno, eno
+                           , "path=NULL, fd=%d, size=%ld, %s"
+                           , fd, size, msg);
+            else
+                return DFW_RETVAL_NEW_MSG(rno, eno
+                           , "path=%s, fd=%d, size=%ld, %s"
+                           , path, fd, size, msg);
+        }
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::contents(String& contents, const char* path){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        int fd;
+        DFW_FILE_INIT(fd);
+        if( DFW_RET(retval, open(&fd, path, O_RDONLY)) )
+            return DFW_RETVAL_D(retval);
+
+        char buf[4096];
+        int size = 4096;
+        int recv = 0;
+        while(true){
+            recv = ::read(fd, buf, size);
+            if(-1 == recv){
+                eno = errno;
+                ::close(fd);
+                msg = Retval::errno_short(&rno, eno, "Not read file");
+                return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", path, msg);
+            }
+            if( 0 == recv){
+                ::close(fd);
+                return NULL; 
+            }
+            contents.append(buf, recv);
+        }
+    }
+
+    DFW_STATIC
+    sp<Retval> File::read(int fd, const char* path
+                        , unsigned *out_size
+                        , char* buf, uint32_t size, uint64_t offset)
+    {
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        if( ((unsigned)-1)==(*out_size = ::pread(fd, buf, size, offset)) ){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not read file");
+            if(path)
+                return DFW_RETVAL_NEW_MSG(rno, eno
+                           , "fd=%d, offset=%lu, size=%u, path=%s, %s"
+                           , fd, offset, size, path, msg);
+            else
+                return DFW_RETVAL_NEW_MSG(rno, eno
+                           , "fd=%d, offset=%lu, size=%u, path=NULL, %s"
+                           , fd, offset, size, msg);
+        }
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::read(int fd, unsigned *out_size
+                        , char* buf, uint32_t size)
+    {
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        if( ((unsigned)-1)==(*out_size = ::read(fd, buf, size)) ){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not read file");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                       , "fd=%d, size=%u, %s"
+                       , fd, size, msg);
+        }
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::read(int fd, unsigned *out_size
+                        , char* buf, uint32_t size, uint64_t offset)
+    {
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        if( ((unsigned)-1)==(*out_size = ::pread(fd, buf, size, offset)) ){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not read file");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                       , "fd=%d, offset=%lu, size=%u, %s"
+                       , fd, offset, size, msg);
+        }
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::save(String& contents, const char* path){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+        int fd;
+        DFW_FILE_INIT(fd);
+        if( DFW_RET(retval, open(&fd, path, O_WRONLY|O_CREAT, 0644)) )
+            return DFW_RETVAL_D(retval);
+        
+        const char* buf = contents.toChars();
+        unsigned size = contents.length();
+        unsigned sended = 0;
+        while(true){
+            unsigned send = ::write(fd, buf+sended, size);
+            if((unsigned)-1 == send){
+                eno = errno;
+                ::close(fd);
+                msg = Retval::errno_short(&rno, eno, "Not write file");
+                return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", path, msg);
+            }
+            if( 0 == send){
+                ::close(fd);
+                return NULL; 
+            }
+            sended += send;
+            size -= send;
+            if( 0==size ){
+                ::close(fd);
+                return NULL; 
+            }
+        }
+    }
+
+    DFW_STATIC
+    sp<Retval> File::write(int fd, const char* buf, unsigned size){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        unsigned sended = 0;
+        unsigned send = 0;
+        unsigned left = size;
+        while(true){
+            send = ::write(fd, buf+sended, left);
+            if(((unsigned)-1) == send){
+                eno = errno;
+                msg = Retval::errno_short(&rno, eno, "Not write file");
+                return DFW_RETVAL_NEW_MSG(rno, eno
+                        , "fd=%d, size=%u, sended=%u, left=%u, %s"
+                        , fd, size, sended, left, msg);
+            }
+            sended += send;
+            left -= send;
+            if(!left){
+                return NULL;
+            }
+        }
+    }
+
+    DFW_STATIC
+    sp<Retval> File::write(int fd, const char* contents, unsigned size
+                              , uint64_t offset)
+    {
+        sp<Retval> retval;
+        if( DFW_RET(retval, seek(fd, offset)) )
+            return DFW_RETVAL_D(retval);
+        return DFW_RET_C(retval, write(fd, contents, size));
+    }
+
+    DFW_STATIC
+    sp<Retval> File::seek(int fd, uint64_t offset){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        dfw_uint_t res = (dfw_uint_t)::lseek(fd, offset, SEEK_SET);
+        if(((dfw_uint_t)-1) == res){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not seek.");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                    , "fd=%d, offset=%ld, %s"
+                    , fd, offset, msg);
+        }
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::lastSeek(int fd, uint64_t offset){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        dfw_uint_t res = (dfw_uint_t)::lseek(fd, offset, SEEK_END);
+        if(((dfw_uint_t)-1) == res){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not lastSeek.");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                    , "fd=%d, offset=%ld, %s"
+                    , fd, offset, msg);
+        }
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::remove(const char* path){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        int res = ::remove(path);
+        if(-1 == res){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not remove.");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                    , "path=%s, %s"
+                    , path, msg);
+        }
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::removePath(const char* base, const char* path){
+        sp<Retval> retval;
+        sp<URI::PathInfo> pi = new URI::PathInfo(path);
+
+        if( pi->size() <= 1 )
+            return NULL;
+
+        for(int k=(pi->size()-1); k>=1; k--){
+            String test = pi->fullpath(k);
+            if(test.empty()) return NULL;
+
+            String testpath = String::format("%s%s", base, test.toChars());
+            if( File::isDirectory(testpath)){
+                sp<DirBox> db = new DirBox(testpath);
+                if(db->size()==0){
+                    if(DFW_RET(retval, File::remove(testpath))){
+                        return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                          , "Not remove dir, path=%s",testpath.toChars());
+                    }
+                    continue;
+                }
+                return NULL;
+            }else if( File::isFile(testpath) ){
+                if(DFW_RET(retval, File::remove(testpath))){
+                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                       , "Not remove file, path=%s ", testpath.toChars());
+                }
+            }
+        }
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::removeAll(const char* path){
+        sp<Retval> retval;
+
+        if( !File::isDirectory(path) ){
+            if( DFW_RET(retval, remove(path)) )
+                return DFW_RETVAL_D(retval);
+            return NULL;
+        }
+
+        sp<DirBox> db = new DirBox(path);
+        for(int k=0; k<db->size(); k++){
+            sp<Stat> st = db->get(k);
+            if(st.has()){
+                if(st->m_name.length()==0 
+                       || st->m_name.equals(".") || st->m_name.equals(".."))
+                    continue;
+                String sSubPath = String::format("%s/%s"
+                                          , path, st->m_name.toChars());
+                if(st->isDir()){
+                    if( DFW_RET(retval, removeAll(sSubPath)) )
+                        return DFW_RETVAL_D(retval);
+                }else if( DFW_RET(retval, remove(sSubPath)) ){
+                    return DFW_RETVAL_D(retval);
+                }
+            }
+        }
+
+        if( DFW_RET(retval, remove(path)) )
+            return DFW_RETVAL_D(retval);
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::rename(const char* oldname, const char* newname){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        int res = ::rename(oldname, newname);
+        if(-1 == res){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not rename.");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                    , "oldname=%s, newname=%s, %s"
+                    , oldname, newname, msg);
+        }
+
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::mtime(const char* path, uint64_t mtime){
+        sp<Retval> retval;
+        int eno = 0;
+        dfw_retno_t rno = DFW_ERROR;
+        const char* msg = NULL;
+
+        struct utimbuf buf;
+        ::memset(&buf, 0, sizeof(struct utimbuf));
+        buf.actime = (time_t)mtime;
+        buf.modtime = (time_t)mtime;
+
+        int res = ::utime(path, &buf);
+        if(-1 == res){
+            eno = errno;
+            msg = Retval::errno_short(&rno, eno, "Not utime.");
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                    , "path=%s, mtime=%lu, %s"
+                    , path, mtime, msg);
+        }
+
+        return NULL;
+    }
+
+};
+

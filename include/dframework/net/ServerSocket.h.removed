@@ -1,0 +1,55 @@
+#ifndef DFRAMEWORK_NET_SERVERSOCKET_H
+#define DFRAMEWORK_NET_SERVERSOCKET_H
+
+#include <dframework/base/Retval.h>
+#include <dframework/net/Socket.h>
+
+#ifdef __cplusplus
+namespace dframework {
+
+    class ServerSocket : public Object
+    {
+    private:
+        int m_iHandle;
+	int m_iPort;
+
+	int m_iBacklog;    // default 256.
+	int m_iSinFamily;  // default : AF_INET.
+	int m_iSocketType; // defualt : SOCK_STREAM.
+
+	String m_sErrmsg;
+
+    public:
+        ServerSocket();
+        virtual ~ServerSocket();
+
+        sp<Retval> listenex(int port);
+        sp<Retval> create(int port);
+        sp<Retval> bind();
+        sp<Retval> listen();
+        sp<Retval> accept(sp<Socket>& out_sock, int timeout_of1000);
+        sp<Retval> accept(int* sock_fd, String& sIp, int timeout);
+
+        sp<Retval> setOpt(int name, const void* val, socklen_t len);
+        sp<Retval> setOpt(int name, const void* val, socklen_t len, int level);
+        sp<Retval> setOptInt(int name, int val);
+        sp<Retval> setOptInt(int name, int val, int level);
+
+        sp<Retval> setLinger(int onoff, int linger);
+        sp<Retval> setKeepAlive(int alive);
+
+        sp<Retval> setFcntl(int v);
+        sp<Retval> removeFcntl(int v);
+        sp<Retval> fcntl_k(int *out, int cmd, int arg);
+
+        sp<Retval> setNonBlock(bool nonblock);
+
+
+
+    };
+
+};
+#endif
+
+#endif /* DFRAMEWORK_NET_SERVERSOCKET_H */
+

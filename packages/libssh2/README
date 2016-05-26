@@ -1,0 +1,49 @@
+
+1. Linux & Darwin
+-----------------
+
+   $ ./libssh2-make-linux.sh
+   $ cd src-linux
+   $ ddk-build
+
+
+2. Windows
+----------
+
+   $ ./libssh2-make-mingw.sh
+   $ cd src-mingw
+   $ ddk-build --add-target=mingw-linux-x86_64
+
+
+3. Android
+----------
+
+   $ ./libssh2-make-linux.sh
+   $ cd src-linux
+   $ ddk-build --add-target=android-x86
+   $ ddk-build --add-target=android-x86_64
+   $ ddk-build --add-target=android-armv7
+   $ ddk-build --add-target=android-arm64
+
+   or
+
+   $ ./build-libssh2-android.sh
+
+
+4. IOS
+------
+
+   $ ./libssh2-make-linux.sh
+   $ cd src-linux
+   $ ddk-build --add-target=ios-x86
+   $ ddk-build --add-target=ios-x86_64
+   $ ddk-build --add-target=ios-armv7
+   $ ddk-build --add-target=ios-armv7s
+   $ ddk-build --add-target=ios-arm64
+
+   or
+
+   $ ./build-libssh2-ios.sh
+
+   * ios/build-libssh2.sh: This is old method.
+

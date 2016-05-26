@@ -1,0 +1,12 @@
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := a.cpp 
+LOCAL_SRC_FILES += b.cpp
+
+LOCAL_MODULE:=libk
+
+include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
+#include $(BUILD_EXCUTABLE)
+
