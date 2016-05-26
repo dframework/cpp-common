@@ -157,7 +157,12 @@ make_mk(){
   MK_S="include \$(CLEAR_VARS)"
   MK_S="${MK_S}\n\nLOCAL_PATH := \$(call my-dir)"
   MK_S="${MK_S}\n\nLOCAL_SRC_FILES := ${D_SRC}"
+  MK_S="${MK_S}\n\nifeq (\${DDK_ENV_TARGET_OS}, \"darwin\")"
   MK_S="${MK_S}\n\nLOCAL_INCLUDES := \${LOCAL_PATH}/include \${LOCAL_PATH}/../../openssl/darwin/x86_64/include"
+  MK_S="${MK_S}\n\nelifeq (\${DDK_ENV_TARGET_OS}, \"linux\")"
+  MK_S="${MK_S}\n\nLOCAL_INCLUDES := \${LOCAL_PATH}/include \${LOCAL_PATH}/../../openssl/linux/x86_64/include"
+  MK_S="${MK_S}\n\nendif"
+
 if [ "$D_MINGW" = "" ]; then
   MK_S="${MK_S}\n\nLOCAL_CFLAGS := -fPIC -DHAVE_CONFIG_H=1"
 else
