@@ -62,6 +62,15 @@ namespace dframework {
         return NULL;
     }
 
+    sp<Retval> File::write(const char* buf, unsigned size, uint64_t offset){
+        sp<Retval> retval;
+        if( (offset!=m_offset) && DFW_RET(retval, seek(offset)) )
+            return DFW_RETVAL_D(retval);
+        if( DFW_RET(retval, File::write(m_fd, buf, size)) )
+            return DFW_RETVAL_D(retval);
+        return NULL;
+    }
+
     sp<Retval> File::seek(uint64_t offset){
         sp<Retval> retval;
         if( offset!=m_offset ){
@@ -122,7 +131,8 @@ namespace dframework {
             int eno = errno;
             dfw_retno_t rno = DFW_ERROR;
             const char* msg = Retval::errno_short(&rno, eno, "Not mkdir");
-            return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", path, msg);
+            return DFW_RETVAL_NEW_MSG(rno, eno
+                       , "Not make directory. path=%s, (%s)", path, msg);
         }
         return NULL;
     }
@@ -320,20 +330,19 @@ namespace dframework {
     }
 
     DFW_STATIC
-    sp<Retval> File::save(String& contents, const char* path){
+    sp<Retval> File::save(const char* buf, unsigned size, const char* path){
         sp<Retval> retval;
         int eno = 0;
         dfw_retno_t rno = DFW_ERROR;
         const char* msg = NULL;
+        unsigned sended = 0;
         int fd;
         DFW_FILE_INIT(fd);
+
         if( DFW_RET(retval, open(&fd, path, O_WRONLY|O_CREAT, 0644)) )
             return DFW_RETVAL_D(retval);
         
-        const char* buf = contents.toChars();
-        unsigned size = contents.length();
-        unsigned sended = 0;
-        while(true){
+        do{
             unsigned send = ::write(fd, buf+sended, size);
             if((unsigned)-1 == send){
                 eno = errno;
@@ -351,7 +360,7 @@ namespace dframework {
                 ::close(fd);
                 return NULL; 
             }
-        }
+        }while(true);
     }
 
     DFW_STATIC

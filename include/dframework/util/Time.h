@@ -77,6 +77,7 @@ namespace dframework {
         }
 
         String format(const char *fmt);
+        static String format(const char *fmt, dfw_time_t tm);
 
         static dfw_time_t currentTimeMillis();
         static sp<Retval> currentTimeMillis(dfw_timeval *out_tv);

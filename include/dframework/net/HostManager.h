@@ -15,18 +15,24 @@ namespace dframework {
         class HostLookup : public Thread
         {
         private:
+            unsigned m_refresh_seconds;
+
+        private:
             HostLookup();
+            
         public:
             virtual ~HostLookup();
+
+            virtual sp<Retval> start();
+            virtual sp<Retval> start(unsigned refresh);
             virtual void run();
 
             friend class HostManager;
         };
 
     public:
-        static int REFRESH_SECONDS; /* default: 2 */
-        static sp<Retval> start();
-        static void       stop();
+        static sp<Retval> start(unsigned refresh, unsigned timesec);
+        static sp<Retval> stop();
         static sp<Retval> join();
 
     private:

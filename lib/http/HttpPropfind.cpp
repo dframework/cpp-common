@@ -223,14 +223,13 @@ namespace dframework{
         if(DFW_RET(retval, HttpQuery::onResponse(c, b, s)))
             return DFW_RETVAL_D(retval);
 
-        if(!b && !s)
+        if(!b && !s){
             return propfindComplete(c, m_XmlParser.getResult());
+        }
 
         dfw_xmlstatus_t xmlstatus = m_XmlParser.parseBuffer(b, s);
         switch(xmlstatus){
         case DFW_XML_OK:
-            return propfindComplete(c, m_XmlParser.getResult());
-
         case DFW_XML_EMPTY_BUFFER:
         case DFW_XML_NEED_BUFFER:
             return NULL;

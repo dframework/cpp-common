@@ -31,8 +31,8 @@ namespace dframework {
     {
         DFW_SOCK_INIT(m_iHandle);
         m_iAddrType = AF_INET;
-        m_ConnTimeMSec = 1000;
-        m_TimeoutMSec = 1000;
+        m_ConnTimeMSec = 10000;
+        m_TimeoutMSec = 10000;
         m_iSockType = SOCK_STREAM;
         m_RecvSoSize = 102400;
         m_SendSoSize = 102400;

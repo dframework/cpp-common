@@ -35,11 +35,11 @@ namespace dframework {
         void close();
 
         sp<Retval> open(const char* path, int flag=O_RDONLY);
-        inline sp<Retval> open(String& path, int flag=O_RDONLY){
+        inline sp<Retval> open(const String& path, int flag=O_RDONLY){
             return open(path.toChars(), flag);
         }
         sp<Retval> open(const char* path, int flag, int mode);
-        inline sp<Retval> open(String& path, int flag, int mode){
+        inline sp<Retval> open(const String& path, int flag, int mode){
             return open(path.toChars(), flag, mode);
         }
 
@@ -50,6 +50,11 @@ namespace dframework {
         sp<Retval> read(unsigned *out_size, char* buf, unsigned size
                       , uint64_t offset);
 
+        inline sp<Retval> write(const char* buf, uint32_t size){
+            return File::write(m_fd, buf, size);
+        }
+        sp<Retval> write(const char* buf, unsigned size, uint64_t offset);
+
         sp<Retval> seek(uint64_t offset);
         sp<Retval> lastSeek(uint64_t offset);
 
@@ -58,30 +63,30 @@ namespace dframework {
 
     public:
         static bool isFile(const char* path);
-        static inline bool isFile(String& path) {
+        static inline bool isFile(const String& path) {
             return isFile(path.toChars());
         }
 
         static bool isAccess(const char* path);
-        static inline bool isAccess(String& path) {
+        static inline bool isAccess(const String& path) {
             return isAccess(path.toChars());
         }
 
         static bool isDirectory(const char* path);
-        static inline bool isDirectory(String& path) {
+        static inline bool isDirectory(const String& path) {
             return isDirectory(path.toChars());
         }
 
         // ----------------------------------------------------------
 
         static sp<Retval> makeDirectory(const char* path, int mode);
-        static inline sp<Retval> makeDirectory(String& path, int mode){
+        static inline sp<Retval> makeDirectory(const String& path, int mode){
             return makeDirectory(path.toChars(), mode);
         }
         static inline sp<Retval> makeDir(const char* path){
             return makeDirectory(path, 0755);
         }
-        static inline sp<Retval> makeDir(String& path){
+        static inline sp<Retval> makeDir(const String& path){
             return makeDirectory(path.toChars(), 0755);
         }
 
@@ -89,48 +94,50 @@ namespace dframework {
 
         static sp<Retval> makeDir(const char* basedir
                                        , const char* path, int mode);
-        static inline sp<Retval> makeDir(String& basedir
+        static inline sp<Retval> makeDir(const String& basedir
                                        , const char* path, int mode){
             return makeDir(basedir.toChars(), path, mode);
         }
-        static inline sp<Retval> makeDir(String& basedir
-                                       , String& path, int mode){
+        static inline sp<Retval> makeDir(const String& basedir
+                                       , const String& path, int mode){
             return makeDir(basedir.toChars(), path.toChars(), mode);
         }
         static inline sp<Retval> makeDir(const char* basedir
                                         ,const char* path){
             return makeDir(basedir, path, 0755);
         }
-        static inline sp<Retval> makeDir(String& basedir,const char* path){
+        static inline sp<Retval> makeDir(const String& basedir
+                                        ,const char* path){
             return makeDir(basedir.toChars(), path, 0755);
         }
-        static inline sp<Retval> makeDir(String& basedir, String& path){
+        static inline sp<Retval> makeDir(const String& basedir
+                                       , const String& path){
             return makeDir(basedir.toChars(), path.toChars(), 0755);
         }
 
         // ----------------------------------------------------------
 
         static sp<Retval> open(int* out_fd, const char* path, int flag);
-        static inline sp<Retval> open(int* out_fd, String& path, int flag){
+        static inline sp<Retval> open(int* out_fd,const String& path,int flag){
             return open(out_fd, path.toChars(), flag);
         }
         static sp<Retval> open(int* out_fd, const char* path, int flag
                              , int mode);
         static inline sp<Retval> open(int* out_fd
-                                    , String& path, int flag, int mode){
+                                    , const String& path, int flag, int mode){
             return open(out_fd, path.toChars(), flag, mode);
         }
 
         // ----------------------------------------------------------
 
         static sp<Retval> truncate(const char* path, uint64_t size);
-        static inline sp<Retval> truncate(String& path, uint64_t size){
+        static inline sp<Retval> truncate(const String& path, uint64_t size){
             return truncate(path.toChars(), size);
         }
         static sp<Retval> truncate(int fd, uint64_t size
                                  , const char* path=NULL);
         static inline sp<Retval> truncate(int fd, uint64_t size
-                                 , String& path){
+                                 , const String& path){
             return truncate(fd, size, path.toChars());
         }
 
@@ -157,27 +164,35 @@ namespace dframework {
         // ----------------------------------------------------------
 
         static sp<Retval> write(int fd, const char* contents, unsigned size);
-        static inline sp<Retval> write(int fd, String& contents){
-            return write(fd, contents.toChars(), contents.length());
+        static inline sp<Retval> write(int fd, const String& contents){
+            return write(fd, contents.toChars(), (unsigned)contents.length());
         }
-        static inline sp<Retval> write(int fd, String& contents
+        static inline sp<Retval> write(int fd, const String& contents
                                      , unsigned size){
             return write(fd, contents.toChars(), size);
         }
         static sp<Retval> write(int fd, const char* contents, unsigned size
                               , uint64_t offset);
-        static inline sp<Retval> write(int fd, String& contents
+        static inline sp<Retval> write(int fd, const String& contents
                               , uint64_t offset){
-            return write(fd, contents.toChars(), contents.length(), offset);
+            return write(fd, contents.toChars(), (unsigned)contents.length()
+                       , offset);
         }
-        static inline sp<Retval> write(int fd, String& contents
+        static inline sp<Retval> write(int fd, const String& contents
                                      , unsigned size, uint64_t offset){
             return write(fd, contents.toChars(), size, offset);
         }
 
         // ----------------------------------------------------------
 
-        static sp<Retval> save(String& contents, const char* path);
+        static sp<Retval> save(const char* buf, unsigned size, const char* path);
+        inline static sp<Retval> save(const char* buf, unsigned size
+                                    , const String& sPath){
+            return save(buf, size, sPath.toChars());
+        }
+        inline static sp<Retval> save(const String& buf, const char* path){
+            return save(buf.toChars(), (unsigned)buf.length(), path);
+        }
 
         // ----------------------------------------------------------
 
@@ -187,37 +202,40 @@ namespace dframework {
         // ----------------------------------------------------------
 
         static sp<Retval> remove(const char* path);
-        static inline sp<Retval> remove(String& path){
+        static inline sp<Retval> remove(const String& path){
             return remove(path.toChars());
         }
 
         static sp<Retval> removePath(const char* base, const char* path);
-        static inline sp<Retval> removePath(const char* base, String& path){
+        static inline sp<Retval> removePath(const char* base
+                                          , const String& path){
             return removePath(base, path.toChars());
         }
-        static inline sp<Retval> removePath(String& base, const char* path){
+        static inline sp<Retval> removePath(const String& base
+                                          , const char* path){
             return removePath(base.toChars(), path);
         }
-        static inline sp<Retval> removePath(String& base, String& path){
+        static inline sp<Retval> removePath(const String& base
+                                          , const String& path){
             return removePath(base.toChars(), path.toChars());
         }
 
         static sp<Retval> removeAll(const char* path);
-        static inline sp<Retval> removeAll(String& path){
+        static inline sp<Retval> removeAll(const String& path){
             return removeAll(path.toChars());
         }
 
         // ----------------------------------------------------------
 
         static sp<Retval> rename(const char* oldname, const char* newname);
-        static inline sp<Retval> rename(String& oldname, String& newname){
-            return rename(oldname.toChars(), newname.toChars());
+        static inline sp<Retval> rename(const String& old, const String& newn){
+            return rename(old.toChars(), newn.toChars());
         }
 
         // ----------------------------------------------------------
 
         static sp<Retval> mtime(const char* path, uint64_t time);
-        static inline sp<Retval> mtime(String& path, uint64_t time){
+        static inline sp<Retval> mtime(const String& path, uint64_t time){
             return mtime(path.toChars(), time);
         }
 

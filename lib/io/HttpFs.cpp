@@ -215,7 +215,7 @@ namespace dframework {
             return NULL;
         }
 
-        return DFW_RETVAL_NEW(DFW_E_NOENT, ENOENT);
+        return DFW_RETVAL_NEW(DFW_ERROR, EIO);
     }
 
     sp<Retval> HttpFs::getattr(const char* path, struct stat* st){
@@ -371,10 +371,10 @@ namespace dframework {
         if( !m_http.has() ){
 #else
         if( !m_http.has() || m_offset!=offset ){
-if( !m_http.has() )
-printf("read: offset=%ld !m_http.has()\n", offset);
-else if( m_offset != offset )
-printf("read: offset=%ld m_offset(%ld) != offset\n", offset, m_offset);
+//if( !m_http.has() )
+//printf("read: offset=%ld !m_http.has()\n", offset);
+//else if( m_offset != offset )
+//printf("read: offset=%ld m_offset(%ld) != offset\n", offset, m_offset);
 #endif
             if( DFW_RET(retval, open_l(path)) )
                 return DFW_RETVAL_D(retval);
@@ -418,7 +418,7 @@ printf("read: offset=%ld m_offset(%ld) != offset\n", offset, m_offset);
                 m_offset += *outsize;
                 return DFW_RETVAL_D(retval);
             }
-printf("read: offset=%ld step=2\n", offset);
+//printf("read: offset=%ld step=2\n", offset);
             m_offset += *outsize;
             return NULL;
         }
@@ -466,7 +466,7 @@ printf("read: offset=%ld step=2\n", offset);
                 m_offset += *outsize;
                 return DFW_RETVAL_D(retval);
             }
-printf("read: offset=%ld step=1\n", offset);
+//printf("read: offset=%ld step=1\n", offset);
             m_step = 2;
             m_offset += *outsize;
 #endif

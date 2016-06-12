@@ -73,7 +73,7 @@ namespace dframework {
         bool append(const String& str, dfw_size_t len);
         bool appendFmt(const char* fmt, ...);
 
-        inline dfw_size_t length() const { 
+        inline const dfw_size_t length() const { 
             return m_iLength; 
         }
 
@@ -113,6 +113,8 @@ namespace dframework {
 
         static dfw_size_t strlen(const char* str);
         static String format(const char* fmt, ...);
+        static char* strdup(const char* str);
+        static char* strndup(const char* str, int len);
         static bool isspace(const char ch);
 
         static dfw_size_t indexOf(const char *hay, const char need);

@@ -4,9 +4,13 @@
 
 namespace dframework {
 
+    DFW_DECLARATION_SAFE_COUNT(Object);
+
     Object::Object() :
           ___m_ref_count(0)
     {
+        DFW_SAFE_ADD(Object, l);
+
         int error;
 #if (defined(_WIN32) || defined(_WIN64)) && (!defined(__MINGW32__))
         InitializeCriticalSection( &___m_handle );
@@ -33,6 +37,7 @@ namespace dframework {
 #  endif
         if(!___m_status) ::pthread_mutex_destroy(&___m_handle);
 #endif
+        DFW_SAFE_REMOVE(Object, l);
     }
 
     int Object::___m_init(){

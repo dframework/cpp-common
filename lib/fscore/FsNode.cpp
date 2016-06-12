@@ -261,9 +261,9 @@ printf("*** patch: max:%d, recent-size:%d, named=%d, size=%d, str=%lu\n"
 );
 #endif
 
-        if( !(FsConfig::getRecentlyMax() < m_recently->size()) ){
+        //if( !(FsConfig::getRecentlyMax() < m_recently->size()) ){
             return NULL;
-        }
+        //}
 
         int pcount = 0;
         int pdepth = m_recently->size() - FsConfig::getRecentlyMax();

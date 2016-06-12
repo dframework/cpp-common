@@ -340,6 +340,34 @@ namespace dframework {
     }
 
     /* static */
+    char* String::strdup(const char* str)
+    {
+        char* buf;
+        unsigned int size;
+        if( !str )
+            return NULL;
+        if( !(size = strlen(str)) )
+            return NULL;
+        if( !(buf = (char*)::malloc(size+1)) )
+            return NULL;
+        ::memcpy(buf, str, size);
+        buf[size] = '\0';
+        return buf;
+    }
+
+    char* String::strndup(const char* str, int len)
+    {
+        char* buf;
+        if( !str )
+            return NULL;
+        if( !(buf = (char*)malloc(len+1)) )
+            return NULL;
+        memcpy(buf, str, len);
+        buf[len] = '\0';
+        return buf;
+    }
+
+    /* static */
     bool String::isspace(const char ch){
         switch(ch){
             case ' ':

@@ -66,6 +66,7 @@ enum dfw_retno_t {
     DFW_T_STOP           =    6,
     DFW_T_CANCLE         =    7,
     DFW_T_ETC            =    8,
+    DFW_CODE             =   10,
 
     DFW_ERROR            = 2001,
     DFW_E_INTR           = 2002,

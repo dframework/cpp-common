@@ -176,6 +176,12 @@ time_t gmt_to_local_win32(void)
     }
 
     /* static */
+    String Time::format(const char* fmt, dfw_time_t in){
+        Time t(in);
+        return t.format(fmt);
+    }
+
+    /* static */
     sp<Retval> Time::currentTimeMillis(dfw_timeval *out_tv){
         if(!out_tv) return DFW_RETVAL_NEW(DFW_E_INVAL, 0);
 

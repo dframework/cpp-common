@@ -48,6 +48,7 @@ namespace dframework {
     class Object
     {
     public:
+        DFW_DEFINITION_SAFE_COUNT(Object);
         
     private:
         int              ___m_ref_count;
