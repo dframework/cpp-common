@@ -64,7 +64,7 @@ endif
 #endif
 ##############################################################
 
-LOCAL_VERSION := 0.2.14
+LOCAL_VERSION := 0.2.16
 LOCAL_MODULE := libdframework-common
 
 include $(BUILD_STATIC_LIBRARY)

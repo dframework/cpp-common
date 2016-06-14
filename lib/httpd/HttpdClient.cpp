@@ -660,6 +660,8 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
           }
 
           if( fbuflen == 0 ){
+              uint64_t fileOffset = m_resp->m_iFileOffset;
+
               if( ((uint64_t)readable_size) > (thiz_length) )
                   readable_size = (unsigned)thiz_length;
 
@@ -667,7 +669,7 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
                                          m_req->m_sRequest.toChars()
                                        , &out_fsize
                                        , fbuf
-                                       , readable_size, m_resp->m_iFileOffset)) ){
+                                       , readable_size, fileOffset)) ){
                   return DFW_RETVAL_D(retval);
               }
                           
@@ -684,14 +686,15 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
               }
               for(int k=0; k<host->getModSize(); k++){
                   sp<HttpdMod> mod = host->getMod(k);
-                  if( DFW_RET(retval, mod->read(thiz, fbuf, out_fsize, m_resp->m_iFileOffset))){
-                      // FIXME:
+                  if( DFW_RET(retval, mod->read(thiz, fbuf, out_fsize, fileOffset))){
                       switch( retval->error() ){
                       case ZONEHTTPD_MOD_OK:
                           break;
+#if 0
                       case ZONEHTTPD_MOD_AGAIN:
                           ::memcpy(m_resp->m_buffer, fbuf, m_resp->m_iBufferLen);
                           return DFW_RETVAL_D_SET(retval, DFW_E_AGAIN, EAGAIN);
+#endif
                       case ZONEHTTPD_MOD_ERROR:
                       default :
                           ::memcpy(m_resp->m_buffer, fbuf, m_resp->m_iBufferLen);
