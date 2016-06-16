@@ -22,7 +22,7 @@ if [ "$D_MINGW" = "" ]; then
     ;;
     darwin)
       D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/${D_OSNAME}/x86_64"
-      D_DEST_SRC="src-linux"
+      D_DEST_SRC="src-darwin"
     ;;
   # ios)
   #   D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/${D_OSNAME}"
@@ -100,6 +100,7 @@ configure(){
   fi
   if [ "$D_OSNAME" = "darwin" ]; then
       echo -n " * Configure ... "
+      echo "./configure $D_MINGW --prefix=$D_DEST_BD --enable-shared=yes ${D_LIBSSL_PREFIX}"
       ((./configure $D_MINGW --prefix=$D_DEST_BD --enable-shared=yes ${D_LIBSSL_PREFIX}   > "_configure.log" 2>&1 \
           && echo "1" > $stoped) || echo "0" > $stoped) & spinner $stoped
   else
