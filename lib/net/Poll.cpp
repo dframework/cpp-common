@@ -10,7 +10,7 @@ namespace dframework {
     {
         struct timeval timeout, *toptr;
         fd_set ifds, ofds, efds, *ip, *op;
-        unsigned int i, rc;
+        int i, rc;
 
         /* Set up the file-descriptor sets in ifds, ofds and efds. */
         FD_ZERO(&ifds);
