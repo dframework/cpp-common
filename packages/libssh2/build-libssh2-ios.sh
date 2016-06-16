@@ -4,6 +4,9 @@
 D_PWD=`pwd`
 D_DEST_NM="libssh2-1.6.0"
 
+tmp_unamea=`uname -a`
+tmp_unameb=`expr "${tmp_unamea}" : '\(^[A-Za-z0-9]\{1,\}\)[[:blank:]]'`
+D_OSNAME=`echo $tmp_unameb | tr "[A-Z]" "[a-z]"`
 
 if [ "$DFRAMEWORK_DDK_HOME" = "" ]; then
     echo "Not found DFRAMEWORK_DDK_HOME environment."
@@ -47,9 +50,9 @@ ddk_build_all()
 }
 
 
-if test -d src-linux ; then
+if test -d src-${D_OSNAME} ; then
     echo ""
-    echo "You has src-linux folder ..."
+    echo "You has src-${D_OSNAME} folder ..."
     echo ""
     ddk_build_all
     exit 0
@@ -66,12 +69,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-if test ! -d $D_PWD/src-linux ; then
-    echo "Not found $D_PWD/src-linux"
+if test ! -d $D_PWD/src-${D_OSNAME} ; then
+    echo "Not found $D_PWD/src-${D_OSNAME}"
     exit 1
 fi
 
-cd $D_PWD/src-linux
+cd $D_PWD/src-${D_OSNAME}
 if [ $? -ne 0 ]; then
     exit 1
 fi

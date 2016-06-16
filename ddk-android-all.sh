@@ -1,5 +1,6 @@
 #!/bin/sh
 
+D_PWD=`pwd`
 
 if [ "$DFRAMEWORK_DDK_HOME" = "" ]; then
     echo "Not found DFRAMEWORK_DDK_HOME environment."
@@ -17,6 +18,43 @@ if [ "$which" = "" ]; then
     alias ddk-build='$DFRAMEWORK_DDK_HOME/build/make.sh'
 fi
 
+sample()
+{
+  echo ""
+  echo " *** Android build ***"
+  echo ""
+  echo " 1. Openssl"
+  echo " 2. libssh2"
+  echo " 3. cpp-common of dframework"
+  echo ""
+
+  ############################################
+  # for openssl
+  echo ""
+  echo " *** Openssl for Android"
+  echo ""
+  cd packages/openssl/android
+  ./build-openssl.sh
+  if [ $? -ne 0 ]; then
+    echo "Not compile openssl for android."
+    exit 1
+  fi
+  cd $D_PWD
+
+  ############################################
+  # for libssh2
+  echo ""
+  echo " *** libssh2 for Android"
+  echo ""
+  cd packages/libssh2
+  ./build-libssh2-android.sh
+  if [ $? -ne 0 ]; then
+    echo "Not compile libssh2 for android."
+    exit 1
+  fi
+  cd $D_PWD
+}
+
 ddk_build_target()
 {
     ddk-build --add-target=android-${1}
@@ -24,43 +62,6 @@ ddk_build_target()
         exit 1
     fi
 }
-
-
-D_PWD=`pwd`
-
-echo ""
-echo " *** Android build ***"
-echo ""
-echo " 1. Openssl"
-echo " 2. libssh2"
-echo " 3. cpp-common of dframework"
-echo ""
-
-############################################
-# for openssl
-echo ""
-echo " *** Openssl for Android"
-echo ""
-cd packages/openssl/android
-./build-openssl.sh
-if [ $? -ne 0 ]; then
-    echo "Not compile openssl for android."
-    exit 1
-fi
-cd $D_PWD
-
-############################################
-# for libssh2
-echo ""
-echo " *** libssh2 for Android"
-echo ""
-cd packages/libssh2
-./build-libssh2-android.sh
-if [ $? -ne 0 ]; then
-    echo "Not compile libssh2 for android."
-    exit 1
-fi
-cd $D_PWD
 
 ############################################
 # for dframework
@@ -71,7 +72,6 @@ ddk_build_target "x86"
 ddk_build_target "x86_64"
 ddk_build_target "armv7"
 ddk_build_target "arm64"
-
 
 echo ""
 echo "Complete Android All ... OK"

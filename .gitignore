@@ -12,11 +12,11 @@
 /packages/libssh2/ios/ios9.3-i386
 /packages/libssh2/ios/ios9.3-x86_64
 /packages/openssl/linux
+/packages/openssl/android/arm64/
+/packages/openssl/android/armv7/
+/packages/openssl/android/x86/
+/packages/openssl/android/x86_64/
 /packages/openssl/android/workspace
-/packages/openssl/android/arm64
-/packages/openssl/android/armv7
-/packages/openssl/android/x86
-/packages/openssl/android/x86_64
 /packages/openssl/ios/workspace
 /packages/openssl/ios/ios9.3-arm64
 /packages/openssl/ios/ios9.3-armv7

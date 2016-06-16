@@ -1,5 +1,7 @@
 #!/bin/sh
 
+D_PWD=`pwd`
+
 if [ "$DFRAMEWORK_DDK_HOME" = "" ]; then
     echo "Not found DFRAMEWORK_DDK_HOME environment."
     exit 1
@@ -25,6 +27,42 @@ if [ "$HOST_OS" != "Darwin" ]; then
 fi
 
 
+sample(){
+  echo ""
+  echo " *** iOS build ***"
+  echo ""
+  echo " 1. Openssl"
+  echo " 2. libssh2"
+  echo " 3. cpp-common of dframework"
+  echo ""
+
+  ############################################
+  # for openssl
+  echo ""
+  echo " *** Openssl for iOS"
+  echo ""
+  cd packages/openssl/ios
+  ./build-openssl.sh
+  if [ $? -ne 0 ]; then
+    echo "Not compile openssl for ios."
+    exit 1
+  fi
+  cd $D_PWD
+
+  ############################################
+  # for libssh2
+  echo ""
+  echo " *** libssh2 for iOS"
+  echo ""
+  cd packages/libssh2
+  ./build-libssh2-ios.sh
+  if [ $? -ne 0 ]; then
+    echo "Not compile libssh2 for ios."
+    exit 1
+  fi
+  cd $D_PWD
+}
+
 ddk_build_target()
 {
     ddk-build --add-target=ios-${1}
@@ -33,41 +71,6 @@ ddk_build_target()
     fi
 }
 
-D_PWD=`pwd`
-
-echo ""
-echo " *** iOS build ***"
-echo ""
-echo " 1. Openssl"
-echo " 2. libssh2"
-echo " 3. cpp-common of dframework"
-echo ""
-
-############################################
-# for openssl
-echo ""
-echo " *** Openssl for iOS"
-echo ""
-cd packages/openssl/ios
-./build-openssl.sh
-if [ $? -ne 0 ]; then
-    echo "Not compile openssl for ios."
-    exit 1
-fi
-cd $D_PWD
-
-############################################
-# for libssh2
-echo ""
-echo " *** libssh2 for iOS"
-echo ""
-cd packages/libssh2
-./build-libssh2-ios.sh
-if [ $? -ne 0 ]; then
-    echo "Not compile libssh2 for ios."
-    exit 1
-fi
-cd $D_PWD
 
 ############################################
 # for dframework

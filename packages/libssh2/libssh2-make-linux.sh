@@ -10,9 +10,14 @@ D_SRCPATH=""
 D_SRCS=""
 D_MAKELOG="_make.log"
 
-tmp_unamea=`uname -a`
-tmp_unameb=`expr "${tmp_unamea}" : '\(^[A-Za-z0-9]\{1,\}\)[[:blank:]]'`
-D_OSNAME=`echo $tmp_unameb | tr "[A-Z]" "[a-z]"`
+D_OSNAME=$1
+
+if [ "$D_OSNAME" = "" ]; then
+  tmp_unamea=`uname -a`
+  tmp_unameb=`expr "${tmp_unamea}" : '\(^[A-Za-z0-9]\{1,\}\)[[:blank:]]'`
+  D_OSNAME=`echo $tmp_unameb | tr "[A-Z]" "[a-z]"`
+fi
+
 
 if [ "$D_MINGW" = "" ]; then
     case $D_OSNAME in
@@ -24,13 +29,17 @@ if [ "$D_MINGW" = "" ]; then
       D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/${D_OSNAME}/x86_64"
       D_DEST_SRC="src-darwin"
     ;;
+    android)
+      D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/${D_OSNAME}/x86_64"
+      D_DEST_SRC="src-$D_OSNAME"
+    ;;
   # ios)
   #   D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/${D_OSNAME}"
   #   D_DEST_SRC="src-$D_OSNAME"
   # ;;
   *)
-      D_LIBSSL_PREFIX=""
-      D_DEST_SRC="src-$D_OSNAME"
+      echo "Not found target name"
+      exit 1
   ;;
 esac
 else
@@ -158,11 +167,8 @@ make_mk(){
   MK_S="include \$(CLEAR_VARS)"
   MK_S="${MK_S}\n\nLOCAL_PATH := \$(call my-dir)"
   MK_S="${MK_S}\n\nLOCAL_SRC_FILES := ${D_SRC}"
-  MK_S="${MK_S}\n\nifeq (\${DDK_ENV_TARGET_OS}, \"darwin\")"
-  MK_S="${MK_S}\n\nLOCAL_INCLUDES := \${LOCAL_PATH}/include \${LOCAL_PATH}/../../openssl/darwin/x86_64/include"
-  MK_S="${MK_S}\n\nelifeq (\${DDK_ENV_TARGET_OS}, \"linux\")"
-  MK_S="${MK_S}\n\nLOCAL_INCLUDES := \${LOCAL_PATH}/include \${LOCAL_PATH}/../../openssl/linux/x86_64/include"
-  MK_S="${MK_S}\n\nendif"
+
+  MK_S="${MK_S}\n\nLOCAL_INCLUDES := \${LOCAL_PATH}/include \${LOCAL_PATH}/../../openssl/\${DDK_ENV_TARGET_OS}/\${DDK_ENV_TARGET_CPU}/include"
 
 if [ "$D_MINGW" = "" ]; then
   MK_S="${MK_S}\n\nLOCAL_CFLAGS := -fPIC -DHAVE_CONFIG_H=1"

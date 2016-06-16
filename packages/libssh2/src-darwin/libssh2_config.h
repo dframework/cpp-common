@@ -36,7 +36,7 @@
 #define HAVE_ERRNO_H 1
 
 /* Define to 1 if you have the `EVP_aes_128_ctr' function. */
-#define HAVE_EVP_AES_128_CTR 1
+//#define HAVE_EVP_AES_128_CTR 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
