@@ -2,7 +2,6 @@
 /packages/openssl/ios/OpenSSL-for-iPhone
 /packages/openssl/workspace
 .DS_Store
-/packages/libssh2/src-linux
 /packages/libssh2/src-mingw
 /packages/libssh2/workspace
 /packages/libssh2/ios/workspace
