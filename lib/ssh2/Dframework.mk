@@ -10,7 +10,7 @@ ifeq (${DDK_ENV_TARGET_OS}, "windows")
 #elifeq (${DDK_ENV_TARGET_OS}, "ios")
 #  libssh2_PATH := ${pkg_PATH}/libssh2/${DDK_ENV_TARGET_OS}/ios${DDK_APPLE_SDK_VERSION}-${DDK_ENV_TARGET_CPU}
 else
-  libssh2_PATH := ${pkg_PATH}/libssh2/src-${DDK_ENV_OSNAME}
+  libssh2_PATH := ${pkg_PATH}/libssh2/src-${DDK_ENV_TARGET_OS}
 endif
 
 LOCAL_SRC_FILES :=          \
