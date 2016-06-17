@@ -29,7 +29,6 @@ LOCAL_STATIC_LIBRARIES :=        \
     libdframework-common-filedb  \
     libdframework-common-http    \
     libdframework-common-httpd   \
-    libdframework-common-fscore  \
     libdframework-common-log     \
     libdframework-common-sql     \
     libdframework-common-ssh2    \
