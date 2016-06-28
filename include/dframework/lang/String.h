@@ -73,7 +73,7 @@ namespace dframework {
         bool append(const String& str, dfw_size_t len);
         bool appendFmt(const char* fmt, ...);
 
-        inline const dfw_size_t length() const { 
+        inline dfw_size_t length() const { 
             return m_iLength; 
         }
 

@@ -4,9 +4,10 @@ include_PATH := ${LOCAL_PATH}/../../include
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-    String.cpp \
-    Integer.cpp \
-    Long.cpp \
+    String.cpp     \
+    Integer.cpp    \
+    Long.cpp       \
+    Float.cpp
 
 LOCAL_INCLUDES := \
     ${include_PATH}

@@ -339,5 +339,34 @@ namespace dframework {
         return false;
     }
 
+    String Net::hexstringToIp(const char* hexstring){
+        String s = hexstring;
+        if( s.indexOf("0x")==0 || s.indexOf("0X")==0 ){
+            s.shift(2);
+        }
+
+        if(s.length()==8){
+            char str[20];
+            struct in_addr addr;
+            uint32_t v = ::strtoul(s.toChars(), NULL, 16);
+            ::memset(str, 0, 20);
+            addr.s_addr = v;
+            ::inet_ntop(AF_INET, &addr, str, 20);
+            s = str;
+        }else if(s.length()==32){
+            char str[60]; ::memset(str, 0, 60);
+            char test[9]; test[8] = '\0';
+            uint32_t a6[4];
+            const char* p = s.toChars();
+            for(int i=0; i<4; i++){
+                ::memcpy(test, p+(i*8), 8);
+                a6[i] = ::strtoul(test, NULL, 16);
+            }
+            ::inet_ntop(AF_INET6, &a6[0], str, 60);
+            s = str;
+        }
+        return s;
+    }
+
 };
 

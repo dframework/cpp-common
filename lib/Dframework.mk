@@ -1,2 +1,2 @@
-LOCAL_NO_SUBDIRS := fscore
+LOCAL_NO_SUBDIRS := fscore-removed
 

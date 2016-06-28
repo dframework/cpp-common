@@ -3,6 +3,7 @@
 
 #include <dframework/util/Array.h>
 #include <dframework/lang/String.h>
+#include <dframework/util/StringArray.h>
 
 #ifdef __cplusplus
 namespace dframework {

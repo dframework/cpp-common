@@ -53,6 +53,11 @@ namespace dframework {
 
         static bool isInprogress(int eno);
 
+        static String hexstringToIp(const char* hexstring);
+        inline static String hexstringToIp(const String& hexstring){
+            return hexstringToIp(hexstring.toChars());
+        }
+
     private:
         static sp<Retval> fcntl_k(int *out, int sock, int cmd, int arg);
 

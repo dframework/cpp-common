@@ -5,6 +5,7 @@ packages_PATH := ${LOCAL_PATH}/../../packages
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES :=     \
+    Util.cpp           \
     Time.cpp           \
     Regexp.cpp         \
     NamedValue.cpp     \

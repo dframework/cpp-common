@@ -22,3 +22,6 @@
 /packages/openssl/ios/ios9.3-armv7s
 /packages/openssl/ios/ios9.3-i386
 /packages/openssl/ios/ios9.3-x86_64
+/lib/fscore-removed
+/include/dframework/fscore-removed
+

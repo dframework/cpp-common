@@ -32,6 +32,7 @@ LOCAL_STATIC_LIBRARIES :=        \
     libdframework-common-log     \
     libdframework-common-sql     \
     libdframework-common-ssh2    \
+    libdframework-common-monitor \
     libcrypto                    \
     libssl                       \
     libssh2
@@ -63,7 +64,7 @@ endif
 #endif
 ##############################################################
 
-LOCAL_VERSION := 0.2.18
+LOCAL_VERSION := 0.2.20
 LOCAL_MODULE := libdframework-common
 
 include $(BUILD_STATIC_LIBRARY)
