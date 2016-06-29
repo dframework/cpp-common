@@ -6,6 +6,8 @@
 
 namespace dframework {
 
+  const char* MonSocket::SAVE_FILENM = "socket";
+
   MonSocket::Line::Line(){
       m_localPort = 0;
       m_remotePort = 0;
@@ -59,7 +61,11 @@ namespace dframework {
   }
 
   const char* MonSocket::savename(){
-      return "socket";
+      return SAVE_FILENM;
+  }
+
+  const char* MonSocket::rawname(){
+      return SAVE_FILENM;
   }
 
   sp<Retval> MonSocket::readData(){
@@ -208,22 +214,6 @@ namespace dframework {
       case TCP_CLOSING: m_all->m_closing++; break;
       }
 
-#if 0
-printf("localaddr=%s, localport=%d, remoteaddr=%s, remoteport=%d, s=%d, tx=%lu, rx=%lu"
-", uid=%d, inode=%lu, last=%d"
-"\n"
-, line->m_sLocalAddr.toChars()
-, line->m_localPort
-, line->m_sRemoteAddr.toChars()
-, line->m_remotePort
-, line->m_status
-, line->m_tx
-, line->m_rx
-, line->m_uid
-, line->m_inode
-, line->m_7
-);
-#endif
       return NULL;
   }
 
@@ -233,7 +223,7 @@ printf("localaddr=%s, localport=%d, remoteaddr=%s, remoteport=%d, s=%d, tx=%lu, 
       DFW_UNUSED(sec);
       DFW_UNUSED(old_);
 
-      sp<MonSocket> ret = new MonSocket(sec);
+      sp<MonSocket> ret = create(sec);
       sp<Data> t = ret->m_all;
       sp<Data> c = m_all;
 
@@ -287,6 +277,7 @@ printf("localaddr=%s, localport=%d, remoteaddr=%s, remoteport=%d, s=%d, tx=%lu, 
               "%lu "
               "%lu %lu "
               "%lu %lu %lu"
+              "\n"
           , c->m_sec
           , d->m_total, d->m_est
           , d->m_syn_sent, d->m_syn_recv
@@ -296,6 +287,81 @@ printf("localaddr=%s, localport=%d, remoteaddr=%s, remoteport=%d, s=%d, tx=%lu, 
           , d->m_last_ack, d->m_listen, d->m_closing
       );
       return true;
+  }
+
+  sp<MonBase> MonSocket::createBlank(uint64_t sec, sp<MonBase>& old_){
+      DFW_UNUSED(old_);
+      return create(sec);
+  }
+
+  sp<Retval> MonSocket::loadData(sp<MonBase>& out, String& sLine)
+  {
+      sp<Retval> retval;
+
+      String s_sec;
+      String s_total, s_est;
+      String s_syn_sent, s_syn_recv;
+      String s_fin_wait1, s_fin_wait2;
+      String s_time_wait;
+      String s_close, s_close_wait;
+      String s_last_ack;
+      String s_listen, s_closing;
+
+      int round = 0;
+      const char* v = NULL;
+      const char* p = sLine.toChars();
+      do{
+          if( *p == ' ' || *p == '\t' || *p == '|' || *p=='\0'){
+              if( v ){
+                  switch(round){
+                  case 0: s_sec.set(v, p-v); break;
+                  case 1: s_total.set(v, p-v); break;
+                  case 2: s_est.set(v, p-v); break;
+                  case 3: s_syn_sent.set(v, p-v); break;
+                  case 4: s_syn_recv.set(v, p-v); break;
+                  case 5: s_fin_wait1.set(v, p-v); break;
+                  case 6: s_fin_wait2.set(v, p-v); break;
+                  case 7: s_time_wait.set(v, p-v); break;
+                  case 8: s_close.set(v, p-v); break;
+                  case 9: s_close_wait.set(v, p-v); break;
+                  case 10: s_last_ack.set(v, p-v); break;
+                  case 11: s_listen.set(v, p-v); break;
+                  case 12: s_closing.set(v, p-v); break;
+                  }
+                  v= NULL;
+                  round++;
+              }
+              if( *p=='\0' ) break;
+          }else if(!v){
+              v = p;
+          }
+          p++;
+      }while(true);
+
+      if( round != 13 ){
+          return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                     , "Unknown format %s", sLine.toChars());
+      }
+
+
+      uint64_t d_sec = Long::parseLong(s_sec);
+      sp<MonSocket> dest = create(d_sec);
+      sp<Data> c = dest->m_all;
+      c->m_total      = Long::parseLong(s_total);
+      c->m_est        = Long::parseLong(s_est);
+      c->m_syn_sent   = Long::parseLong(s_syn_sent);
+      c->m_syn_recv   = Long::parseLong(s_syn_recv);
+      c->m_fin_wait1  = Long::parseLong(s_fin_wait1);
+      c->m_fin_wait2  = Long::parseLong(s_fin_wait2);
+      c->m_time_wait  = Long::parseLong(s_time_wait);
+      c->m_close      = Long::parseLong(s_close);
+      c->m_close_wait = Long::parseLong(s_close_wait);
+      c->m_last_ack   = Long::parseLong(s_last_ack);
+      c->m_listen     = Long::parseLong(s_listen);
+      c->m_closing    = Long::parseLong(s_closing);
+
+      out = dest;
+      return NULL;
   }
 
   sp<Retval> MonSocket::draw(int num, sp<info>& info, sp<MonBase>& thiz

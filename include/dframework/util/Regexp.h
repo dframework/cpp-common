@@ -14,7 +14,7 @@ typedef dfw_point_t   dfw_pcre2_match_data_t;
 #ifdef __cplusplus
 namespace dframework {
     
-    class Regexp
+    class Regexp : public Object
     {
     public:
         Regexp(const char *regexp);

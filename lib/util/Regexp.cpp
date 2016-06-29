@@ -13,13 +13,15 @@
 
 namespace dframework {
 
-    Regexp::Regexp(const char *regexp){
+    Regexp::Regexp(const char *regexp) : Object()
+    {
         ___init();
         m_sExp = regexp;
         ___compile();
     }
     
-    Regexp::Regexp(const String &regexp){
+    Regexp::Regexp(const String &regexp) : Object()
+    {
         ___init();
         m_sExp = regexp;
         ___compile();

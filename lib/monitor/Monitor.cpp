@@ -4,8 +4,9 @@
 namespace dframework {
 
 
-  Monitor::Monitor(const char* savepath){
+  Monitor::Monitor(const char* savepath, unsigned max_rows){
       m_sPath = savepath;
+      MAX_ROWS = max_rows;
       setSecondsNum(0,    5);
       setSecondsNum(1,  240);
       setSecondsNum(2, 1800);
@@ -48,6 +49,34 @@ namespace dframework {
       return NULL;
   }
 
+  sp<Retval> Monitor::ready(){
+      sp<Retval> retval;
+
+      for(int sn=0; sn<SECONDS_NUM; sn++){
+          unsigned seconds = SECONDS[sn];
+          for(int k=0; k<m_aDevices.size(); k++){
+              sp<MonBase::group> grp = m_aDevices.get(k);
+              if( !grp.has() ) continue;
+
+              sp<MonBase::info> inf = grp->m_infos.get(sn);
+              if( !inf.has() ){
+                  inf = new MonBase::info();
+                  inf->m_sec = seconds;
+                  if( DFW_RET(retval, grp->m_infos.insert(inf)) )
+                      return DFW_RETVAL_D(retval);
+              }
+              if( DFW_RET(retval, grp->m_base->loadRawData(
+                                      seconds, inf, m_sPath, MAX_ROWS)) ){
+printf("%s\n", retval->dump().toChars());
+                  //return DFW_RETVAL_D(retval);
+              }else{
+              }
+          }
+      } // end for[int sn=0; sn<SECONDS_NUM; sn++]
+
+      return NULL;
+  }
+
   void Monitor::run()
   {
       sp<Retval> retval;
@@ -74,22 +103,23 @@ namespace dframework {
           sp<MonBase> device = grp->m_base->create(sec);
           if( DFW_RET(retval, device->readData()) ){
               DFW_RETVAL_D(retval);
-              // FIXME:
-printf("retval=%s\n", retval->dump().toChars());
-              continue;
+          }else if( DFW_RET(retval, run_s_l(grp, sec, 0, device)) ){
+              DFW_RETVAL_D(retval);
           }
 
-          run_s_l(grp, sec, 0, device);
+          if( retval.has() ){
+              // FIXME:
+printf("retval=%s\n", retval->dump().toChars());
+          }
       }
   }
 
-  bool Monitor::run_s_l(sp<MonBase::group>& grp, uint64_t sec, int no
+  sp<Retval> Monitor::run_s_l(sp<MonBase::group>& grp, uint64_t sec, int no
                        , sp<MonBase>& device)
   {
-      if( SECONDS[no] == 0 ){
-          //printf("end no=%d\n", no);
-          return false;
-      }
+      sp<Retval> retval;
+      if( SECONDS[no] == 0 )
+          return DFW_RETVAL_NEW(DFW_OK, 0);
 
       int      next = SECONDS[no+1];
       uint64_t range = SECONDS[no] * MAX_ROWS;
@@ -107,7 +137,7 @@ printf("retval=%s\n", retval->dump().toChars());
 
       if( !inf->m_last.has() ){
           inf->m_last = device;
-          return true;
+          return NULL;
       }
 
       sp<MonBase> dep = device->depth(no, sec, inf->m_last);
@@ -121,15 +151,18 @@ printf("retval=%s\n", retval->dump().toChars());
           if( (sec % next) != 0 ){
               inf->m_total->plus(dep);
           }else{
-              if( !run_s_l(grp, sec, no+1, inf->m_total) )
-                  return true;
+              if( DFW_RET(retval, run_s_l(grp, sec, no+1, inf->m_total)) ){
+                  if( retval->error() == DFW_OK )
+                      return NULL;
+                  return DFW_RETVAL_D(retval);
+              }
               inf->m_total = NULL;
           }
       }
 
-      grp->m_base->draw(no, inf, dep, m_sPath.toChars());
-
-      return true;
+      if(DFW_RET(retval, grp->m_base->draw(no, inf, dep, m_sPath.toChars())))
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

@@ -45,6 +45,7 @@ namespace dframework {
       virtual sp<MonBase> create(uint64_t sec);
       virtual const char* source_path();
       virtual const char* savename();
+      virtual const char* rawname();
       virtual sp<Retval>  readData();
       virtual sp<MonBase> depth(int no, uint64_t sec
                               , sp<MonBase>& old);

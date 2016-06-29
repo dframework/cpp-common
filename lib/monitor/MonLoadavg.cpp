@@ -1,9 +1,13 @@
 #include <dframework/monitor/MonLoadavg.h>
 #include <dframework/lang/Float.h>
+#include <dframework/lang/Integer.h>
+#include <dframework/lang/Long.h>
 #include <dframework/io/File.h>
 #include <dframework/util/Regexp.h>
 
 namespace dframework {
+
+  const char* MonLoadavg::SAVE_FILENM = "loadavg";
 
   MonLoadavg::MonLoadavg(uint64_t sec)
           : MonBase(sec)
@@ -25,7 +29,11 @@ namespace dframework {
   }
 
   const char* MonLoadavg::savename(){
-      return "loadavg";
+      return SAVE_FILENM;
+  }
+
+  const char* MonLoadavg::rawname(){
+      return SAVE_FILENM;
   }
 
   sp<Retval> MonLoadavg::readData(){
@@ -87,7 +95,7 @@ printf("%s\n", retval->dump().toChars());
       DFW_UNUSED(no);
       DFW_UNUSED(old_);
 
-      sp<MonLoadavg> ret = new MonLoadavg(sec);
+      sp<MonLoadavg> ret = create(sec);
       ret->m_1 = m_1;
       ret->m_5 = m_5;
       ret->m_15 = m_15;
@@ -104,8 +112,38 @@ printf("%s\n", retval->dump().toChars());
   bool MonLoadavg::getRawString(String& s, sp<MonBase>& b){
       sp<MonLoadavg> c = b;
       if( !c.has() ) return false;
-      s = String::format("%lu\t%u %lu %lu", c->m_sec, c->m_1, c->m_5, c->m_15);
+      s = String::format("%lu\t%u %lu %lu\n", c->m_sec, c->m_1, c->m_5, c->m_15);
       return true;
+  }
+
+  sp<MonBase> MonLoadavg::createBlank(uint64_t sec, sp<MonBase>& old_){
+      DFW_UNUSED(old_);
+      return create(sec);
+  }
+
+  sp<Retval> MonLoadavg::loadData(sp<MonBase>& out, String& sLine)
+  {
+      sp<Retval> retval;
+
+      Regexp a("^([0-9]+)[\\s]+([0-9]+)[\\s]+([0-9]+)[\\s]+([0-9]+)");
+      if( DFW_RET(retval, a.regexp(sLine.toChars())) )
+          return DFW_RETVAL_D(retval);
+
+      String s_sec, s_1, s_5, s_15;
+
+      s_sec.set(a.getMatch(1), a.getMatchLength(1));
+      s_1.set(a.getMatch(2), a.getMatchLength(2));
+      s_5.set(a.getMatch(3), a.getMatchLength(3));
+      s_15.set(a.getMatch(4), a.getMatchLength(4));
+
+      uint64_t d_sec = Long::parseLong(s_sec);
+      sp<MonLoadavg> dest = create(d_sec);
+      dest->m_1 = Long::parseLong(s_1);
+      dest->m_5 = Long::parseLong(s_5);
+      dest->m_15 = Long::parseLong(s_15);
+
+      out = dest;
+      return NULL;
   }
 
   sp<Retval> MonLoadavg::draw(int num, sp<info>& info, sp<MonBase>& thiz

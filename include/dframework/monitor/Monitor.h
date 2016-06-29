@@ -19,13 +19,14 @@ namespace dframework {
       Array<MonBase::group> m_aDevices;
 
   private:
-      bool run_s_l(sp<MonBase::group>&, uint64_t, int, sp<MonBase>&);
+      sp<Retval> run_s_l(sp<MonBase::group>&, uint64_t, int, sp<MonBase>&);
       void run_s(uint64_t sec);
 
   public:
-      Monitor(const char* savepath);
+      Monitor(const char* savepath, unsigned max);
       virtual ~Monitor();
 
+      virtual sp<Retval> ready();
       virtual void run();
 
       void setSecondsNum(unsigned pos, unsigned seconds);

@@ -1,6 +1,7 @@
 #include <dframework/monitor/MonPacket.h>
 #include <dframework/io/File.h>
 #include <dframework/util/Regexp.h>
+#include <dframework/util/StringArray.h>
 #include <dframework/lang/Long.h>
 
 namespace dframework {
@@ -12,6 +13,8 @@ namespace dframework {
   int  MonPacket::N_T_PACKETS = 0;
   int  MonPacket::N_T_ERRS = 0;
   bool MonPacket::N_HAS = false;
+
+  const char* MonPacket::SAVE_FILENM = "packet";
 
   MonPacket::MonPacket(uint64_t sec)
           : MonBase(sec)
@@ -36,7 +39,11 @@ namespace dframework {
   }
 
   const char* MonPacket::savename(){
-      return "packet";
+      return SAVE_FILENM;
+  }
+
+  const char* MonPacket::rawname(){
+      return SAVE_FILENM;
   }
 
   sp<Retval> MonPacket::readData(){
@@ -213,7 +220,7 @@ namespace dframework {
   sp<MonBase> MonPacket::depth(int no, uint64_t sec, sp<MonBase>& old_)
   {
       sp<MonPacket> old = old_;
-      sp<MonPacket> ret = new MonPacket(sec);
+      sp<MonPacket> ret = create(sec);
 
       if( no == 0 ){
           ret->m_rbytes = m_rbytes - old->m_rbytes;
@@ -251,13 +258,103 @@ namespace dframework {
 
       s = String::format(
               "%lu\t"
-              "%lu %lu %lu\t"
-              "%lu %lu %lu"
+              "|%lu %lu %lu\t"
+              "|%lu %lu %lu"
+              "\n"
           , c->m_sec
           , c->m_rbytes, c->m_rpackets, c->m_rerrs
           , c->m_tbytes, c->m_tpackets, c->m_terrs
       );
       return true;
+  }
+
+  sp<MonBase> MonPacket::createBlank(uint64_t sec, sp<MonBase>& old_){
+      DFW_UNUSED(old_);
+      return create(sec);
+  }
+
+  sp<Retval> MonPacket::loadData(sp<MonBase>& out, String& sLine)
+  {
+      sp<Retval> retval;
+
+      String s_sec;
+      String s_rbytes, s_rpackets, s_rerrs;
+      String s_tbytes, s_tpackets, s_terrs;
+
+      StringArray sa;
+      sa.split(sLine.toChars(), "|");
+      if(sa.size()!=3)
+          return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Unknown format : %s", sLine.toChars());
+
+      sp<String> sa1 = sa.getString(0);
+      sp<String> sa2 = sa.getString(1);
+      sp<String> sa3 = sa.getString(2);
+
+      uint64_t d_sec = Long::parseLong(sa1->toChars());
+      {
+          int round = 0;
+          const char* v = NULL;
+          const char* p = sa2->toChars();
+          do{
+              if( *p == ' ' || *p == '\t' || *p == '|' || *p=='\0'){
+                  if( v ){
+                      switch(round){
+                      case 0: s_rbytes.set(v, p-v); break;
+                      case 1: s_rpackets.set(v, p-v); break;
+                      case 2: s_rerrs.set(v, p-v); break;
+                      }
+                      v= NULL;
+                      round++;
+                  }
+                  if( *p=='\0' ) break;
+              }else if(!v){
+                  v = p;
+              }
+              p++;
+          }while(true);
+          if( round != 3 ){
+              return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                         , "Unknown format %s", sLine.toChars());
+          }
+      }
+
+      {
+          int round = 0;
+          const char* v = NULL;
+          const char* p = sa3->toChars();
+          do{
+              if( *p == ' ' || *p == '\t' || *p == '|' || *p=='\0'){
+                  if( v ){
+                      switch(round){
+                      case 0: s_tbytes.set(v, p-v); break;
+                      case 1: s_tpackets.set(v, p-v); break;
+                      case 2: s_terrs.set(v, p-v); break;
+                      }
+                      v= NULL;
+                      round++;
+                  }
+                  if( *p=='\0' ) break;
+              }else if(!v){
+                  v = p;
+              }
+              p++;
+          }while(true);
+          if( round != 3 ){
+              return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                         , "Unknown format %s", sLine.toChars());
+          }
+      }
+
+      sp<MonPacket> dest = create(d_sec);
+      dest->m_rbytes   = Long::parseLong(s_rbytes);
+      dest->m_rpackets = Long::parseLong(s_rpackets);
+      dest->m_rerrs    = Long::parseLong(s_rerrs);
+      dest->m_tbytes   = Long::parseLong(s_tbytes);
+      dest->m_tpackets = Long::parseLong(s_tpackets);
+      dest->m_terrs    = Long::parseLong(s_terrs);
+
+      out = dest;
+      return NULL;
   }
 
   sp<Retval> MonPacket::draw(int num, sp<info>& info, sp<MonBase>& thiz

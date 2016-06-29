@@ -5,6 +5,8 @@
 
 namespace dframework {
 
+  const char* MonMemory::SAVE_FILENM = "memory";
+
   MonMemory::MonMemory(uint64_t sec)
           : MonBase(sec)
   {
@@ -41,7 +43,11 @@ namespace dframework {
   }
 
   const char* MonMemory::savename(){
-      return "memory";
+      return SAVE_FILENM;
+  }
+
+  const char* MonMemory::rawname(){
+      return SAVE_FILENM;
   }
 
   sp<Retval> MonMemory::readData(){
@@ -151,7 +157,7 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
       DFW_UNUSED(no);
       DFW_UNUSED(old_);
 
-      sp<MonMemory> ret = new MonMemory(sec);
+      sp<MonMemory> ret = create(sec);
 
       ret->m_total = m_total;
       ret->m_free  = m_free;
@@ -205,6 +211,7 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
               "%lu %lu %lu "
               "%lu %lu %lu "
               "%lu %lu"
+              "\n"
           , c->m_sec
           , c->m_total, c->m_free, c->m_available, c->m_buffers, c->m_cached
           , c->m_swapTotal, c->m_swapFree, c->m_swapCached
@@ -212,6 +219,79 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
           , c->m_active, c->m_inActive
       );
       return true;
+  }
+
+  sp<MonBase> MonMemory::createBlank(uint64_t sec, sp<MonBase>& old_){
+      DFW_UNUSED(old_);
+      return create(sec);
+  }
+
+  sp<Retval> MonMemory::loadData(sp<MonBase>& out, String& sLine)
+  {
+      sp<Retval> retval;
+
+      String s_sec;
+      String s_total, s_free, s_avail, s_buffers, s_cached;
+      String s_swapTotal, s_swapFree, s_swapCached;
+      String s_vmTotal, s_vmUsed, s_vmChunk;
+      String s_active, s_inactive;
+
+      int round = 0;
+      const char* v = NULL;
+      const char* p = sLine.toChars();
+      do{
+          if( *p == ' ' || *p == '\t' || *p == '|' || *p=='\0'){
+              if( v ){
+                  switch(round){
+                  case 0: s_sec.set(v, p-v); break;
+                  case 1: s_total.set(v, p-v); break;
+                  case 2: s_free.set(v, p-v); break;
+                  case 3: s_avail.set(v, p-v); break;
+                  case 4: s_buffers.set(v, p-v); break;
+                  case 5: s_cached.set(v, p-v); break;
+                  case 6: s_swapTotal.set(v, p-v); break;
+                  case 7: s_swapFree.set(v, p-v); break;
+                  case 8: s_swapCached.set(v, p-v); break;
+                  case 9: s_vmTotal.set(v, p-v); break;
+                  case 10: s_vmUsed.set(v, p-v); break;
+                  case 11: s_vmChunk.set(v, p-v); break;
+                  case 12: s_active.set(v, p-v); break;
+                  case 13: s_inactive.set(v, p-v); break;
+                  }
+                  v= NULL;
+                  round++;
+              }
+              if( *p=='\0' ) break;
+          }else if(!v){
+              v = p;
+          }
+          p++;
+      }while(true);
+
+      if( round != 14 ){
+          return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                     , "Unknown format %s", sLine.toChars());
+      }
+
+      uint64_t d_sec = Long::parseLong(s_sec);
+      sp<MonMemory> dest = create(d_sec);
+
+      dest->m_total = Long::parseLong(s_total);
+      dest->m_free = Long::parseLong(s_free);
+      dest->m_available = Long::parseLong(s_avail);
+      dest->m_buffers = Long::parseLong(s_buffers);
+      dest->m_cached = Long::parseLong(s_cached);
+      dest->m_swapTotal = Long::parseLong(s_swapTotal);
+      dest->m_swapFree = Long::parseLong(s_swapFree);
+      dest->m_swapCached = Long::parseLong(s_swapCached);
+      dest->m_vmallocTotal = Long::parseLong(s_vmTotal);
+      dest->m_vmallocUsed = Long::parseLong(s_vmUsed);
+      dest->m_vmallocChunk = Long::parseLong(s_vmChunk);
+      dest->m_active = Long::parseLong(s_active);
+      dest->m_inActive = Long::parseLong(s_inactive);
+
+      out = dest;
+      return NULL;
   }
 
   sp<Retval> MonMemory::draw(int num, sp<info>& info, sp<MonBase>& thiz

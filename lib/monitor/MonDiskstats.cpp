@@ -3,9 +3,11 @@
 #include <dframework/util/Regexp.h>
 #include <dframework/lang/Integer.h>
 #include <dframework/lang/Long.h>
+#include <dframework/util/StringArray.h>
 
 namespace dframework {
 
+  const char* MonDiskstats::SAVE_FILENM = "diskstats";
 
   MonDiskstats::Data::Data(){
       m_type = 0;
@@ -47,7 +49,11 @@ namespace dframework {
   }
 
   const char* MonDiskstats::savename(){
-      return "diskstats";
+      return SAVE_FILENM;
+  }
+
+  const char* MonDiskstats::rawname(){
+      return SAVE_FILENM;
   }
 
   sp<Retval> MonDiskstats::readData(){
@@ -189,7 +195,7 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
   sp<MonBase> MonDiskstats::depth(int no, uint64_t sec, sp<MonBase>& old_)
   {
       sp<MonDiskstats> old = old_;
-      sp<MonDiskstats> ret = new MonDiskstats(sec);
+      sp<MonDiskstats> ret = create(sec);
 
       for( int k=0; k<m_aLists.size(); k++){
           sp<Data> d = new Data();
@@ -312,7 +318,7 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
           sp<Data> d = c->m_aLists.get(k);
           if( !d.has() ) return false;
           s.appendFmt(
-               "\t%u %u %s\t"
+               "\t|%d %d %s\t"
                "%lu %lu %lu %lu\t"
                "%lu %lu %lu %lu\t"
                "%lu %lu %lu"
@@ -322,7 +328,125 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
              , d->m_iocount, d->m_iotime, d->m_iowtime
           );
       }
+      s.append("\n");
       return true;
+  }
+
+  sp<MonBase> MonDiskstats::createBlank(uint64_t sec, sp<MonBase>& old_)
+  {
+      sp<MonDiskstats> old = old_;
+      sp<MonDiskstats> ret = create(sec);
+
+      for( int k=0; k<old->m_aLists.size(); k++){
+          sp<Data> d = new Data();
+          sp<Data> o = old->m_aLists.get(k);
+          d->m_type    = o->m_type;
+          d->m_devtype = o->m_devtype;
+          d->m_sName   = o->m_sName;
+          ret->m_aLists.insert(d);
+      }
+
+      return ret;
+  }
+
+  sp<Retval> MonDiskstats::loadData(sp<MonBase>& out, String& sLine)
+  {
+      sp<Retval> retval;
+
+      StringArray ar;
+      if( DFW_RET(retval, ar.split(sLine, "|")) )
+          return DFW_RETVAL_D(retval);
+      if( !(ar.size() > 1) )
+          return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                     , "Unknown format. ground-size=%d", ar.size());
+
+      sp<String> ar1 = ar.getString(0);
+      uint64_t d_sec = Long::parseLong(ar1->toChars());
+      sp<MonDiskstats> dest = create(d_sec);
+
+      // get datas
+      String s_type, s_devtype, s_name;
+      String s_rcount, s_rmerged, s_rsector, s_rtime;
+      String s_wcount, s_wmerged, s_wsector, s_wtime;
+      String s_iocount, s_iotime, s_iowtime;
+
+      for(int k=1; k<ar.size(); k++){
+          sp<String> arx = ar.getString(k);
+
+          int round = 0;
+          const char* v = NULL;
+          const char* p = arx->toChars();
+          do{
+              if( *p == ' ' || *p == '\t' || *p == '|' || *p=='\0'){
+                  if( v ){
+                      switch(round){
+                      case 0: s_type.set(v, p-v); break;
+                      case 1: s_devtype.set(v, p-v); break;
+                      case 2: s_name.set(v, p-v); break;
+                      case 3: s_rcount.set(v, p-v); break;
+                      case 4: s_rmerged.set(v, p-v); break;
+                      case 5: s_rsector.set(v, p-v); break;
+                      case 6: s_rtime.set(v, p-v); break;
+                      case 7: s_wcount.set(v, p-v); break;
+                      case 8: s_wmerged.set(v, p-v); break;
+                      case 9: s_wsector.set(v, p-v); break;
+                      case 10: s_wtime.set(v, p-v); break;
+                      case 11: s_iocount.set(v, p-v); break;
+                      case 12: s_iotime.set(v, p-v); break;
+                      case 13: s_iowtime.set(v, p-v); break;
+                      }
+                      v= NULL;
+                      round++;
+                  }
+                  if( *p=='\0' ) break;
+              }else if(!v){
+                  v = p;
+              }
+              p++;
+          }while(true);
+          if( round != 14 ){
+              return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                         , "Unknown format %s", sLine.toChars());
+          }
+
+          sp<Data> d = new Data();
+          d->m_type    = Integer::parseInt(s_type);
+          d->m_devtype = Integer::parseInt(s_devtype);
+          d->m_sName = s_name;
+
+          d->m_rcount = Long::parseLong(s_rcount);
+          d->m_rmerged = Long::parseLong(s_rmerged);
+          d->m_rsector = Long::parseLong(s_rsector);
+          d->m_rtime = Long::parseLong(s_rtime);
+          d->m_wcount = Long::parseLong(s_wcount);
+          d->m_wmerged = Long::parseLong(s_wmerged);
+          d->m_wsector = Long::parseLong(s_wsector);
+          d->m_wtime = Long::parseLong(s_wtime);
+
+          d->m_iocount = Long::parseLong(s_iocount);
+          d->m_iotime = Long::parseLong(s_iotime);
+          d->m_iowtime = Long::parseLong(s_iowtime);
+
+          if( d->m_devtype == 0 ) {
+              dest->m_all->m_rcount  += d->m_rcount;
+              dest->m_all->m_rmerged += d->m_rmerged;
+              dest->m_all->m_rsector += d->m_rsector;
+              dest->m_all->m_rtime   += d->m_rtime;
+              dest->m_all->m_wcount  += d->m_wcount;
+              dest->m_all->m_wmerged += d->m_wmerged;
+              dest->m_all->m_wsector += d->m_wsector;
+              dest->m_all->m_wtime   += d->m_wtime;
+              dest->m_all->m_iocount += d->m_iocount;
+              dest->m_all->m_iotime  += d->m_iotime;
+              dest->m_all->m_iowtime += d->m_iowtime;
+          }
+
+          if( DFW_RET(retval, dest->m_aLists.insert(d)) )
+              return DFW_RETVAL_D(retval);
+      }
+
+      out = dest;
+      return NULL;
   }
 
   sp<Retval> MonDiskstats::draw(int num, sp<info>& info, sp<MonBase>& thiz

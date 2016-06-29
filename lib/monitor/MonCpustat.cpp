@@ -3,8 +3,11 @@
 #include <dframework/util/Regexp.h>
 #include <dframework/lang/Integer.h>
 #include <dframework/lang/Long.h>
+#include <dframework/util/StringArray.h>
 
 namespace dframework {
+
+  const char* MonCpustat::SAVE_FILENM = "cpustat";
 
   MonCpustat::Data::Data(){
       m_no = 0;
@@ -41,10 +44,15 @@ namespace dframework {
   }
 
   const char* MonCpustat::savename(){
-      return "cpustat";
+      return SAVE_FILENM;
   }
 
-  sp<Retval> MonCpustat::readData(){
+  const char* MonCpustat::rawname(){
+      return SAVE_FILENM;
+  }
+
+  sp<Retval> MonCpustat::readData()
+  {
       sp<Retval> retval;
 
       String sContents;
@@ -180,7 +188,7 @@ namespace dframework {
   sp<MonBase> MonCpustat::depth(int no, uint64_t sec, sp<MonBase>& old_)
   {
       sp<MonCpustat> old = old_;
-      sp<MonCpustat> ret = new MonCpustat(sec);
+      sp<MonCpustat> ret = create(sec);
 
       for( int k=0; k<m_aLists.size(); k++){
           sp<Data> d = new Data();
@@ -258,7 +266,7 @@ namespace dframework {
           sp<Data> d = c->m_aLists.get(k);
           if( !d.has() ) return false;
           s.appendFmt(
-               "\t%u "
+               "\t|%d "
                "%lu %lu %lu %lu "
                "%lu %lu %lu %lu"
              , d->m_no
@@ -266,7 +274,113 @@ namespace dframework {
              , d->m_idle, d->m_iowait, d->m_irq,  d->m_softirq
           );
       }
+      s.append("\n");
       return true;
+  }
+
+  sp<MonBase> MonCpustat::createBlank(uint64_t sec, sp<MonBase>& old_)
+  {
+      sp<MonCpustat> old = old_;
+      sp<MonCpustat> ret = create(sec);
+
+      for( int k=0; k<old->m_aLists.size(); k++){
+          sp<Data> d = new Data();
+          sp<Data> o = old->m_aLists.get(k);
+          d->m_no    = o->m_no;
+          if( k==0 )
+              ret->m_all = d;
+          ret->m_aLists.insert(d);
+      }
+
+      return ret;
+  }
+
+  sp<Retval> MonCpustat::loadData(sp<MonBase>& out, String& sLine)
+  {
+      sp<Retval> retval;
+
+      StringArray ar;
+      if( DFW_RET(retval, ar.split(sLine, "|")) )
+          return DFW_RETVAL_D(retval);
+      if( !(ar.size() > 1) )
+          return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                     , "Unknown format. ground-size=%d", ar.size());
+
+      // get seconds.
+      String s_sec;
+      sp<String> ar1 = ar.getString(0);
+#if 0
+      sp<Regexp> a = new Regexp("^([0-9]+)[\\s]+");
+      if( DFW_RET(retval, a->regexp(ar1->toChars())) )
+          return DFW_RETVAL_D(retval);
+
+      s_sec.set(a->getMatch(1), a->getMatchLength(1));
+      uint64_t d_sec = Long::parseLong(s_sec);
+#endif
+
+      uint64_t d_sec = Long::parseLong(ar1->toChars());
+      sp<MonCpustat> dest = create(d_sec);
+
+      // get datas
+      String s_no;
+      String s_total, s_user, s_nice, s_system;
+      String s_idle, s_iowait, s_irq,  s_softirq;
+      for(int k=1; k<ar.size(); k++){
+          sp<String> arx = ar.getString(k);
+
+          int round = 0;
+          const char* v = NULL;
+          const char* p = arx->toChars();
+          do{
+              if( *p==' ' || *p=='\t' || *p=='|' || *p=='\0'){
+                  if( v ){
+                      switch(round){
+                      case 0 : s_no.set(v, p-v); break;
+                      case 1 : s_total.set(v, p-v); break;
+                      case 2 : s_user.set(v, p-v); break;
+                      case 3 : s_nice.set(v, p-v); break;
+                      case 4 : s_system.set(v, p-v); break;
+                      case 5 : s_idle.set(v, p-v); break;
+                      case 6 : s_iowait.set(v, p-v); break;
+                      case 7 : s_irq.set(v, p-v); break;
+                      case 8 : s_softirq.set(v, p-v); break;
+                      }
+                      v = NULL;
+                      round++;
+                  }
+                  if( *p=='\0' ) break;
+              }else if( !v ){
+                  v = p;
+              }
+              p++;
+          }while(true);
+
+          if( round != 9 ){
+              return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                         , "Unknown format %s", sLine.toChars());
+          }
+
+          sp<Data> d = new Data();
+          d->m_no = Integer::parseInt(s_no);
+          d->m_total = Long::parseLong(s_total);
+          d->m_user = Long::parseLong(s_user);
+          d->m_nice = Long::parseLong(s_nice);
+          d->m_system = Long::parseLong(s_system);
+          d->m_idle = Long::parseLong(s_idle);
+          d->m_iowait = Long::parseLong(s_iowait);
+          d->m_irq = Long::parseLong(s_irq);
+          d->m_softirq = Long::parseLong(s_softirq);
+
+          if( DFW_RET(retval, dest->m_aLists.insert(d)) )
+              return DFW_RETVAL_D(retval);
+
+          if( d->m_no==-1 ){
+              dest->m_all = d;
+          }
+      }
+
+      out = dest;
+      return NULL;
   }
 
   sp<Retval> MonCpustat::draw(int num, sp<info>& info, sp<MonBase>& thiz

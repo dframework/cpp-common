@@ -33,6 +33,10 @@ namespace dframework {
       return "diskspace";
   }
 
+  const char* MonDiskspace::rawname(){
+      return "diskspace";
+  }
+
   sp<Retval> MonDiskspace::readData(){
       sp<Retval> retval;
 

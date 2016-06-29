@@ -11,6 +11,9 @@ namespace dframework {
   class MonBase : public Object
   {
   public:
+      static const char* SUBDIR;
+
+  public:
       class info : public Object
       {
       public:
@@ -47,6 +50,7 @@ namespace dframework {
       virtual sp<MonBase> create(uint64_t sec) = 0;
       virtual const char* source_path() = 0;
       virtual const char* savename() = 0;
+      virtual const char* rawname() = 0;
       virtual sp<Retval>  readData() = 0;
       virtual sp<MonBase> depth(int no, uint64_t sec
                               , sp<MonBase>& old) = 0;
@@ -54,15 +58,19 @@ namespace dframework {
       virtual sp<Retval>  draw(int num, sp<info>&, sp<MonBase>&
                               , const char* path) = 0;
 
-      virtual bool        getRawString(String& out, sp<MonBase>& base);
-      virtual sp<Retval>  saveRawData(int num, sp<info>&, sp<MonBase>&
-                              , const char* path);
+      virtual sp<MonBase> createBlank(uint64_t sec, sp<MonBase>& old)=0;
 
-      sp<Retval> openTempFile(sp<File>& out
+      virtual bool       getRawString(String& out, sp<MonBase>& base);
+      virtual sp<Retval>  loadData(sp<MonBase>& out, String&);
+      virtual sp<Retval> loadRawData(unsigned, sp<info>&
+                              , String&, int max_rows);
+      virtual sp<Retval> saveRawData(int num, sp<info>&, sp<MonBase>&
+                              , const char* path);
+      virtual sp<Retval> openTempFile(sp<File>& out
                              , String& tempfile, String& orgFile
                              , const char* path, const char* subdir
                              , uint64_t subnm,  const char* ext);
-      sp<Retval> replaceTempFile(String& sTemp, String& sOrg);
+      virtual sp<Retval> replaceTempFile(String& sTemp, String& sOrg);
 
       DFW_OPERATOR_EX_DECLARATION(MonBase, m_sec);
   };
