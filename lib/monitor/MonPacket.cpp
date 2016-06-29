@@ -5,8 +5,6 @@
 
 namespace dframework {
 
-  const char* MonPacket::PATH = "/proc/net/dev";
-
   int  MonPacket::N_R_BYTES = 0;
   int  MonPacket::N_R_PACKETS = 0;
   int  MonPacket::N_R_ERRS = 0;
@@ -29,16 +27,28 @@ namespace dframework {
   MonPacket::~MonPacket(){
   }
 
+  sp<MonBase> MonPacket::create(uint64_t sec){
+      return new MonPacket(sec);
+  }
+
+  const char* MonPacket::source_path(){
+      return "/proc/net/dev";
+  }
+
+  const char* MonPacket::savename(){
+      return "packet";
+  }
+
   sp<Retval> MonPacket::readData(){
       sp<Retval> retval;
 
       String sContents;
       String sLine;
-      if( DFW_RET(retval, File::contents(sContents, PATH)) )
+      if( DFW_RET(retval, File::contents(sContents, source_path())) )
           return DFW_RETVAL_D(retval);
       if( sContents.length()==0 )
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     ,"Has not contents at %s", PATH);
+                     ,"Has not contents at %s", source_path());
 
       unsigned len;
       const char* lp;
@@ -108,7 +118,7 @@ namespace dframework {
           return NULL;
       }
       return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                 , "Not find need format (%s)", PATH);
+                 , "Not find need format (%s)", source_path());
   }
 
   sp<Retval> MonPacket::parseTitle(String& sLine)
@@ -122,7 +132,7 @@ namespace dframework {
       sa1.split(sLine, "|");
       if(sa1.size()!=3){
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     , "Unknown format %s", PATH);
+                     , "Unknown format %s", source_path());
       }
 
       int all, all2;
@@ -235,21 +245,28 @@ namespace dframework {
       m_terrs += old->m_terrs;
   }
 
-  void MonPacket::draw(int num, sp<info>& info, sp<MonBase>& thiz)
-  {
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
-#if 0
-sp<MonPacket> u = thiz;
-printf("#<%d> : %lu, %d, rb=%lu, rp=%lu, tb=%lu, tp=%lu\n"
-, num
-, thiz->m_sec, info->m_aLists.size()
-, u->m_rbytes, u->m_rpackets
-, u->m_tbytes, u->m_tpackets
-);
-#endif
+  bool MonPacket::getRawString(String& s, sp<MonBase>& b){
+      sp<MonPacket> c = b;
+      if( !c.has() ) return false;
 
+      s = String::format(
+              "%lu\t"
+              "%lu %lu %lu\t"
+              "%lu %lu %lu"
+          , c->m_sec
+          , c->m_rbytes, c->m_rpackets, c->m_rerrs
+          , c->m_tbytes, c->m_tpackets, c->m_terrs
+      );
+      return true;
+  }
+
+  sp<Retval> MonPacket::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                     , const char* path)
+  {
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

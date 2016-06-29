@@ -5,8 +5,6 @@
 
 namespace dframework {
 
-  const char* MonLoadavg::PATH = "/proc/loadavg";
-
   MonLoadavg::MonLoadavg(uint64_t sec)
           : MonBase(sec)
   {
@@ -18,16 +16,28 @@ namespace dframework {
   MonLoadavg::~MonLoadavg(){
   }
 
+  sp<MonBase> MonLoadavg::create(uint64_t sec){
+      return new MonLoadavg(sec);
+  }
+
+  const char* MonLoadavg::source_path(){
+      return "/proc/loadavg";
+  }
+
+  const char* MonLoadavg::savename(){
+      return "loadavg";
+  }
+
   sp<Retval> MonLoadavg::readData(){
       sp<Retval> retval;
 
       String sContents;
       String sLine;
-      if( DFW_RET(retval, File::contents(sContents, PATH)) )
+      if( DFW_RET(retval, File::contents(sContents, source_path())) )
           return DFW_RETVAL_D(retval);
       if( sContents.length()==0 )
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     ,"Has not contents at %s", PATH);
+                     ,"Has not contents at %s", source_path());
 
       unsigned len;
       const char* lp;
@@ -91,10 +101,20 @@ printf("%s\n", retval->dump().toChars());
       m_15 += old->m_15;
   }
 
-  void MonLoadavg::draw(int num, sp<info>& info, sp<MonBase>& thiz){
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
+  bool MonLoadavg::getRawString(String& s, sp<MonBase>& b){
+      sp<MonLoadavg> c = b;
+      if( !c.has() ) return false;
+      s = String::format("%lu\t%u %lu %lu", c->m_sec, c->m_1, c->m_5, c->m_15);
+      return true;
+  }
+
+  sp<Retval> MonLoadavg::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                      , const char* path)
+  {
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

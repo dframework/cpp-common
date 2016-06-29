@@ -7,8 +7,6 @@
 
 namespace dframework {
 
-  const char* MonDiskspace::PATH = "/proc/mounts";
-
   MonDiskspace::Data::Data(){
   }
 
@@ -23,16 +21,28 @@ namespace dframework {
   MonDiskspace::~MonDiskspace(){
   }
 
+  sp<MonBase> MonDiskspace::create(uint64_t sec){
+      return new MonDiskspace(sec);
+  }
+
+  const char* MonDiskspace::source_path(){
+      return "/proc/mounts";
+  }
+
+  const char* MonDiskspace::savename(){
+      return "diskspace";
+  }
+
   sp<Retval> MonDiskspace::readData(){
       sp<Retval> retval;
 
       String sContents;
       String sLine;
-      if( DFW_RET(retval, File::contents(sContents, PATH)) )
+      if( DFW_RET(retval, File::contents(sContents, source_path())) )
           return DFW_RETVAL_D(retval);
       if( sContents.length()==0 )
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     ,"Has not contents at %s", PATH);
+                     ,"Has not contents at %s", source_path());
 
       unsigned len;
       const char* lp;
@@ -143,11 +153,21 @@ printf("%s, %s, b=%lu, a=%lu, f=%lu, u=%lu\n"
       }
   }
 
-  void MonDiskspace::draw(int num, sp<info>& info, sp<MonBase>& thiz)
+  bool MonDiskspace::getRawString(String& s, sp<MonBase>& b){
+      s = String::format(
+          "%lu"
+         , b->m_sec
+      );
+      return false;
+  }
+
+  sp<Retval> MonDiskspace::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                        , const char* path)
   {
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

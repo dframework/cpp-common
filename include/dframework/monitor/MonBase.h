@@ -4,6 +4,7 @@
 #include <dframework/base/Retval.h>
 #include <dframework/util/Array.h>
 #include <dframework/util/ArraySorted.h>
+#include <dframework/io/File.h>
 
 namespace dframework {
 
@@ -44,11 +45,24 @@ namespace dframework {
       virtual ~MonBase();
 
       virtual sp<MonBase> create(uint64_t sec) = 0;
+      virtual const char* source_path() = 0;
+      virtual const char* savename() = 0;
       virtual sp<Retval>  readData() = 0;
       virtual sp<MonBase> depth(int no, uint64_t sec
                               , sp<MonBase>& old) = 0;
       virtual void        plus(sp<MonBase>& old) = 0;
-      virtual void        draw(int num, sp<info>&, sp<MonBase>&) = 0;
+      virtual sp<Retval>  draw(int num, sp<info>&, sp<MonBase>&
+                              , const char* path) = 0;
+
+      virtual bool        getRawString(String& out, sp<MonBase>& base);
+      virtual sp<Retval>  saveRawData(int num, sp<info>&, sp<MonBase>&
+                              , const char* path);
+
+      sp<Retval> openTempFile(sp<File>& out
+                             , String& tempfile, String& orgFile
+                             , const char* path, const char* subdir
+                             , uint64_t subnm,  const char* ext);
+      sp<Retval> replaceTempFile(String& sTemp, String& sOrg);
 
       DFW_OPERATOR_EX_DECLARATION(MonBase, m_sec);
   };

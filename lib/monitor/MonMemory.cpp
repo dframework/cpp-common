@@ -5,8 +5,6 @@
 
 namespace dframework {
 
-  const char* MonMemory::PATH = "/proc/meminfo";
-
   MonMemory::MonMemory(uint64_t sec)
           : MonBase(sec)
   {
@@ -34,16 +32,28 @@ namespace dframework {
   MonMemory::~MonMemory(){
   }
 
+  sp<MonBase> MonMemory::create(uint64_t sec){
+      return new MonMemory(sec);
+  }
+
+  const char* MonMemory::source_path(){
+      return "/proc/meminfo";
+  }
+
+  const char* MonMemory::savename(){
+      return "memory";
+  }
+
   sp<Retval> MonMemory::readData(){
       sp<Retval> retval;
 
       String sContents;
       String sLine;
-      if( DFW_RET(retval, File::contents(sContents, PATH)) )
+      if( DFW_RET(retval, File::contents(sContents, source_path())) )
           return DFW_RETVAL_D(retval);
       if( sContents.length()==0 )
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     ,"Has not contents at %s", PATH);
+                     ,"Has not contents at %s", source_path());
 
       unsigned len;
       const char* lp;
@@ -185,10 +195,32 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
       m_inActive += old->m_inActive;
   }
 
-  void MonMemory::draw(int num, sp<info>& info, sp<MonBase>& thiz){
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
+  bool MonMemory::getRawString(String& s, sp<MonBase>& b){
+      sp<MonMemory> c = b;
+      if( !c.has() ) return false;
+
+      s = String::format(
+              "%lu\t"
+              "%lu %lu %lu %lu %lu "
+              "%lu %lu %lu "
+              "%lu %lu %lu "
+              "%lu %lu"
+          , c->m_sec
+          , c->m_total, c->m_free, c->m_available, c->m_buffers, c->m_cached
+          , c->m_swapTotal, c->m_swapFree, c->m_swapCached
+          , c->m_vmallocTotal, c->m_vmallocUsed, c->m_vmallocChunk
+          , c->m_active, c->m_inActive
+      );
+      return true;
+  }
+
+  sp<Retval> MonMemory::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                     , const char* path)
+  {
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

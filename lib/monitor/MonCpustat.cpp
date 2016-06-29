@@ -6,8 +6,6 @@
 
 namespace dframework {
 
-  const char* MonCpustat::PATH = "/proc/stat";
-
   MonCpustat::Data::Data(){
       m_no = 0;
       m_total = 0;
@@ -34,16 +32,28 @@ namespace dframework {
   MonCpustat::~MonCpustat(){
   }
 
+  sp<MonBase> MonCpustat::create(uint64_t sec){
+      return new MonCpustat(sec);
+  }
+
+  const char* MonCpustat::source_path(){
+      return "/proc/stat";
+  }
+
+  const char* MonCpustat::savename(){
+      return "cpustat";
+  }
+
   sp<Retval> MonCpustat::readData(){
       sp<Retval> retval;
 
       String sContents;
       String sLine;
-      if( DFW_RET(retval, File::contents(sContents, PATH)) )
+      if( DFW_RET(retval, File::contents(sContents, source_path())) )
           return DFW_RETVAL_D(retval);
       if( sContents.length()==0 )
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     ,"Has not contents at %s", PATH);
+                     ,"Has not contents at %s", source_path());
 
       unsigned len;
       const char* lp;
@@ -239,10 +249,33 @@ namespace dframework {
       m_blocked += old->m_blocked;
   }
 
-  void MonCpustat::draw(int num, sp<info>& info, sp<MonBase>& thiz){
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
+  bool MonCpustat::getRawString(String& s, sp<MonBase>& b){
+      sp<MonCpustat> c = b;
+      if( !c.has() ) return false;
+
+      s = String::format("%lu", c->m_sec);
+      for(int k=0; k<c->m_aLists.size(); k++){
+          sp<Data> d = c->m_aLists.get(k);
+          if( !d.has() ) return false;
+          s.appendFmt(
+               "\t%u "
+               "%lu %lu %lu %lu "
+               "%lu %lu %lu %lu"
+             , d->m_no
+             , d->m_total, d->m_user, d->m_nice, d->m_system
+             , d->m_idle, d->m_iowait, d->m_irq,  d->m_softirq
+          );
+      }
+      return true;
+  }
+
+  sp<Retval> MonCpustat::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                      , const char* path)
+  {
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

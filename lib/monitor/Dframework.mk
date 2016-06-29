@@ -9,7 +9,6 @@ LOCAL_SRC_FILES :=   \
     MonMemory.cpp    \
     MonLoadavg.cpp   \
     MonDiskstats.cpp \
-    MonDiskspace.cpp \
     MonPacket.cpp    \
     MonSocket.cpp
 

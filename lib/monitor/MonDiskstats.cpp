@@ -6,7 +6,6 @@
 
 namespace dframework {
 
-  const char* MonDiskstats::PATH = "/proc/diskstats";
 
   MonDiskstats::Data::Data(){
       m_type = 0;
@@ -39,16 +38,28 @@ namespace dframework {
   MonDiskstats::~MonDiskstats(){
   }
 
+  sp<MonBase> MonDiskstats::create(uint64_t sec){
+      return new MonDiskstats(sec);
+  }
+
+  const char* MonDiskstats::source_path(){
+      return "/proc/diskstats";
+  }
+
+  const char* MonDiskstats::savename(){
+      return "diskstats";
+  }
+
   sp<Retval> MonDiskstats::readData(){
       sp<Retval> retval;
 
       String sContents;
       String sLine;
-      if( DFW_RET(retval, File::contents(sContents, PATH)) )
+      if( DFW_RET(retval, File::contents(sContents, source_path())) )
           return DFW_RETVAL_D(retval);
       if( sContents.length()==0 )
           return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                     ,"Has not contents at %s", PATH);
+                     ,"Has not contents at %s", source_path());
 
       unsigned len;
       const char* lp;
@@ -292,10 +303,35 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
       ca->m_iowtime += oa->m_iowtime;
   }
 
-  void MonDiskstats::draw(int num, sp<info>& info, sp<MonBase>& thiz){
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
+  bool MonDiskstats::getRawString(String& s, sp<MonBase>& b){
+      sp<MonDiskstats> c = b;
+      if( !c.has() ) return false;
+
+      s = String::format("%lu", c->m_sec);
+      for(int k=0; k<c->m_aLists.size(); k++){
+          sp<Data> d = c->m_aLists.get(k);
+          if( !d.has() ) return false;
+          s.appendFmt(
+               "\t%u %u %s\t"
+               "%lu %lu %lu %lu\t"
+               "%lu %lu %lu %lu\t"
+               "%lu %lu %lu"
+             , d->m_type, d->m_devtype, d->m_sName.toChars()
+             , d->m_rcount, d->m_rmerged, d->m_rsector, d->m_rtime
+             , d->m_wcount, d->m_wmerged, d->m_wsector, d->m_wtime
+             , d->m_iocount, d->m_iotime, d->m_iowtime
+          );
+      }
+      return true;
+  }
+
+  sp<Retval> MonDiskstats::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                              , const char* path)
+  {
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

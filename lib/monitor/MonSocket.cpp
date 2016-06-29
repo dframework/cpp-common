@@ -50,8 +50,16 @@ namespace dframework {
   MonSocket::~MonSocket(){
   }
 
+  sp<MonBase> MonSocket::create(uint64_t sec){
+      return new MonSocket(sec);
+  }
+
   const char* MonSocket::source_path(){
       return "/proc/net/tcp6";
+  }
+
+  const char* MonSocket::savename(){
+      return "socket";
   }
 
   sp<Retval> MonSocket::readData(){
@@ -265,10 +273,38 @@ printf("localaddr=%s, localport=%d, remoteaddr=%s, remoteport=%d, s=%d, tx=%lu, 
       c->m_closing    += o->m_closing;
   }
 
-  void MonSocket::draw(int num, sp<info>& info, sp<MonBase>& thiz){
-      DFW_UNUSED(num);
-      DFW_UNUSED(info);
-      DFW_UNUSED(thiz);
+  bool MonSocket::getRawString(String& s, sp<MonBase>& b){
+      sp<MonSocket> c = b;
+      if( !c.has() ) return false;
+      sp<Data> d = c->m_all;
+      if( !d.has() ) return false;
+
+      s = String::format(
+              "%lu\t"
+              "%lu %lu "
+              "%lu %lu "
+              "%lu %lu "
+              "%lu "
+              "%lu %lu "
+              "%lu %lu %lu"
+          , c->m_sec
+          , d->m_total, d->m_est
+          , d->m_syn_sent, d->m_syn_recv
+          , d->m_fin_wait1, d->m_fin_wait2
+          , d->m_time_wait
+          , d->m_close, d->m_close_wait
+          , d->m_last_ack, d->m_listen, d->m_closing
+      );
+      return true;
+  }
+
+  sp<Retval> MonSocket::draw(int num, sp<info>& info, sp<MonBase>& thiz
+                     , const char* path)
+  {
+      sp<Retval> retval;
+      if( DFW_RET(retval, saveRawData(num, info, thiz, path)) )
+          return DFW_RETVAL_D(retval);
+      return NULL;
   }
 
 };

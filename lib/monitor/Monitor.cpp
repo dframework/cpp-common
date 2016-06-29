@@ -3,12 +3,23 @@
 
 namespace dframework {
 
-  unsigned Monitor::SECONDS[] = {5, 240, 1800, 7200, 0};
 
-  Monitor::Monitor(){
+  Monitor::Monitor(const char* savepath){
+      m_sPath = savepath;
+      setSecondsNum(0,    5);
+      setSecondsNum(1,  240);
+      setSecondsNum(2, 1800);
+      setSecondsNum(3, 7200);
+      setSecondsNum(4,    0);
+      setSecondsNum(5,    0);
   }
 
   Monitor::~Monitor(){
+  }
+
+  void Monitor::setSecondsNum(unsigned pos, unsigned seconds){
+      if( pos < SECONDS_NUM )
+          SECONDS[pos] = seconds;
   }
 
   sp<Retval> Monitor::addDevice(sp<MonBase>& base){
@@ -116,7 +127,7 @@ printf("retval=%s\n", retval->dump().toChars());
           }
       }
 
-      grp->m_base->draw(no, inf, dep);
+      grp->m_base->draw(no, inf, dep, m_sPath.toChars());
 
       return true;
   }
