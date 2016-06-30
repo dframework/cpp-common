@@ -163,7 +163,7 @@ namespace dframework {
   sp<Retval> MonPacket::parseLine(String& sLine){
       sp<Retval> retval;
 
-      Regexp b("^[\\s]*([\\S]+):[\\s]+([\\S\\s]+)");
+      Regexp b("^[\\s]*([\\S]+):[\\s]*([\\S\\s]+)");
       if( DFW_RET(retval, b.regexp(sLine.toChars())) )
           return DFW_RETVAL_D(retval);
 
