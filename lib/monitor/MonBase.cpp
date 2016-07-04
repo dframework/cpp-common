@@ -6,6 +6,8 @@ namespace dframework {
   const char* MonBase::SUBDIR = "raw";
 
   MonBase::info::info(){
+      m_sec = 0;
+      m_plus_count = 0;
   }
 
   MonBase::info::~info(){

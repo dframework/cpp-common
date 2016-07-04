@@ -201,6 +201,25 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
       m_inActive += old->m_inActive;
   }
 
+  void MonMemory::avg(int count){
+      m_total /= count;
+      m_free  /= count;
+      m_available /= count;
+      m_buffers   /= count;
+      m_cached    /= count;
+
+      m_swapTotal  /= count;
+      m_swapFree   /= count;
+      m_swapCached /= count;
+
+      m_vmallocTotal /= count;
+      m_vmallocUsed  /= count;
+      m_vmallocChunk /= count;
+
+      m_active   /= count;
+      m_inActive /= count;
+  }
+
   bool MonMemory::getRawString(String& s, sp<MonBase>& b){
       sp<MonMemory> c = b;
       if( !c.has() ) return false;

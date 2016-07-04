@@ -85,7 +85,7 @@ printf("%s\n", retval->dump().toChars());
       do{
           dfw_time_t ctime = Time::currentTimeMillis();
           uint64_t csec = ctime / 1000;
-          if( ((csec % SECONDS[0]) == 0) && (past<csec) ){ // 5 sec
+          if( ((csec % SECONDS[0]) == 0) && (past<csec) ){
               past = csec;
               run_s(csec);
           }
@@ -150,7 +150,9 @@ printf("retval=%s\n", retval->dump().toChars());
 
           if( (sec % next) != 0 ){
               inf->m_total->plus(dep);
+              inf->m_plus_count++;
           }else{
+              inf->m_total->avg(inf->m_plus_count);
               if( DFW_RET(retval, run_s_l(grp, sec, no+1, inf->m_total)) ){
                   if( retval->error() == DFW_OK )
                       return NULL;

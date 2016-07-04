@@ -252,6 +252,15 @@ namespace dframework {
       m_terrs += old->m_terrs;
   }
 
+  void MonPacket::avg(int count){
+      m_rbytes /= count;
+      m_rpackets /= count;
+      m_rerrs /= count;
+      m_tbytes /= count;
+      m_tpackets /= count;
+      m_terrs /= count;
+  }
+
   bool MonPacket::getRawString(String& s, sp<MonBase>& b){
       sp<MonPacket> c = b;
       if( !c.has() ) return false;

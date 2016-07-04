@@ -109,6 +109,12 @@ printf("%s\n", retval->dump().toChars());
       m_15 += old->m_15;
   }
 
+  void MonLoadavg::avg(int count){
+      m_1 /= count;
+      m_5 /= count;
+      m_15 /= count;
+  }
+
   bool MonLoadavg::getRawString(String& s, sp<MonBase>& b){
       sp<MonLoadavg> c = b;
       if( !c.has() ) return false;

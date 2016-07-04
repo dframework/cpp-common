@@ -157,6 +157,9 @@ printf("%s, %s, b=%lu, a=%lu, f=%lu, u=%lu\n"
       }
   }
 
+  void MonDiskspace::avg(sp<MonBase>& total, int count){
+  }
+
   bool MonDiskspace::getRawString(String& s, sp<MonBase>& b){
       s = String::format(
           "%lu"

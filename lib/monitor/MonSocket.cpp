@@ -263,6 +263,22 @@ namespace dframework {
       c->m_closing    += o->m_closing;
   }
 
+  void MonSocket::avg(int count){
+      sp<Data> c = m_all;
+      c->m_total      /= count;
+      c->m_est        /= count;
+      c->m_syn_sent   /= count;
+      c->m_syn_recv   /= count;
+      c->m_fin_wait1  /= count;
+      c->m_fin_wait2  /= count;
+      c->m_time_wait  /= count;
+      c->m_close      /= count;
+      c->m_close_wait /= count;
+      c->m_last_ack   /= count;
+      c->m_listen     /= count;
+      c->m_closing    /= count;
+  }
+
   bool MonSocket::getRawString(String& s, sp<MonBase>& b){
       sp<MonSocket> c = b;
       if( !c.has() ) return false;

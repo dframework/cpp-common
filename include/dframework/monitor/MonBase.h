@@ -8,6 +8,8 @@
 
 namespace dframework {
 
+  class Monitor;
+
   class MonBase : public Object
   {
   public:
@@ -16,6 +18,9 @@ namespace dframework {
   public:
       class info : public Object
       {
+      private:
+          int         m_plus_count;
+
       public:
           uint64_t    m_sec;
           sp<MonBase> m_last;
@@ -27,6 +32,8 @@ namespace dframework {
           virtual ~info();
 
           DFW_OPERATOR_EX_DECLARATION(info, m_sec);
+
+          friend class Monitor;
       };
 
       class group : public Object
@@ -55,6 +62,7 @@ namespace dframework {
       virtual sp<MonBase> depth(int no, uint64_t sec
                               , sp<MonBase>& old) = 0;
       virtual void        plus(sp<MonBase>& old) = 0;
+      virtual void        avg(int count) = 0;
       virtual sp<Retval>  draw(int num, sp<info>&, sp<MonBase>&
                               , const char* path) = 0;
 

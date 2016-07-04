@@ -50,6 +50,7 @@ namespace dframework {
       virtual sp<MonBase> depth(int no, uint64_t sec
                               , sp<MonBase>& old);
       virtual void        plus(sp<MonBase>& old);
+      virtual void        avg(int count);
       virtual bool        getRawString(String& s, sp<MonBase>& b);
       virtual sp<Retval>  draw(int num, sp<info>&, sp<MonBase>&
                               , const char* path);

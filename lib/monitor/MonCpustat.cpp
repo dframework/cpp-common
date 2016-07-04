@@ -30,6 +30,7 @@ namespace dframework {
       m_processes = 0;
       m_running = 0;
       m_blocked = 0;
+      m_all = new Data();
   }
 
   MonCpustat::~MonCpustat(){
@@ -255,6 +256,24 @@ namespace dframework {
       m_processes += old->m_processes;
       m_running += old->m_running;
       m_blocked += old->m_blocked;
+  }
+
+  void MonCpustat::avg(int count){
+      for( int k=0; k<m_aLists.size(); k++){
+          sp<Data> c = m_aLists.get(k);
+          c->m_total   /= count;
+          c->m_user    /= count;
+          c->m_nice    /= count;
+          c->m_system  /= count;
+          c->m_idle    /= count;
+          c->m_iowait  /= count;
+          c->m_irq     /= count;
+          c->m_softirq /= count;
+      }
+
+      m_processes /= count;
+      m_running /= count;
+      m_blocked /= count;
   }
 
   bool MonCpustat::getRawString(String& s, sp<MonBase>& b){

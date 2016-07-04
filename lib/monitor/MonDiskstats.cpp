@@ -309,6 +309,37 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
       ca->m_iowtime += oa->m_iowtime;
   }
 
+  void MonDiskstats::avg(int count){
+      for( int k=0; k<m_aLists.size(); k++){
+          sp<Data> c = m_aLists.get(k);
+
+          c->m_rcount  /= count;
+          c->m_rmerged /= count;
+          c->m_rsector /= count;
+          c->m_rtime   /= count;
+          c->m_wcount  /= count;
+          c->m_wmerged /= count;
+          c->m_wsector /= count;
+          c->m_wtime   /= count;
+          c->m_iocount /= count;
+          c->m_iotime  /= count;
+          c->m_iowtime /= count;
+      }
+
+      sp<Data> ca = m_all;
+      ca->m_rcount  /= count;
+      ca->m_rmerged /= count;
+      ca->m_rsector /= count;
+      ca->m_rtime   /= count;
+      ca->m_wcount  /= count;
+      ca->m_wmerged /= count;
+      ca->m_wsector /= count;
+      ca->m_wtime   /= count;
+      ca->m_iocount /= count;
+      ca->m_iotime  /= count;
+      ca->m_iowtime /= count;
+  }
+
   bool MonDiskstats::getRawString(String& s, sp<MonBase>& b){
       sp<MonDiskstats> c = b;
       if( !c.has() ) return false;
