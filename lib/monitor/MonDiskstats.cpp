@@ -86,14 +86,6 @@ printf("%s\n", retval->dump().toChars());
           }
       }while(true);
 
-#if 0
-      sp<Data> d = m_all;
-printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu, iot=%lu, iow=%lu\n"
-	, d->m_rcount, d->m_rmerged, d->m_rsector, d->m_rtime
-	, d->m_wcount, d->m_wmerged, d->m_wsector, d->m_wtime
-	, d->m_iocount, d->m_iotime, d->m_iowtime
-);
-#endif
       return NULL;      
   }
 
@@ -109,8 +101,8 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
       const char* v = NULL;
       const char* p = sLine.toChars();
 
-      while( *p ){
-          if( (*p==' ') || (*p=='\t') ){
+      while( true ){
+          if( (*p==' ') || (*p=='\t') || (*p=='\0') ){
               if( v ){
                   if( round == 0 ){
                       s_type.set(v, p-v);
@@ -140,18 +132,23 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
                       s_iotime.set(v, p-v);
                   }else if( round == 13 ){
                       s_iowtime.set(v, p-v);
+                  }else if( round > 13 ){
+                      break;
                   }
                   v = NULL;
                   round++;
               }
+              if( *p == '\0' ) break;
           }else if(!v){
               v = p;
           }
           p++;
       } // end while[ *p ]
 
-      if( v )
-          s_iowtime = v;
+      if( round!=14 ){
+          return DFW_RETVAL_NEW_MSG(DFW_ERROR,0
+                     ,"Unknown format : %s", sLine.toChars());
+      }
 
       sp<Data> d = new Data();
 
@@ -192,77 +189,60 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
       return NULL;
   }
 
+  void MonDiskstats::depth_l(int no, sp<Data>& d, sp<Data>& c, sp<Data>& o){
+      if( no==0 && o.has() ){
+          d->m_rcount  = c->m_rcount  - o->m_rcount;
+          d->m_rmerged = c->m_rmerged - o->m_rmerged;
+          d->m_rsector = c->m_rsector - o->m_rsector;
+          d->m_rtime   = c->m_rtime   - o->m_rtime;
+          d->m_wcount  = c->m_wcount  - o->m_wcount;
+          d->m_wmerged = c->m_wmerged - o->m_wmerged;
+          d->m_wsector = c->m_wsector - o->m_wsector;
+          d->m_wtime   = c->m_wtime   - o->m_wtime;
+          d->m_iocount = c->m_iocount - o->m_iocount;
+          d->m_iotime  = c->m_iotime  - o->m_iotime;
+          d->m_iowtime = c->m_iowtime - o->m_iowtime;
+      }else if( c.has() ){
+          d->m_rcount  = c->m_rcount;
+          d->m_rmerged = c->m_rmerged;
+          d->m_rsector = c->m_rsector;
+          d->m_rtime   = c->m_rtime;
+          d->m_wcount  = c->m_wcount;
+          d->m_wmerged = c->m_wmerged;
+          d->m_wsector = c->m_wsector;
+          d->m_wtime   = c->m_wtime;
+          d->m_iocount = c->m_iocount;
+          d->m_iotime  = c->m_iotime;
+          d->m_iowtime = c->m_iowtime;
+      }
+  }
+
   sp<MonBase> MonDiskstats::depth(int no, uint64_t sec, sp<MonBase>& old_)
   {
       sp<MonDiskstats> old = old_;
       sp<MonDiskstats> ret = create(sec);
 
+      sp<Data> d, c, o;
+
       for( int k=0; k<m_aLists.size(); k++){
-          sp<Data> d = new Data();
-          sp<Data> c = m_aLists.get(k);
+          d = new Data();
+          c = m_aLists.get(k);
+          o = old->getData(k);
 
           d->m_type    = c->m_type;
           d->m_devtype = c->m_devtype;
           d->m_sName   = c->m_sName;
 
-          if( no==0 ){
-              sp<Data> o = old->getData(k);
-              d->m_rcount  = c->m_rcount  - o->m_rcount;
-              d->m_rmerged = c->m_rmerged - o->m_rmerged;
-              d->m_rsector = c->m_rsector - o->m_rsector;
-              d->m_rtime   = c->m_rtime   - o->m_rtime;
-              d->m_wcount  = c->m_wcount  - o->m_wcount;
-              d->m_wmerged = c->m_wmerged - o->m_wmerged;
-              d->m_wsector = c->m_wsector - o->m_wsector;
-              d->m_wtime   = c->m_wtime   - o->m_wtime;
-              d->m_iocount = c->m_iocount - o->m_iocount;
-              d->m_iotime  = c->m_iotime  - o->m_iotime;
-              d->m_iowtime = c->m_iowtime - o->m_iowtime;
-          }else{
-              d->m_rcount  = c->m_rcount;
-              d->m_rmerged = c->m_rmerged;
-              d->m_rsector = c->m_rsector;
-              d->m_rtime   = c->m_rtime;
-              d->m_wcount  = c->m_wcount;
-              d->m_wmerged = c->m_wmerged;
-              d->m_wsector = c->m_wsector;
-              d->m_wtime   = c->m_wtime;
-              d->m_iocount = c->m_iocount;
-              d->m_iotime  = c->m_iotime;
-              d->m_iowtime = c->m_iowtime;
-          }
+          depth_l(no, d, c, o);
+
           ret->m_aLists.insert(d);
       }
 
-      sp<Data> ra = ret->m_all;
-      sp<Data> ca = m_all;
-      sp<Data> oa = old->m_all;
+      d = ret->m_all;
+      c = m_all;
+      o = old->m_all;
 
-      if( no==0 ){
-          ra->m_rcount  = ca->m_rcount  - oa->m_rcount;
-          ra->m_rmerged = ca->m_rmerged - oa->m_rmerged;
-          ra->m_rsector = ca->m_rsector - oa->m_rsector;
-          ra->m_rtime   = ca->m_rtime   - oa->m_rtime;
-          ra->m_wcount  = ca->m_wcount  - oa->m_wcount;
-          ra->m_wmerged = ca->m_wmerged - oa->m_wmerged;
-          ra->m_wsector = ca->m_wsector - oa->m_wsector;
-          ra->m_wtime   = ca->m_wtime   - oa->m_wtime;
-          ra->m_iocount = ca->m_iocount - oa->m_iocount;
-          ra->m_iotime  = ca->m_iotime  - oa->m_iotime;
-          ra->m_iowtime = ca->m_iowtime - oa->m_iowtime;
-      }else{
-          ra->m_rcount  = ca->m_rcount;
-          ra->m_rmerged = ca->m_rmerged;
-          ra->m_rsector = ca->m_rsector;
-          ra->m_rtime   = ca->m_rtime;
-          ra->m_wcount  = ca->m_wcount;
-          ra->m_wmerged = ca->m_wmerged;
-          ra->m_wsector = ca->m_wsector;
-          ra->m_wtime   = ca->m_wtime;
-          ra->m_iocount = ca->m_iocount;
-          ra->m_iotime  = ca->m_iotime;
-          ra->m_iowtime = ca->m_iowtime;
-      }
+      depth_l(no, d, c, o);
 
       return ret;
   }
@@ -310,6 +290,8 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
   }
 
   void MonDiskstats::avg(int count){
+      DFW_UNUSED(count);
+#if 0
       if( count == 0 ) return;
 
       for( int k=0; k<m_aLists.size(); k++){
@@ -340,6 +322,7 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
       ca->m_iocount /= count;
       ca->m_iotime  /= count;
       ca->m_iowtime /= count;
+#endif
   }
 
   bool MonDiskstats::getRawString(String& s, sp<MonBase>& b){

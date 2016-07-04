@@ -66,6 +66,8 @@ namespace dframework {
       virtual sp<MonBase> createBlank(uint64_t, sp<MonBase>&);
       virtual sp<Retval>  loadData(sp<MonBase>& out, String&);
 
+      void depth_l(int no, sp<Data>& d, sp<Data>& c, sp<Data>& o);
+
       inline sp<Data> getData(int pos) { return m_aLists.get(pos); }
       inline uint64_t total(){ return  (m_all.has() ? m_all->m_total: 0); }
       inline uint64_t user() { return  (m_all.has() ? m_all->m_user : 0); }

@@ -244,15 +244,17 @@ namespace dframework {
   void MonPacket::plus(sp<MonBase>& old_){
       sp<MonPacket> old = old_;
 
-      m_rbytes += old->m_rbytes;
+      m_rbytes   += old->m_rbytes;
       m_rpackets += old->m_rpackets;
-      m_rerrs += old->m_rerrs;
-      m_tbytes += old->m_tbytes;
+      m_rerrs    += old->m_rerrs;
+      m_tbytes   += old->m_tbytes;
       m_tpackets += old->m_tpackets;
-      m_terrs += old->m_terrs;
+      m_terrs    += old->m_terrs;
   }
 
   void MonPacket::avg(int count){
+      DFW_UNUSED(count);
+#if 0
       if( count == 0 ) return;
 
       m_rbytes /= count;
@@ -261,6 +263,7 @@ namespace dframework {
       m_tbytes /= count;
       m_tpackets /= count;
       m_terrs /= count;
+#endif
   }
 
   bool MonPacket::getRawString(String& s, sp<MonBase>& b){

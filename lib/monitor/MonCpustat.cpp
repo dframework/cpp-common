@@ -129,10 +129,9 @@ namespace dframework {
           m_all = d;
       }else{
           d->m_no  = Integer::parseInt(s_no);
-      }
-
-      if( DFW_RET(retval, m_aLists.insert(d)) ){
-          return DFW_RETVAL_D(retval);
+          if( DFW_RET(retval, m_aLists.insert(d)) ){
+              return DFW_RETVAL_D(retval);
+          }
       }
 
       return NULL;
@@ -186,45 +185,59 @@ namespace dframework {
       return NULL;
   }
 
+  void MonCpustat::depth_l(int no, sp<Data>& d, sp<Data>& c, sp<Data>& o)
+  {
+      if( no == 0 && c.has() && o.has() ){
+          d->m_total   = c->m_total   - o->m_total;
+          d->m_user    = c->m_user    - o->m_user;
+          d->m_nice    = c->m_nice    - o->m_nice;
+          d->m_system  = c->m_system  - o->m_system;
+          d->m_idle    = c->m_idle    - o->m_idle;
+          d->m_iowait  = c->m_iowait  - o->m_iowait;
+          d->m_irq     = c->m_irq     - o->m_irq;
+          d->m_softirq = c->m_softirq - o->m_softirq;
+      }else if( c.has() ){
+          d->m_total   = c->m_total;
+          d->m_user    = c->m_user;
+          d->m_nice    = c->m_nice;
+          d->m_system  = c->m_system;
+          d->m_idle    = c->m_idle;
+          d->m_iowait  = c->m_iowait;
+          d->m_irq     = c->m_irq;
+          d->m_softirq = c->m_softirq;
+      }
+  }
+
   sp<MonBase> MonCpustat::depth(int no, uint64_t sec, sp<MonBase>& old_)
   {
       sp<MonCpustat> old = old_;
       sp<MonCpustat> ret = create(sec);
+      sp<Data> d, c, o;
 
       for( int k=0; k<m_aLists.size(); k++){
-          sp<Data> d = new Data();
-          sp<Data> c = m_aLists.get(k);
-          d->m_no    = c->m_no;
-          if( no==0 ){
-              sp<Data> o = old->getData(k);
-              d->m_total   = c->m_total   - o->m_total;
-              d->m_user    = c->m_user    - o->m_user;
-              d->m_nice    = c->m_nice    - o->m_nice;
-              d->m_system  = c->m_system  - o->m_system;
-              d->m_idle    = c->m_idle    - o->m_idle;
-              d->m_iowait  = c->m_iowait  - o->m_iowait;
-              d->m_irq     = c->m_irq     - o->m_irq;
-              d->m_softirq = c->m_softirq - o->m_softirq;
-          }else{
-              d->m_total   = c->m_total;
-              d->m_user    = c->m_user;
-              d->m_nice    = c->m_nice;
-              d->m_system  = c->m_system;
-              d->m_idle    = c->m_idle;
-              d->m_iowait  = c->m_iowait;
-              d->m_irq     = c->m_irq;
-              d->m_softirq = c->m_softirq;
-          }
+          d = new Data();
+          c = m_aLists.get(k);
+          o = old->getData(k);
 
-          if( k==0 )
-              ret->m_all = d;
+          d->m_no    = c->m_no;
+
+          depth_l(no, d, c, o);
+
           ret->m_aLists.insert(d);
       }
 
-      if( no == 0 )
+      d = ret->m_all;
+      o = old->m_all;
+      c = m_all;
+
+      depth_l(no, d, c, o);
+
+      if( no == 0 && old.has() ){
           ret->m_processes = m_processes - old->m_processes;
-      else
+      }else{
           ret->m_processes = m_processes;
+      }
+
       ret->m_running = m_running;
       ret->m_blocked = m_blocked;
       return ret;
@@ -240,8 +253,6 @@ namespace dframework {
               c = new Data();
               c->m_no = o->m_no;
               m_aLists.insert(c);
-              if( k==0 )
-                  m_all = c;
           }
           c->m_total   += o->m_total;
           c->m_user    += o->m_user;
@@ -253,12 +264,26 @@ namespace dframework {
           c->m_softirq += o->m_softirq;
       }
 
+      sp<Data> o = old->m_all;
+      sp<Data> c = m_all;
+
+      c->m_total   += o->m_total;
+      c->m_user    += o->m_user;
+      c->m_nice    += o->m_nice;
+      c->m_system  += o->m_system;
+      c->m_idle    += o->m_idle;
+      c->m_iowait  += o->m_iowait;
+      c->m_irq     += o->m_irq;
+      c->m_softirq += o->m_softirq;
+
       m_processes += old->m_processes;
       m_running += old->m_running;
       m_blocked += old->m_blocked;
   }
 
   void MonCpustat::avg(int count){
+      DFW_UNUSED(count);
+#if 0
       if( count == 0 ) return;
 
       for( int k=0; k<m_aLists.size(); k++){
@@ -273,9 +298,20 @@ namespace dframework {
           c->m_softirq /= count;
       }
 
+      sp<Data> c = m_all;
+      c->m_total   /= count;
+      c->m_user    /= count;
+      c->m_nice    /= count;
+      c->m_system  /= count;
+      c->m_idle    /= count;
+      c->m_iowait  /= count;
+      c->m_irq     /= count;
+      c->m_softirq /= count;
+
       m_processes /= count;
       m_running /= count;
       m_blocked /= count;
+#endif
   }
 
   bool MonCpustat::getRawString(String& s, sp<MonBase>& b){
@@ -330,14 +366,6 @@ namespace dframework {
       // get seconds.
       String s_sec;
       sp<String> ar1 = ar.getString(0);
-#if 0
-      sp<Regexp> a = new Regexp("^([0-9]+)[\\s]+");
-      if( DFW_RET(retval, a->regexp(ar1->toChars())) )
-          return DFW_RETVAL_D(retval);
-
-      s_sec.set(a->getMatch(1), a->getMatchLength(1));
-      uint64_t d_sec = Long::parseLong(s_sec);
-#endif
 
       uint64_t d_sec = Long::parseLong(ar1->toChars());
       sp<MonCpustat> dest = create(d_sec);

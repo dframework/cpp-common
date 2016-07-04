@@ -81,24 +81,6 @@ namespace dframework {
       m_swapUsed = m_swapTotal - m_swapFree;
       m_kernelUsed = m_total - m_free - m_buffers - m_cached;
 
-#if 0
-
-uint64_t h = m_kernelUsed + m_cached + m_buffers + m_free;
-if( m_total == h ){
-	printf("ok-");
-}else{
-	printf("fa-");
-}
-
-uint64_t a = m_swapUsed + m_total;
-uint64_t u = m_kernelUsed - m_vmallocUsed;
-printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
-	", a=%lu, swapu=%lu, vmu=%lu"
-	"\n"
-	, m_total, m_kernelUsed, m_cached, m_buffers, m_free
-	, a, m_swapUsed, m_vmallocUsed
-);
-#endif
       return NULL;
   }
 
@@ -182,9 +164,9 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
 
   void MonMemory::plus(sp<MonBase>& old_){
       sp<MonMemory> old = old_;
-
-      m_total += old->m_total;
-      m_free  += old->m_free;
+#if 0
+      m_total     += old->m_total;
+      m_free      += old->m_free;
       m_available += old->m_available;
       m_buffers   += old->m_buffers;
       m_cached    += old->m_cached;
@@ -199,9 +181,29 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
 
       m_active   += old->m_active;
       m_inActive += old->m_inActive;
+#else
+      m_total     = old->m_total;
+      m_free      = old->m_free;
+      m_available = old->m_available;
+      m_buffers   = old->m_buffers;
+      m_cached    = old->m_cached;
+
+      m_swapTotal  = old->m_swapTotal;
+      m_swapFree   = old->m_swapFree;
+      m_swapCached = old->m_swapCached;
+
+      m_vmallocTotal = old->m_vmallocTotal;
+      m_vmallocUsed  = old->m_vmallocUsed;
+      m_vmallocChunk = old->m_vmallocChunk;
+
+      m_active   = old->m_active;
+      m_inActive = old->m_inActive;
+#endif
   }
 
   void MonMemory::avg(int count){
+      DFW_UNUSED(count);
+#if 0
       if( count == 0 ) return;
 
       m_total /= count;
@@ -220,6 +222,7 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
 
       m_active   /= count;
       m_inActive /= count;
+#endif
   }
 
   bool MonMemory::getRawString(String& s, sp<MonBase>& b){

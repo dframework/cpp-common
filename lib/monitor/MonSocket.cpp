@@ -264,6 +264,8 @@ namespace dframework {
   }
 
   void MonSocket::avg(int count){
+      DFW_UNUSED(count);
+#if 0
       if( count == 0 ) return;
 
       sp<Data> c = m_all;
@@ -279,6 +281,7 @@ namespace dframework {
       c->m_last_ack   /= count;
       c->m_listen     /= count;
       c->m_closing    /= count;
+#endif
   }
 
   bool MonSocket::getRawString(String& s, sp<MonBase>& b){

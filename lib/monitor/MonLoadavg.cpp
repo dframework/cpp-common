@@ -72,7 +72,6 @@ printf("%s\n", retval->dump().toChars());
   sp<Retval> MonLoadavg::parseLine_loadavg(String& sLine){
       sp<Retval> retval;
 
-    //Regexp a("^([.0-9]+)[\\s]+([.0-9]+)[\\s]+([.0-9]+)[\\s]+([\\S]+)[\\s]+([0-9]+)");
       Regexp a("^([.0-9]+)[\\s]+([.0-9]+)[\\s]+([.0-9]+)[\\s\\S]*");
       if( DFW_RET(retval, a.regexp(sLine.toChars())) )
           return DFW_RETVAL_D(retval);
@@ -104,17 +103,27 @@ printf("%s\n", retval->dump().toChars());
 
   void MonLoadavg::plus(sp<MonBase>& old_){
       sp<MonLoadavg> old = old_;
+#if 1
       m_1 += old->m_1;
       m_5 += old->m_5;
       m_15 += old->m_15;
+#else
+      if( m_1 < old->m_1 ) m_1 = old->m_1;
+      if( m_5 < old->m_5 ) m_5 = old->m_5;
+      if( m_15< old->m_15) m_15 = old->m_15;
+#endif
   }
 
   void MonLoadavg::avg(int count){
+#if 1
       if( count == 0 ) return;
 
       m_1 /= count;
       m_5 /= count;
       m_15 /= count;
+#else
+      DFW_UNUSED(count);
+#endif
   }
 
   bool MonLoadavg::getRawString(String& s, sp<MonBase>& b){
