@@ -202,6 +202,8 @@ printf("total=%lu, kernel=%lu, cached=%lu, buffer=%lu, free=%lu"
   }
 
   void MonMemory::avg(int count){
+      if( count == 0 ) return;
+
       m_total /= count;
       m_free  /= count;
       m_available /= count;

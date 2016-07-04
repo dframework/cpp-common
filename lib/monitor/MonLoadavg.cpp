@@ -110,6 +110,8 @@ printf("%s\n", retval->dump().toChars());
   }
 
   void MonLoadavg::avg(int count){
+      if( count == 0 ) return;
+
       m_1 /= count;
       m_5 /= count;
       m_15 /= count;

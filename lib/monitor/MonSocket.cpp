@@ -264,6 +264,8 @@ namespace dframework {
   }
 
   void MonSocket::avg(int count){
+      if( count == 0 ) return;
+
       sp<Data> c = m_all;
       c->m_total      /= count;
       c->m_est        /= count;

@@ -310,6 +310,8 @@ printf("rc=%lu, rm=%lu, rr=%lu, rt=%lu, wc=%lu, wm=%lu, ws=%lu, wt=%lu, ioc=%lu,
   }
 
   void MonDiskstats::avg(int count){
+      if( count == 0 ) return;
+
       for( int k=0; k<m_aLists.size(); k++){
           sp<Data> c = m_aLists.get(k);
 

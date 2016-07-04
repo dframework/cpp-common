@@ -259,6 +259,8 @@ namespace dframework {
   }
 
   void MonCpustat::avg(int count){
+      if( count == 0 ) return;
+
       for( int k=0; k<m_aLists.size(); k++){
           sp<Data> c = m_aLists.get(k);
           c->m_total   /= count;

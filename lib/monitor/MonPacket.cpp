@@ -253,6 +253,8 @@ namespace dframework {
   }
 
   void MonPacket::avg(int count){
+      if( count == 0 ) return;
+
       m_rbytes /= count;
       m_rpackets /= count;
       m_rerrs /= count;
