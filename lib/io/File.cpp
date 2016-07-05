@@ -22,14 +22,18 @@ ssize_t pread (int fd, void *buf, size_t count, off_t offset)
 
 namespace dframework {
 
+    DFW_DECLARATION_SAFE_COUNT(File);
 
     File::File(){
+        DFW_SAFE_ADD(File, l);
+
         DFW_FILE_INIT(m_fd);
         m_offset = 0;
     }
 
     File::~File(){
         close_l();
+        DFW_SAFE_REMOVE(File, l);
     }
 
     void File::close(){

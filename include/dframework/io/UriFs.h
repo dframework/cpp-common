@@ -48,6 +48,9 @@ namespace dframework {
 
     class UriFs : public BaseFs
     {
+    public:
+        DFW_DEFINITION_SAFE_COUNT(UriFs);
+
     private:
         String     m_sUri;
         sp<URI>    m_oUri;

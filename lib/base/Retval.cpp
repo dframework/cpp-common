@@ -268,6 +268,7 @@ namespace dframework {
                                 , const char* default_msg)
     {
 #ifndef _WIN32
+        DFW_UNUSED(wsa);
         if(rno) *rno = DFW_ERROR;
         if(default_msg)
             return default_msg;

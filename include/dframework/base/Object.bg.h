@@ -45,9 +45,13 @@
 #ifdef __cplusplus
 namespace dframework {
 
-    class Safe_K
+    class Object
     {
+    public:
+        DFW_DEFINITION_SAFE_COUNT(Object);
+        
     private:
+        int              ___m_ref_count;
 #if (defined(_WIN32) || defined(_WIN64)) && (!defined(__MINGW32__))
         CRITICAL_SECTION ___m_handle;
 #else
@@ -63,38 +67,6 @@ namespace dframework {
         int              ___m_init();
 
     public:
-        Safe_K();
-        virtual ~Safe_K();
-
-        int     lock();
-        int     unlock();
-    };
-
-    class Safe
-    {
-    private:
-        static Safe_K  ___static_safe_k;
-               Safe_K* ___safe_k;
-
-    public:
-        Safe();
-        virtual ~Safe();
-
-        int     lock();
-        int     unlock();
-    };
-
-
-    class Object
-    {
-    public:
-        DFW_DEFINITION_SAFE_COUNT(Object);
-
-    private:
-        int              ___m_ref_count;
-        Safe             ___m_safe;
-
-    public:
         Object();
         virtual ~Object();
 
@@ -104,8 +76,8 @@ namespace dframework {
             return ___m_ref_count;
         }
 
-        inline int lock() { return ___m_safe.lock(); }
-        inline int unlock() { return ___m_safe.unlock(); }
+        int     lock();
+        int     unlock();
 
         DFW_D_IVBO(==,Object,*) { return (this ==  p); }
         DFW_D_IVBO(!=,Object,*) { return (this !=  p); }

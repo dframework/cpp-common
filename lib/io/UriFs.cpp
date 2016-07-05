@@ -5,11 +5,15 @@
 
 namespace dframework {
 
+    DFW_DECLARATION_SAFE_COUNT(UriFs);
+
     UriFs::UriFs() {
+        DFW_SAFE_ADD(UriFs, l);
     }
 
     UriFs::~UriFs(){
         close("");
+        DFW_SAFE_REMOVE(UriFs, l);
     }
 
     sp<Retval> UriFs::ready(const char* uri)

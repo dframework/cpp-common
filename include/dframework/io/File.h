@@ -24,6 +24,9 @@ namespace dframework {
 
     class File : public Object
     {
+    public:
+        DFW_DEFINITION_SAFE_COUNT(File);
+
     private:
         int      m_fd;
         uint64_t m_offset;
