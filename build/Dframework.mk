@@ -12,10 +12,14 @@ endif
 include $(CLEAR_VARS)
 
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
-LOCAL_SRC_FILES := ../lib/android/langinfo.c
+    LOCAL_SRC_FILES := ../lib/android/langinfo.c
+endif
+ifeq (${DDK_ENV_TARGET_OS}, "android")
+    LOCAL_SRC_FILES := ../lib/android/langinfo.c
+endif
+
 LOCAL_INCLUDES :=     \
     ${LOCAL_PATH}/../include
-endif
 
 LOCAL_STATIC_LIBRARIES :=        \
     libpcre2                     \
