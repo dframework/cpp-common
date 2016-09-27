@@ -165,12 +165,14 @@ namespace dframework {
 
     void ServerAccept::run(){
         sp<Retval> retval;
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "start accept");
+
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "Start ServerAccept");
+
         while(true){
             {
                 AutoLock _l(this);
                 if( !m_bLive ) {
-                    DFWLOG(DFWLOG_F|DFWLOG_ID(DFWLOG_SERVER_ID), "serveraccept is stop.");
+                    DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "Stop ServerAccept");
                     return;
                 }
             }

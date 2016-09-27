@@ -1,4 +1,5 @@
 #include <dframework/httpd/HttpdService.h>
+#include <dframework/log/Logger.h>
 
 namespace dframework {
 

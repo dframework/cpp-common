@@ -555,8 +555,11 @@ namespace dframework {
 
         if( iEnd < iStart )
             return DFW_RETVAL_NEW(DFW_ERROR, 0);
-        if( m_resp->m_iFileSize <= iStart )
-            return DFW_RETVAL_NEW(DFW_ERROR, 0);
+        if( m_resp->m_iFileSize <= iStart ){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                       , "m_iFileSize:%lu, iStart:%lu"
+                       , m_resp->m_iFileSize, iStart);
+        }
 
         if( DFW_RET(retval, setResponse(status, (size_t)iLength, true)) )
             return DFW_RETVAL_D(retval);
