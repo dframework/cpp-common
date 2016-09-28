@@ -177,7 +177,6 @@ value means there is no possessified version - in those cases the item in
 question must be wrapped in ONCE brackets. The table is truncated at OP_CALLOUT
 because all relevant opcodes are less than that. */
 
-#ifndef __APPLE__
 static const uint8_t opcode_possessify[] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   /* 0 - 15  */
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   /* 16 - 31 */
@@ -229,7 +228,7 @@ static const uint8_t opcode_possessify[] = {
   0, 0,                    /* DNREF, DNREFI */
   0, 0                     /* RECURSE, CALLOUT */
 };
-#endif
+
 
 
 #ifdef SUPPORT_UNICODE

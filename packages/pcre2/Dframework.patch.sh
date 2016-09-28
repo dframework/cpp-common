@@ -16,7 +16,7 @@ F_CONFIGURE(){
     fi
 
     nowdir=`pwd`
-    ./configure
+    ./configure --prefix=$nowdir/build
     if [ $? -ne 0 ]; then
         echo "  @ ERROR: ./configure"
         echo "       at ${nowdir}"
@@ -64,10 +64,10 @@ F_COPYIT(){
     for x in $SRC_A
     do
         src_x="src/${x}"
-        cp "${src_x}" "../pcre2/src/${x}"
+        cp "${src_x}" "../src/${x}"
         ret=$?
         if [ $ret -ne 0 ]; then
-            echo "  @ ERROR: cp \"${src_x}\" \"../pcre2/src/${x}\""
+            echo "  @ ERROR: cp \"${src_x}\" \"../src/${x}\""
             echo "       at ${nowdir}"
             return $ret
         fi
@@ -89,10 +89,10 @@ F_COPYIT(){
     for x in $HEADER_A
     do
         header_x="src/${x}"
-        cp "${header_x}" "../pcre2/src/${x}"
+        cp "${header_x}" "../src/${x}"
         ret=$?
         if [ $ret -ne 0 ]; then
-            echo "  @ ERROR: cp \"${header_x}\" \"../pcre2/src/${x}\""
+            echo "  @ ERROR: cp \"${header_x}\" \"../src/${x}\""
             echo "       at ${nowdir}"
             return $ret
         fi
@@ -133,7 +133,6 @@ F_MAKE_MK(){
 
 F_MAIN(){
     current=`pwd`
-    cd ../
 
     F_CONFIGURE
     ret=$?
@@ -161,7 +160,7 @@ F_MAIN(){
         return $ret
     fi
 
-    rm -rf ../pcre2-10.20
+#    rm -rf pcre2-10.20
 
     return 0
 }
