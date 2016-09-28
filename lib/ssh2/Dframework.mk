@@ -28,8 +28,6 @@ LOCAL_INCLUDES :=           \
 LOCAL_SHARED_LIBRARIES :=   \
     libdframework-common
 
-@echo ${LOCAL_INCLUDES}
-
 #LOCAL_LDFLAGS :=            \
     -Wl,--no-as-needed      \
     -pthread -ldl -lz

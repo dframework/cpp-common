@@ -1,10 +1,9 @@
 LOCAL_PATH := $(call my-dir)
 
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
-  openssl_PATH := ${LOCAL_PATH}/../packages/openssl/${DDK_ENV_TARGET_OS}
+  openssl_PATH := ${LOCAL_PATH}/../packages/openssl/${DDK_ENV_TARGET_OS}/${DDK_ENV_TARGET_CPU}
 elifeq (${DDK_ENV_TARGET_OS}, "ios")
   openssl_PATH := ${LOCAL_PATH}/../packages/openssl/${DDK_ENV_TARGET_OS}/ios${DDK_APPLE_SDK_VERSION}-${DDK_ENV_TARGET_CPU}
-  libssh2_PATH := ${LOCAL_PATH}/../packages/libssh2/${DDK_ENV_TARGET_OS}/ios${DDK_APPLE_SDK_VERSION}-${DDK_ENV_TARGET_CPU}
 else
   openssl_PATH := ${LOCAL_PATH}/../packages/openssl/${DDK_ENV_TARGET_OS}/${DDK_ENV_TARGET_CPU}
 endif
@@ -36,7 +35,6 @@ LOCAL_STATIC_LIBRARIES :=        \
     libdframework-common-log     \
     libdframework-common-sql     \
     libdframework-common-ssh2    \
-    libdframework-common-monitor \
     libcrypto                    \
     libssl                       \
     libssh2
@@ -48,8 +46,10 @@ ifeq (${DDK_ENV_TARGET_OS}, "windows")
     libws2_32                    \
     libpsapi                     \
     libgdi32
-
 else
+  LOCAL_STATIC_LIBRARIES +=      \
+    libdframework-common-monitor \
+
   LOCAL_LDFLAGS := -lz
 endif
 

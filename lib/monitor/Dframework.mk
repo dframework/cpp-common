@@ -19,5 +19,7 @@ LOCAL_INCLUDES :=                \
 
 LOCAL_MODULE := libdframework-common-monitor
 
+ifneq (${DDK_ENV_TARGET_OS}, "windows")
 include $(BUILD_STATIC_LIBRARY)
+endif
 
