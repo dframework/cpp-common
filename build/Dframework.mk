@@ -44,8 +44,9 @@ ifeq (${DDK_ENV_TARGET_OS}, "windows")
     libdframework-common-dl      \
     libpthread                   \
     libws2_32                    \
-    libpsapi                     \
-    libgdi32
+    libgdi32                     \
+    libpsapi
+
 else
   LOCAL_STATIC_LIBRARIES +=      \
     libdframework-common-monitor \
