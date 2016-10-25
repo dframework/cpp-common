@@ -199,6 +199,7 @@ namespace dframework {
           p++;
       }
 
+#ifndef __APPLE__
       m_all->m_total++;
       switch( line->m_status ){
       case TCP_ESTABLISHED : m_all->m_est++; break;
@@ -213,6 +214,7 @@ namespace dframework {
       case TCP_LISTEN: m_all->m_listen++; break;
       case TCP_CLOSING: m_all->m_closing++; break;
       }
+#endif
 
       return NULL;
   }
