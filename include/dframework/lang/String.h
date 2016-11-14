@@ -27,7 +27,7 @@
 
 #include <dframework/base/Object.h>
 #include <dframework/util/D_Sorted.h>
-
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {

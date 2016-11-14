@@ -10,6 +10,56 @@ namespace dframework {
     HttpdUtil::~HttpdUtil(){
     }
 
+    DFW_STATIC
+    int HttpdUtil::toLower(int c){
+	    if (c >= 'A' && c <= 'Z')
+		    c ^= 0x20;
+	    return c;
+    }
+
+    DFW_STATIC
+    sp<Retval> HttpdUtil::urldecode(String& out, const char *url){
+        int s = 0, d = 0, url_len = 0;
+        char c;
+        char *dest = NULL;
+	if (!url)
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not found url parameter");
+	url_len = ::strlen(url) + 1;
+	dest = (char*)::malloc(url_len);
+	if (!dest)
+                return DFW_RETVAL_NEW(DFW_E_NOMEM, ENOMEM);
+	while (s < url_len) {
+		c = url[s++];
+		if (c == '%' && s + 2 < url_len) {
+			char c2 = url[s++];
+			char c3 = url[s++];
+			if (::isxdigit(c2) && ::isxdigit(c3)) {
+				c2 = HttpdUtil::toLower(c2);
+				c3 = HttpdUtil::toLower(c3);
+				if (c2 <= '9')
+					c2 = c2 - '0';
+				else
+					c2 = c2 - 'a' + 10;
+				if (c3 <= '9')
+					c3 = c3 - '0';
+				else
+					c3 = c3 - 'a' + 10;
+				dest[d++] = 16 * c2 + c3;
+			} else { /* %zz or something other invalid */
+				dest[d++] = c;
+				dest[d++] = c2;
+				dest[d++] = c3;
+			}
+		} else if (c == '+') {
+			dest[d++] = ' ';
+		} else {
+			dest[d++] = c;
+		}
+	}
+        out = dest;
+	return NULL;
+    }
+
 #define DFW_HTTPD_ISSPACE(c)  (::isspace(((unsigned char)(c))))
 #define DFW_HTTPD_ISUPPER(c)  (::isupper(((unsigned char)(c))))
 #define DFW_HTTPD_ISLOWER(c)  (::islower(((unsigned char)(c))))

@@ -27,22 +27,22 @@ fi
 
 ddk_build_all()
 {
-    ddk-build --add-target=android-x86
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
-    ddk-build --add-target=android-x86_64
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
     ddk-build --add-target=android-armv7
     if [ $? -ne 0 ]; then
         exit 1
     fi
-    ddk-build --add-target=android-arm64
+#    ddk-build --add-target=android-arm64
+#    if [ $? -ne 0 ]; then
+#        exit 1
+#    fi
+    ddk-build --add-target=android-x86
     if [ $? -ne 0 ]; then
         exit 1
     fi
+#    ddk-build --add-target=android-x86_64
+#    if [ $? -ne 0 ]; then
+#        exit 1
+#    fi
 }
 
 

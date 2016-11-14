@@ -104,6 +104,7 @@ namespace dframework {
                                     , "Not found host. host=%s:%d"
                                     , m_req->m_sHost.toChars(), m_sock->getServerPort());
         }
+
         sp<Object> hostobj = host;
         setHost(hostobj);
 
@@ -116,8 +117,9 @@ namespace dframework {
             dfw_httpstatus_t outstatus = DFW_HTTP_STATUS_0;
             sp<HttpdMod> mod = host->getMod(k);
             if( DFW_RET(retval, mod->request(thiz, &outstatus))){
-                if(outstatus!=DFW_HTTP_STATUS_0)
+                if(outstatus!=DFW_HTTP_STATUS_0){
                     return DFW_RETVAL_D_SET_ERR(retval, HTTPD_STATUS_500);
+                }
             }
         }
         // module

@@ -12,6 +12,9 @@ namespace dframework {
     class HttpdUtil : public Object
     {
     public:
+        static int toLower(int c);
+        static sp<Retval> urldecode(String& out, const char *url);
+
         static bool isDateMask(const char *data, const char *mask);
         static sp<Retval> expget(time_t *t, Time *xt);
         static sp<Retval> parseToTime(time_t* out, const char* date);
