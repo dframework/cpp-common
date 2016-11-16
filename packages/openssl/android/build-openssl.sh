@@ -10,8 +10,8 @@ D_ORIGIN="origin-x86"
 MKDIR(){
     local path=
     path="$1"
-    if test ! -d $path ; then
-        mkdir -p $path
+    if test ! -d $path/lib ; then
+        mkdir -p $path/lib
         if [ $? -ne 0 ]; then
             echo "mkdir $path"
             exit 1
@@ -23,17 +23,19 @@ COPY_OBJ(){
     local SRC="$1"
     local DST="$2"
 
-    cp obj/local/$SRC/libcrypto-static.a ../$DST/libcrypto.a
+    cp obj/local/$SRC/libcrypto-static.a ../$DST/lib/libcrypto.a
     if [ $? -ne 0 ]; then
         echo "cp obj/local/$SRC/libcrypto-static.a ../$DST/libcrypto.a"
         exit 1
     fi
 
-    cp obj/local/$SRC/libssl-static.a ../$DST/libssl.a
+    cp obj/local/$SRC/libssl-static.a ../$DST/lib/libssl.a
     if [ $? -ne 0 ]; then
         echo "cp obj/local/$SRC/libssl-static.a ../$DST/libssl.a"
         exit 1
     fi
+
+    cp -R jni/include ../$DST/
 }
 
 MKDIR "$D_ARMV7"
@@ -54,8 +56,8 @@ if [ $? -ne 0 ]; then
 fi
 
 COPY_OBJ "armeabi-v7a" "${D_ARMV7}"
-#COPY_OBJ "arm64-v8a" "${D_ARM64}"
+COPY_OBJ "arm64-v8a" "${D_ARM64}"
 COPY_OBJ "x86" "${D_X86}"
-#COPY_OBJ "x86_64" "${D_X86_64}"
+COPY_OBJ "x86_64" "${D_X86_64}"
 
 echo " OK "

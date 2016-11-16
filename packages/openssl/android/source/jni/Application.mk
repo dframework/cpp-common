@@ -2,7 +2,8 @@
 #APP_ABI := all
 #APP_ABI := armeabi-v7a  armeabi x86
 #APP_ABI  := mips
-APP_ABI := armeabi-v7a x86 arm64-v8a x86_64
+APP_ABI  := x86
+#APP_ABI := armeabi-v7a
 #APP_PLATFORM := android-10
 #APP_OPTIM := debug
 
