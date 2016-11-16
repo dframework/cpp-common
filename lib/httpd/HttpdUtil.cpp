@@ -57,6 +57,7 @@ namespace dframework {
 		}
 	}
         out = dest;
+        DFW_FREE(dest);
 	return NULL;
     }
 
@@ -272,7 +273,8 @@ namespace dframework {
     sp<Retval> HttpdUtil::checkRangeBytes(
                   HttpRequest* request
                 , String& sRange, String& sAcceptRange
-                , char** pStart, char** pEnd, int* minus)
+                , String& sStart, String& sEnd, int* minus)
+                //, char** pStart, char** pEnd, int* minus)
     {
         sp<Retval> retval;
 
@@ -310,8 +312,7 @@ namespace dframework {
             }
         }
 
-        *pStart = *pEnd = NULL;
-        *minus = 1;
+        //*pStart = *pEnd = NULL;
         const char* pRange = sRange.toChars();
         const char* p2 = NULL;
         const char* p = ::strcasestr(pRange, "bytes");
@@ -319,25 +320,36 @@ namespace dframework {
             return DFW_RETVAL_NEW(DFW_ERROR, 0);
 
         p = pRange + ::strlen("bytes") + 1;
-        if('\0'==*p)
+        if('\0'==*p){
+            // bytes=
             return DFW_RETVAL_NEW(DFW_ERROR, 0);
+        }
         if('-'==*p){
+            // bytes=-
             *minus = 2;
-            *pEnd = (char*)(p + 1);
+            sEnd.set(p+1);
+            //*pEnd = (char*)(p + 1);
         }else if(::strcmp(p, "0-0,-1")==0){
             // This is multipart.
             *minus = 3;
         }else{
             p2 = ::strstr(p+1,"-");
-            if(NULL==p2)
+            if(NULL==p2){
                 return DFW_RETVAL_NEW(DFW_ERROR, 0);
+            }
             p2++;
             if( '\0'==*p2 ) {
+                // bytes=num-
                 *minus = 4;
-                *pStart = (char*)p;
+                sStart.set(p, p2-p-1);
+                //*pStart = (char*)p;
             }else{
-                *pStart = (char*)p;
-                *pEnd = (char*)p2;
+                // bytes=num-num
+                *minus = 1;
+                sStart.set(p, p2-p-1);
+                sEnd.set(p2);
+                //*pStart = (char*)p;
+                //*pEnd = (char*)p2;
             }
         }
         return NULL;

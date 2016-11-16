@@ -451,9 +451,17 @@ namespace dframework {
     }
 
     sp<Retval> HttpdClient::sendLocalFile_ready(){
-        AutoLock _l(this);
         sp<Retval> retval;
+        dfw_httpstatus_t status = DFW_HTTP_STATUS_0;
+        String sModify;
+        String sRange, sAcceptRange, sContentRange;
+        String sStart;
+        String sEnd;
+        int minus = 0;
+        uint64_t iStart, iEnd, iLength;
 
+DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "send local file ready");
+        AutoLock _l(this);
         // ----------------------------------------------------------
         // modules
         sp<HttpdClient> thiz = this;
@@ -496,19 +504,14 @@ namespace dframework {
                                            m_resp->m_sFileContentType)) ){
         }
 
-        dfw_httpstatus_t status = DFW_HTTP_STATUS_0;
-        String sModify;
-        String sRange, sAcceptRange, sContentRange;
-        char *pStart, *pEnd;
-        int minus = 0;
         Time::getDateStringRfc822(sModify, m_resp->m_iFileMTime);
         if( DFW_RET(retval, HttpdUtil::checkRangeBytes(m_req.get()
                                              , sRange, sAcceptRange
-                                             , &pStart, &pEnd, &minus)) ){
+                                             , sStart, sEnd, &minus)) ){
+                                             //, &pStart, &pEnd, &minus)) ){
             return DFW_RETVAL_D(retval);
         }
 
-        uint64_t iStart, iEnd, iLength;
         switch( minus ){
         case 0 :
             status = DFW_HTTP_STATUS_200;
@@ -519,21 +522,37 @@ namespace dframework {
 
         case 1 :
             status = DFW_HTTP_STATUS_206;
-            iStart = ::atoll(pStart);
-            iEnd = ::atoll(pEnd);
-            if(m_resp->m_iFileSize <= iEnd)
+            if(sStart.empty()){
+                iStart = 0;
+            }else{
+                iStart = ::atoll(sStart.toChars());
+            }
+            if(sEnd.empty()){
+                iEnd = 0;
+            }else{
+                iEnd = ::atoll(sEnd.toChars());
+            }
+            /*if(m_resp->m_iFileSize <= iEnd){
                 iEnd = m_resp->m_iFileSize - 1;
+DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
+
+            }*/
             iLength = iEnd - iStart + 1;
-            sContentRange = String::format("bytes %ld-%ld/%ld"
+
+            sContentRange = String::format("bytes %llu-%llu/%llu"
                                  , iStart, iEnd, m_resp->m_iFileSize);
             break;
 
         case 2 :
             status = DFW_HTTP_STATUS_206;
-            iStart = m_resp->m_iFileSize - ::atoll(pEnd);
+            if(sStart.empty()){
+                iStart = m_resp->m_iFileSize;
+            }else{
+                iStart = m_resp->m_iFileSize - ::atoll(sEnd.toChars());
+            }
             iEnd = m_resp->m_iFileSize - 1;
             iLength = iEnd - iStart + 1;
-            sContentRange = String::format("bytes %ld-%ld/%ld"
+            sContentRange = String::format("bytes %llu-%llu/%llu"
                                  , iStart, iEnd, m_resp->m_iFileSize);
             break;
 
@@ -541,12 +560,17 @@ namespace dframework {
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
                        , "Not support multipart. Range(%s):%d"
                        , sRange.toChars(), minus);
+
         case 4 :
             status = DFW_HTTP_STATUS_206;
-            iStart = ::atoll(pStart);
+            if(sStart.empty()){
+                iStart = 0;
+            }else{
+                iStart = ::atoll(sStart.toChars());
+            }
             iEnd = m_resp->m_iFileSize - 1;
             iLength = iEnd - iStart + 1;
-            sContentRange = String::format("bytes %ld-%ld/%ld"
+            sContentRange = String::format("bytes %llu-%llu/%llu"
                                  , iStart, iEnd, m_resp->m_iFileSize);
             break;
 
@@ -555,18 +579,21 @@ namespace dframework {
                        , "Unknown Range(%s):%d", sRange.toChars(), minus);
         } // end switch(minus)
 
-        if( iEnd < iStart )
+        if( iEnd < iStart ){
             return DFW_RETVAL_NEW(DFW_ERROR, 0);
+        }
         if( m_resp->m_iFileSize <= iStart ){
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                       , "m_iFileSize:%lu, iStart:%lu"
+                       , "m_iFileSize:%llu, iStart:%llu"
                        , m_resp->m_iFileSize, iStart);
         }
 
-        if( DFW_RET(retval, setResponse(status, (size_t)iLength, true)) )
+        if( DFW_RET(retval, setResponse(status, (size_t)iLength, true)) ){
             return DFW_RETVAL_D(retval);
-        if(DFW_RET(retval,m_resp->appendHeader("Accept-Ranges","bytes")))
+        }
+        if(DFW_RET(retval,m_resp->appendHeader("Accept-Ranges","bytes"))){
             return DFW_RETVAL_D(retval);
+        }
         if( !sContentRange.empty() ){
             if(DFW_RET(retval,m_resp->appendHeader(
                                           "Content-Range",sContentRange)))

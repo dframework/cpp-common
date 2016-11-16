@@ -37,7 +37,7 @@ public:
 
 
 int main(){
-
+#if 0
 	ArraySorted<Integer> il;
 	ArraySorted<String> sl;
 
@@ -86,8 +86,9 @@ int main(){
 		printf("resi : %d\n", resi->value());
 	else
 		printf("resi not find\n");
+#endif
 
-#if 0
+#if 1
     DirBox box;
     box.load("/opt");
     String boxdump = box.dump();

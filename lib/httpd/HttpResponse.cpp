@@ -78,6 +78,7 @@ namespace dframework {
         m_sStream.appendFmt("\r\n");
         if( !m_sBody.empty() )
             m_sStream.append(m_sBody);
+
         return NULL;
     }
 

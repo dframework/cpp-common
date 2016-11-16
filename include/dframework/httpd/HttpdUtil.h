@@ -22,7 +22,8 @@ namespace dframework {
         static sp<Retval> checkRangeBytes(
                               HttpRequest* request
                             , String& sRange, String& sAcceptRange
-                            , char** pStart, char** pEnd, int* minus);
+                            , String& sStart, String& sEnd, int* minus);
+                            //, char** pStart, char** pEnd, int* minus);
 
     public:
         HttpdUtil();
