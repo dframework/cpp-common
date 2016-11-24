@@ -1,5 +1,6 @@
 #include <dframework/httpd/OriginFs.h>
 #include <dframework/httpd/HttpdHost.h>
+#include <dframework/log/Logger.h>
 
 namespace dframework {
 

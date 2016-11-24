@@ -6,6 +6,7 @@
 namespace dframework {
 
     HttpdHost::AliasUri::AliasUri(){
+        m_current = 0;
     }
 
     HttpdHost::AliasUri::~AliasUri(){

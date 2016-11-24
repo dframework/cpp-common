@@ -56,8 +56,8 @@ if [ $? -ne 0 ]; then
 fi
 
 COPY_OBJ "armeabi-v7a" "${D_ARMV7}"
-COPY_OBJ "arm64-v8a" "${D_ARM64}"
+#COPY_OBJ "arm64-v8a" "${D_ARM64}"
 COPY_OBJ "x86" "${D_X86}"
-COPY_OBJ "x86_64" "${D_X86_64}"
+#COPY_OBJ "x86_64" "${D_X86_64}"
 
 echo " OK "
