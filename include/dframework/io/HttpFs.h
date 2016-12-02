@@ -38,6 +38,7 @@ namespace dframework {
         uint64_t      m_size;
         uint64_t      m_offset;
         int           m_step;
+        unsigned long m_uTimeout;
 
         bool          m_bUseHead; // default true.
         String        m_sUserAgent;
@@ -47,6 +48,7 @@ namespace dframework {
         virtual ~HttpFs();
 
         virtual sp<Retval> ready(sp<URI>& uri);
+        virtual void setTimeout(unsigned long value);
         virtual sp<Retval> getattr(const char* path, struct stat* st);
         virtual sp<Retval> readdir(const char* path, sp<DirBox>& db);
         virtual sp<Retval> open(const char* path, int flag, int mode=0);

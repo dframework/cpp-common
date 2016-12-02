@@ -79,6 +79,7 @@ namespace dframework {
         m_offset = 0;
         m_step = 0;
         m_bUseHead = true;
+        m_uTimeout = 0;
     }
 
     HttpFs::~HttpFs(){
@@ -108,6 +109,10 @@ namespace dframework {
             }
         }
         return NULL;
+    }
+
+    void HttpFs::setTimeout(unsigned long value){
+        m_uTimeout = value;
     }
 
     DFW_PRIVATE

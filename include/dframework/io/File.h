@@ -30,12 +30,15 @@ namespace dframework {
     private:
         int      m_fd;
         uint64_t m_offset;
+        unsigned long m_uTimeout;
 
     public:
         File();
         virtual ~File();
 
         void close();
+
+        void setTimeout(unsigned long value);
 
         sp<Retval> open(const char* path, int flag=O_RDONLY);
         inline sp<Retval> open(const String& path, int flag=O_RDONLY){
@@ -241,6 +244,9 @@ namespace dframework {
         static inline sp<Retval> mtime(const String& path, uint64_t time){
             return mtime(path.toChars(), time);
         }
+
+        static sp<Retval> setNonBlockSocket(int fd, bool is=true);
+        static sp<Retval> isReadable(int fd, unsigned long timeout);
 
     };
 

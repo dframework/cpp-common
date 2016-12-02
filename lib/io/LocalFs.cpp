@@ -15,6 +15,7 @@ namespace dframework {
     LocalFs::LocalFs(){
         DFW_SAFE_ADD(LocalFs, l);
         //DFW_FD_INIT(m_fd);
+        m_uTimeout = 0;
     }
 
     LocalFs::~LocalFs(){
@@ -26,6 +27,13 @@ namespace dframework {
         m_sUri = uri->toString();
         m_oUri = uri;
         return NULL;
+    }
+
+    void LocalFs::setTimeout(unsigned long value){
+        m_uTimeout = value;
+        if( m_uTimeout && m_file.has() ){
+            m_file->setTimeout(m_uTimeout);
+        }
     }
 
     sp<Retval> LocalFs::getattr(const char* path, struct stat* st){
@@ -81,6 +89,9 @@ namespace dframework {
                                     , m_oUri->getPath().toChars()
                                     , path);
         m_file = new File();
+        if( m_uTimeout ){
+            m_file->setTimeout(m_uTimeout);
+        }
         if( DFW_RET(retval, m_file->open(rpath.toChars(), flag, mode)) )
             return DFW_RETVAL_D(retval);
         return NULL;

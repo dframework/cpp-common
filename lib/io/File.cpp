@@ -1,6 +1,7 @@
 #include <dframework/io/File.h>
 #include <dframework/io/DirBox.h>
 #include <dframework/net/URI.h>
+#include <dframework/net/Poll.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <utime.h>
@@ -29,6 +30,7 @@ namespace dframework {
 
         DFW_FILE_INIT(m_fd);
         m_offset = 0;
+        m_uTimeout = 0;
     }
 
     File::~File(){
@@ -40,14 +42,40 @@ namespace dframework {
         close_l();
     }
 
+    void File::setTimeout(unsigned long value){
+        if( m_uTimeout && !value && m_fd ){
+            m_uTimeout = 10000;
+        }else{
+            m_uTimeout = value;
+        }
+    }
+
     sp<Retval> File::open(const char* path, int flag){
+        sp<Retval> retval;
         close_l();
-        return File::open(&m_fd, path, flag);
+        if( DFW_RET(retval, File::open(&m_fd, path, flag)) ){
+            return DFW_RETVAL_D(retval);
+        }
+        if( m_uTimeout ){
+            if( DFW_RET(retval, File::setNonBlockSocket(m_fd, true)) ){
+                return DFW_RETVAL_D(retval);
+            }
+        }
+        return NULL;
     }
 
     sp<Retval> File::open(const char* path, int flag, int mode){
+        sp<Retval> retval;
         close_l();
-        return File::open(&m_fd, path, flag, mode);
+        if( DFW_RET(retval, File::open(&m_fd, path, flag, mode)) ){
+            return DFW_RETVAL_D(retval);
+        }
+        if( m_uTimeout ){
+            if( DFW_RET(retval, File::setNonBlockSocket(m_fd, true)) ){
+                return DFW_RETVAL_D(retval);
+            }
+        }
+        return NULL;
     }
 
     void File::close_l(){
@@ -59,10 +87,17 @@ namespace dframework {
                         , uint64_t offset)
     {
         sp<Retval> retval;
-        if( (offset!=m_offset) && DFW_RET(retval, seek(offset)) )
+        if( (offset!=m_offset) && DFW_RET(retval, seek(offset)) ){
             return DFW_RETVAL_D(retval);
-        if( DFW_RET(retval, File::read(m_fd, out_size, buf, size)) )
+        }
+        if( m_uTimeout ){
+            if( DFW_RET(retval, File::isReadable(m_fd, m_uTimeout)) ){
+                return DFW_RETVAL_D(retval);
+            }
+        }
+        if( DFW_RET(retval, File::read(m_fd, out_size, buf, size)) ){
             return DFW_RETVAL_D(retval);
+        }
         return NULL;
     }
 
@@ -569,6 +604,71 @@ namespace dframework {
         }
 
         return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::setNonBlockSocket(int fd, bool is){
+	int flags;
+	flags = fcntl(fd, F_GETFL, 0);
+	if(-1 == flags){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, errno
+                     , "Not set non blocking fd by GETFL. fd=%d", fd);
+        }
+	if(-1 == fcntl(fd, F_SETFL, flags | O_NONBLOCK)){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, errno
+                     , "Not set non blocking fd. fd=%d", fd);
+        }
+        return NULL;
+    }
+
+    DFW_STATIC
+    sp<Retval> File::isReadable(int fd, unsigned long timeout){
+        int ret;
+        int eno;
+
+        struct pollfd fds;
+        fds.fd = fd;
+        fds.events = POLLIN|POLLERR|POLLHUP|POLLNVAL;
+        fds.revents = 0;
+#ifdef _WIN32
+        if( -1 == (ret = win32_poll(&fds, 1, timeout)) )
+#else
+        if( -1 == (ret = ::poll(&fds, 1, timeout)) )
+#endif
+        {
+                eno = errno;
+                switch(eno){
+                case EINTR:
+                    return DFW_RETVAL_NEW(DFW_E_INTR,eno);
+                case EFAULT :
+                    return DFW_RETVAL_NEW(DFW_E_FAULT,eno);
+                case EINVAL:
+                    return DFW_RETVAL_NEW(DFW_E_INVAL,eno);
+                case ENOMEM:
+                    return DFW_RETVAL_NEW(DFW_E_NOMEM,eno);
+                }
+                return DFW_RETVAL_NEW(DFW_E_POLL,eno);
+        }else if( 0 == ret ){
+            return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT,0
+                       , "handle=%d, timeout=%lu, TIMEOUT", fd, timeout);
+        }
+
+        if( (fds.revents & POLLIN)==POLLIN ){
+            return NULL;
+        }
+
+        if( (fds.revents & POLLERR) == POLLERR ){
+            return DFW_RETVAL_NEW_MSG(DFW_E_POLLERR,0
+                       , "handle=%d, timeout=%lu, POLLERR", fd, timeout);
+        }else if( (fds.revents & POLLHUP) == POLLHUP ){
+            return DFW_RETVAL_NEW_MSG(DFW_E_POLLHUP,0
+                       , "handle=%d, timeout=%lu, POLLHUP", fd, timeout);
+        }else if( (fds.revents & POLLNVAL) == POLLNVAL ){
+            return DFW_RETVAL_NEW_MSG(DFW_E_POLLNVAL,0
+                       , "handle=%d, timeout=%lu, POLLNVAL", fd, timeout);
+        }
+        return DFW_RETVAL_NEW_MSG(DFW_E_POLL,0
+                   , "handle=%d, timeout=%lu", fd, timeout);
     }
 
 };

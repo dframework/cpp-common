@@ -30,6 +30,9 @@ namespace dframework {
         inline virtual ~BaseFs() {}
 
         virtual sp<Retval> ready(sp<URI>& uri) = 0;
+
+        virtual void setTimeout(unsigned long value) = 0;
+
         virtual sp<Retval> getattr(const char* path, struct stat* st) = 0;
         virtual sp<Retval> readdir(const char* path, sp<DirBox>& db) = 0;
         virtual sp<Retval> open(const char* path, int flag, int mode=0) = 0;
@@ -62,8 +65,10 @@ namespace dframework {
 
         virtual sp<Retval> ready(const char* uri);
         virtual sp<Retval> onFindBaseFs(sp<URI>& uri, sp<BaseFs>& fs);
-
         virtual sp<Retval> ready(sp<URI>& uri);
+
+        virtual void setTimeout(unsigned long value);
+
         virtual sp<Retval> getattr(const char* path, struct stat* st);
         virtual sp<Retval> readdir(const char* path, sp<DirBox>& db);
         virtual sp<Retval> open(const char* path, int flag, int mode=0);

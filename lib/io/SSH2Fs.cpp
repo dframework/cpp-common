@@ -15,6 +15,7 @@ namespace dframework {
     SSH2Fs::SSH2Fs(){
         DFW_SAFE_ADD(SSH2Fs, l);
         m_session = new SSH2Session();
+        m_uTimeout = 0;
     }
 
     SSH2Fs::~SSH2Fs(){
@@ -30,6 +31,10 @@ namespace dframework {
         if( DFW_RET(retval, m_session->ready(test)) )
             return DFW_RETVAL_D(retval);
         return NULL;
+    }
+
+    void SSH2Fs::setTimeout(unsigned long value){
+        m_uTimeout = value;
     }
 
     sp<Retval> SSH2Fs::getattr(const char* path, struct stat* st){

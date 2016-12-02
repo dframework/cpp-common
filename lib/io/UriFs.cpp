@@ -68,6 +68,12 @@ namespace dframework {
         return NULL;
     }
 
+    void UriFs::setTimeout(unsigned long value){
+        if(m_fs.has()){
+            m_fs->setTimeout(value);
+        }
+    }
+
     sp<Retval> UriFs::getattr(const char* path, struct stat* st)
     {
         sp<Retval> retval;

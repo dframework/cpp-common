@@ -17,12 +17,14 @@ namespace dframework {
         String  m_sUri;
         sp<URI> m_oUri;
         String  m_sPath;
+        unsigned long m_uTimeout;
 
     public:
         SSH2Fs();
         virtual ~SSH2Fs();
 
         virtual sp<Retval> ready(sp<URI>& uri);
+        virtual void setTimeout(unsigned long value);
         virtual sp<Retval> getattr(const char* path, struct stat* st);
         virtual sp<Retval> readdir(const char* path, sp<DirBox>& db);
         virtual sp<Retval> open(const char* path, int flag, int mode=0);
