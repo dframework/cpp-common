@@ -292,8 +292,8 @@ namespace dframework {
                 usleep(1000*100);
                 retry++;
                 continue;
-            case EINTR:
-                continue;
+            /*case EINTR:
+                continue;*/
             }
             return DFW_RETVAL_NEW_MSG(rno, eno
                        , "handle=%d, cmd=%d, arg=%d, %s"

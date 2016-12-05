@@ -145,7 +145,9 @@ namespace dframework {
  
         m_iAddrType = addrtype;
         m_iSockType = socktype;
-        
+
+        setTcpNoDelay(true);
+
         return NULL;
     }
     
@@ -184,8 +186,8 @@ namespace dframework {
                 usleep(1000*100);
                 retry++;
                 continue;
-            case EINTR:
-                continue;
+            /*case EINTR:
+                continue;*/
             }
 
 #ifdef _WIN32
@@ -316,7 +318,6 @@ namespace dframework {
     {
         int ret;
         int eno;
-
         struct pollfd fds;
         fds.fd = m_iHandle;
         fds.events = ((rdwr==0)?POLLIN:POLLOUT)|POLLERR|POLLHUP|POLLNVAL;
@@ -331,7 +332,7 @@ namespace dframework {
                 eno = errno;
                 switch(eno){
                 case EINTR:
-                    continue;
+                    return DFW_RETVAL_NEW(DFW_E_INTR,eno);
                 case EFAULT :
                     return DFW_RETVAL_NEW(DFW_E_FAULT,eno);
                 case EINVAL:
@@ -430,9 +431,9 @@ namespace dframework {
 #else
                 int eno = errno;
 #endif
-                if(eno==EINTR){
+                /*if(eno==EINTR){
                     continue;
-                }
+                }*/
 
                 if(Net::isInprogress(eno)){
                     if(DFW_RET(retval, wait(1, m_ConnTimeMSec)) ){
@@ -568,10 +569,6 @@ namespace dframework {
                 int eno = errno;
 #endif
 
-                if(EINTR==eno){
-                    continue;
-                }
-
                 if( Net::isInprogress(eno) ){
                     if(!iswait)
                         return DFW_RETVAL_NEW(DFW_E_AGAIN,eno);
@@ -616,7 +613,9 @@ namespace dframework {
         if(o_size){ *o_size = 0; }
 
         do{
-            if(0==l_size) return NULL;
+            if(0==l_size){
+                return NULL;
+            }
 
             size_t r_size = ::recv(m_iHandle, o_data+offset, l_size, 0);
 
@@ -626,9 +625,6 @@ namespace dframework {
 #else
                 int eno = errno;
 #endif
-                if(EINTR==eno){
-                    continue;
-                }
 
                 if( Net::isInprogress(eno) ){
                     if(!iswait) {

@@ -137,6 +137,7 @@ namespace dframework {
     sp<Retval> HttpConnection::request(){
         sp<Retval> retval;
         sp<HttpRound> round = m_pQuery->getLastRound();
+
         if(DFW_RET(retval, request_real(round))){
             sp<HttpConnection> thiz = this; 
             m_pQuery->onError(thiz, retval);
@@ -209,8 +210,9 @@ namespace dframework {
                 if( DFW_RET(retval, location.parse(
                         reUri, round->m_oUri, 
                         round->m_sLocation, m_socket->getIp())) ){
-                    if(DFW_T_RECONNECT != retval->value())
+                    if(DFW_T_RECONNECT != retval->value()){
                         return DFW_RETVAL_D(retval);
+                    }
                 }
                 if( DFW_RET(retval, m_pQuery->createRound(reUri)) )
                     return DFW_RETVAL_D(retval);
@@ -316,10 +318,10 @@ namespace dframework {
     sp<Retval> HttpConnection::readLine(sp<HttpRound>& round)
     {
         sp<Retval> retval;
-        size_t size = 5120;
+        size_t size = 51200;
         size_t r_size = 0;
         size_t offset = 0;
-        char buf[5152];
+        char buf[51232];
         char* test;
         int status;
 
@@ -331,20 +333,28 @@ namespace dframework {
 
             r_size = 0;
             if( DFW_RET(retval, m_socket->recv(buf+offset, &r_size, size)) ){
-                if( (status = retval->value()) ){ //DFW_RETVAL_V(retval);
+                if( (status = retval->value()) ){
                     if( DFW_E_AGAIN!=status && DFW_E_DISCONNECT!=status)
                         return DFW_RETVAL_D(retval);
-                    if(r_size==0 && DFW_E_AGAIN==status)
+                    if(r_size==0 && DFW_E_AGAIN==status){
                         continue;
+                    }
                 }
+            }
+
+            if( DFW_E_DISCONNECT==status){
+                return DFW_RETVAL_NEW_MSG(DFW_E_DISCONNECT, 0
+                           , "Disconnected for reading"
+                             " in HttpConnection's readLine.");
             }
 
             size -= r_size;
             offset += r_size;
             buf[offset] = '\0';
 
-            if( !(test = ::strstr(buf, "\r\n")) )
+            if( !(test = ::strstr(buf, "\r\n")) ){
                 continue;
+            }
 
             round->m_sRecvBuffer.append(buf, offset);
             return round->readLine();

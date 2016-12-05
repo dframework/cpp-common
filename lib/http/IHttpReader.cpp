@@ -68,7 +68,7 @@ namespace dframework {
                 return DFW_RETVAL_D(retval);
             }
 
-            usleep(1000);
+            //usleep(1000);
         }while(true);
     }
 

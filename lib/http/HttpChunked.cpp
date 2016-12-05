@@ -143,14 +143,16 @@ namespace dframework {
 
         do{
             if( DFW_RET(retval, m_pSocket->wait_recv()) )
-                return DFW_RETVAL_D(retval); // with DFW_E_TIMEOUT
+                return DFW_RETVAL_D(retval);
 
             retval = NULL;
             r_size = 0;
+            status = 0;
             if( size>0 && DFW_RET(retval, m_pSocket->recv(buffer+offset
                                                         , &r_size, size)) ){
-                if( (status = retval->value()) ){ //DFW_RETVAL_V(retval);
-                    if( DFW_E_AGAIN!=status && DFW_E_DISCONNECT!=status)
+                DFW_RETVAL_D(retval);
+                if( (status = retval->value()) ){
+                    if( DFW_E_AGAIN!=status && DFW_E_DISCONNECT!=status )
                         return DFW_RETVAL_D(retval);
                     if(r_size==0 && DFW_E_AGAIN==status)
                         continue;
@@ -164,10 +166,16 @@ namespace dframework {
 
             o_size = 0;
             sp<Retval> ps = parseChunkedBlocks(&o_size, buffer, offset);
-            if(DFW_RETVAL_H(ps)) return DFW_RETVAL_D(ps);
+            if(ps.has()){
+                return DFW_RETVAL_D(ps);
+            }
 
             offset -= o_size;
             size = DFW_HTTPSOCKET_MAX_SIZE - o_size;
+
+            if(DFW_E_DISCONNECT==status){
+                return DFW_RETVAL_D(retval);
+            }
             continue;
         }while(true);
     }
