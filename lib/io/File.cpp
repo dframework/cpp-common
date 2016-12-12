@@ -608,6 +608,7 @@ namespace dframework {
 
     DFW_STATIC
     sp<Retval> File::setNonBlockSocket(int fd, bool is){
+#ifndef _WIN32
 	int flags;
 	flags = fcntl(fd, F_GETFL, 0);
 	if(-1 == flags){
@@ -618,6 +619,7 @@ namespace dframework {
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, errno
                      , "Not set non blocking fd. fd=%d", fd);
         }
+#endif
         return NULL;
     }
 
