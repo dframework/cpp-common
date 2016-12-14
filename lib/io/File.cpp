@@ -53,7 +53,9 @@ namespace dframework {
     sp<Retval> File::open(const char* path, int flag){
         sp<Retval> retval;
         close_l();
-        if( DFW_RET(retval, File::open(&m_fd, path, flag)) ){
+        m_sPath = path;
+        m_sPath.replace('/','\\');
+        if( DFW_RET(retval, File::open(&m_fd, m_sPath.toChars(), flag)) ){
             return DFW_RETVAL_D(retval);
         }
         if( m_uTimeout ){
@@ -67,7 +69,9 @@ namespace dframework {
     sp<Retval> File::open(const char* path, int flag, int mode){
         sp<Retval> retval;
         close_l();
-        if( DFW_RET(retval, File::open(&m_fd, path, flag, mode)) ){
+        m_sPath = path;
+        m_sPath.replace('/','\\');
+        if( DFW_RET(retval, File::open(&m_fd, m_sPath.toChars(), flag, mode)) ){
             return DFW_RETVAL_D(retval);
         }
         if( m_uTimeout ){
@@ -212,17 +216,20 @@ namespace dframework {
         int eno = 0;
         dfw_retno_t rno = DFW_ERROR;
         const char* msg = NULL;
+        const char* ppath;
 
 #ifdef _WIN32
         String sPath = path;
         sPath.replace('/','\\');
-        if( -1 == (fd = ::_open(sPath.toChars(), flag)) ){
+        ppath = sPath.toChars();
+        if( -1 == (fd = ::_open(ppath, flag, mode)) ){
 #else
-        if( -1 == (fd = ::open(path, flag, mode)) ){
+        ppath = path;
+        if( -1 == (fd =  ::open(ppath, flag, mode)) ){
 #endif
             eno = errno;
             msg = Retval::errno_short(&rno, eno, "Not open file");
-            return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", path, msg);
+            return DFW_RETVAL_NEW_MSG(rno, eno, "path=%s, %s", ppath, msg);
         }
 
         *out_fd = fd;
@@ -286,7 +293,12 @@ namespace dframework {
 
         int fd;
         DFW_FILE_INIT(fd);
-        if( DFW_RET(retval, open(&fd, path, O_RDONLY)) )
+#ifdef _WIN32
+        int flags = O_RDONLY | O_BINARY;
+#else
+        int flags = O_RDONLY;
+#endif
+        if( DFW_RET(retval, open(&fd, path, flags)) )
             return DFW_RETVAL_D(retval);
 
         char buf[4096];
@@ -378,7 +390,12 @@ namespace dframework {
         int fd;
         DFW_FILE_INIT(fd);
 
-        if( DFW_RET(retval, open(&fd, path, O_WRONLY|O_CREAT, 0644)) )
+#ifdef _WIN32
+        int flags = O_WRONLY|O_CREAT|O_BINARY;
+#else
+        int flags = O_WRONLY|O_CREAT;
+#endif
+        if( DFW_RET(retval, open(&fd, path, flags, 0644)) )
             return DFW_RETVAL_D(retval);
         
         do{
@@ -480,17 +497,25 @@ namespace dframework {
     DFW_STATIC
     sp<Retval> File::remove(const char* path){
         sp<Retval> retval;
+        int res;
         int eno = 0;
         dfw_retno_t rno = DFW_ERROR;
         const char* msg = NULL;
+        const char* ppath;
+#ifdef _WIN32
+        String sPath = path;
+        sPath.replace('/', '\\');
+        ppath = sPath.toChars();
+        if( -1 == (res = ::_unlink(ppath)) ){
+#else
+        ppath = path;
+        if( -1 == (res = ::remove(ppath)) ){
+#endif
 
-        int res = ::remove(path);
-        if(-1 == res){
             eno = errno;
             msg = Retval::errno_short(&rno, eno, "Not remove.");
             return DFW_RETVAL_NEW_MSG(rno, eno
-                    , "path=%s, %s"
-                    , path, msg);
+                    , "path=%s, %s", ppath, msg);
         }
 
         return NULL;
@@ -509,20 +534,21 @@ namespace dframework {
             if(test.empty()) return NULL;
 
             String testpath = String::format("%s%s", base, test.toChars());
+#ifdef _WIN32
+            testpath.replace('/', '\\');
+#endif
             if( File::isDirectory(testpath)){
                 sp<DirBox> db = new DirBox(testpath);
                 if(db->size()==0){
                     if(DFW_RET(retval, File::remove(testpath))){
-                        return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                          , "Not remove dir, path=%s",testpath.toChars());
+                        return DFW_RETVAL_D(retval);
                     }
                     continue;
                 }
                 return NULL;
             }else if( File::isFile(testpath) ){
                 if(DFW_RET(retval, File::remove(testpath))){
-                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                       , "Not remove file, path=%s ", testpath.toChars());
+                    return DFW_RETVAL_D(retval);
                 }
             }
         }
@@ -531,24 +557,38 @@ namespace dframework {
     }
 
     DFW_STATIC
-    sp<Retval> File::removeAll(const char* path){
+    sp<Retval> File::removeAll(const char* ipath){
         sp<Retval> retval;
+        const char* ppath;
 
-        if( !File::isDirectory(path) ){
-            if( DFW_RET(retval, remove(path)) )
+#ifdef _WIN32
+        String sPath = ipath;
+        sPath.replace('/', '\\');
+        ppath = sPath.toChars();
+#else
+        ppath = ipath;
+#endif
+
+        if( !File::isDirectory(ppath) ){
+            if( DFW_RET(retval, remove(ppath)) )
                 return DFW_RETVAL_D(retval);
             return NULL;
         }
 
-        sp<DirBox> db = new DirBox(path);
+        sp<DirBox> db = new DirBox(ppath);
         for(int k=0; k<db->size(); k++){
             sp<Stat> st = db->get(k);
             if(st.has()){
                 if(st->m_name.length()==0 
                        || st->m_name.equals(".") || st->m_name.equals(".."))
                     continue;
+#ifdef _WIN32
+                String sSubPath = String::format("%s\\%s"
+                                          , ppath, st->m_name.toChars());
+#else
                 String sSubPath = String::format("%s/%s"
-                                          , path, st->m_name.toChars());
+                                          , ppath, st->m_name.toChars());
+#endif
                 if(st->isDir()){
                     if( DFW_RET(retval, removeAll(sSubPath)) )
                         return DFW_RETVAL_D(retval);
@@ -558,7 +598,7 @@ namespace dframework {
             }
         }
 
-        if( DFW_RET(retval, remove(path)) )
+        if( DFW_RET(retval, remove(ppath)) )
             return DFW_RETVAL_D(retval);
         return NULL;
     }

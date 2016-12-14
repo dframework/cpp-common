@@ -146,8 +146,8 @@ namespace dframework {
         m_iAddrType = addrtype;
         m_iSockType = socktype;
 
-        setTcpNoDelay(true);
-
+        if( DFW_RET(retval, setTcpNoDelay(true)) )
+            return DFW_RETVAL_D(retval);
         return NULL;
     }
     
@@ -186,8 +186,6 @@ namespace dframework {
                 usleep(1000*100);
                 retry++;
                 continue;
-            /*case EINTR:
-                continue;*/
             }
 
 #ifdef _WIN32
@@ -700,7 +698,7 @@ namespace dframework {
         AutoLock _l(this);
         sp<Retval> retval;
 #ifdef __APPLE__
-//FIONWRITE
+        //FIONWRITE
         if( -1 == ::ioctl(m_iHandle, TIOCOUTQ, size))
 #elif defined(_WIN32)
         if( -1 == ::ioctlsocket(m_iHandle, SIOCOUTQ, size))
@@ -733,7 +731,6 @@ namespace dframework {
         return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not support SIOCOUTQ.");
 #endif /* ifndef _WIN32 */
     }
-
 
 };
 

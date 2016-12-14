@@ -43,6 +43,7 @@ namespace dframework {
     // --------------------------------------------------------------
 
     sp<Retval> HttpQuery::query(const URI& uri, const char* method){
+        sp<Retval> retval;
         sp<HttpQuery> thiz = this;
         if( !m_conn.has() )
             m_conn = new HttpConnection();
@@ -53,7 +54,9 @@ namespace dframework {
             m_sMethod = "GET";
         }
 
-        createRound(uri);
+        if( DFW_RET(retval, createRound(uri)) )
+            return DFW_RETVAL_D(retval);
+
         m_pFirstRound = m_pLastRound;
         m_readerSavedBuffer = NULL;
 
@@ -69,6 +72,7 @@ namespace dframework {
     // --------------------------------------------------------------
 
     sp<Retval> HttpQuery::request(const URI& uri, const char* method){
+        sp<Retval> retval;
         sp<HttpQuery> thiz = this;
         if( !m_conn.has() )
             m_conn = new HttpConnection();
@@ -79,7 +83,9 @@ namespace dframework {
             m_sMethod = "GET";
         }
 
-        createRound(uri);
+        if( DFW_RET(retval, createRound(uri)) )
+            return DFW_RETVAL_D(retval);
+
         m_pFirstRound = m_pLastRound;
         m_readerSavedBuffer = NULL;
 
@@ -136,8 +142,9 @@ namespace dframework {
         m_pLastRound = new HttpRound(++round);
         m_aRoundList.insert(m_pLastRound);
 
-        retval = m_pLastRound->ready(uri);
-        return DFW_RETVAL_C(retval);
+        if( DFW_RET(retval, m_pLastRound->ready(uri)) )
+            return DFW_RETVAL_D(retval);
+        return NULL;
     }
 
     void HttpQuery::setUserAgent(const char *agent){

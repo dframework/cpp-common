@@ -48,7 +48,7 @@ namespace dframework {
             }
 
             dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-s_time) > (1000*600/* FIXME: */) ){
+            if( (c_time-s_time) > (1000*60/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout read request. handle=%d"
                                         , getHandle());
@@ -138,7 +138,7 @@ namespace dframework {
         dfw_time_t s_time = Time::currentTimeMillis();
         do{
             dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-s_time) > (1000*600/* FIXME: */) ){
+            if( (c_time-s_time) > (1000*60/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout read request. handle=%d"
                                         , getHandle());
@@ -178,7 +178,7 @@ namespace dframework {
         dfw_time_t s_time = Time::currentTimeMillis();
         do{
             dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-s_time) > (1000*600/* FIXME: */) ){
+            if( (c_time-s_time) > (1000*60/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout read request. handle=%d"
                                         , getHandle());
@@ -425,7 +425,6 @@ namespace dframework {
                     return DFW_RETVAL_D(retval);
                 }
             }
-
             m_resp->m_iSendedSize += osize;
             m_resp->m_iStreamSended += osize;
         }
@@ -460,7 +459,7 @@ namespace dframework {
         int minus = 0;
         uint64_t iStart, iEnd, iLength;
 
-DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "send local file ready");
+//DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "send local file ready");
         AutoLock _l(this);
         // ----------------------------------------------------------
         // modules
@@ -494,9 +493,15 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "send local file ready");
         if( DFW_RET(retval, m_resp->m_originFs->ready(m_req->m_host)) )
             return DFW_RETVAL_D(retval);
 
+#ifdef _WIN32
+        int flags = O_RDONLY | O_BINARY;
+#else
+        int flags = O_RDONLY;
+#endif
+
         if( DFW_RET(retval, m_resp->m_originFs->open(
                                              m_req->m_sRequest.toChars()
-                                            , O_RDONLY)) ){
+                                            , flags)) ){
             return DFW_RETVAL_D(retval);
         }
 
@@ -685,8 +690,6 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
           char fbuf[MAX_BUFFER];
           unsigned readable_size = MAX_BUFFER;
 
-//printf("#1 **************************************** : handle=%d, sended=%lld, offset=%lld, thiz-length=%lld, fbuflen=%d\n" , getHandle(), m_resp->m_iFileSended, m_resp->m_iFileOffset, thiz_length, fbuflen);
-
           if( DFW_RET(retval, m_sock->wait_send()) ){
               return DFW_RETVAL_D(retval);
           }
@@ -703,6 +706,10 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
                                        , fbuf
                                        , readable_size, fileOffset)) ){
                   return DFW_RETVAL_D(retval);
+              }
+
+              if( 0 == out_fsize){
+                  return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
               }
                           
               m_resp->m_iBufferLen = out_fsize;
@@ -756,7 +763,7 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
               m_resp->m_iFileStatus = 3;
           if( retval.has() )
               return DFW_RETVAL_D(retval);
-          return DFW_RETVAL_NEW(DFW_E_AGAIN, EAGAIN);
+          return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
         }
 
         case 3:

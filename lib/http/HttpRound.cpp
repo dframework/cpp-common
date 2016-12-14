@@ -59,8 +59,9 @@ namespace dframework {
         if(m_oUri.getPath().empty()){
             m_oUri.setPath("/");
         }
-        if( DFW_RET(retval, m_oHostname.get(m_oUri)) )
+        if( DFW_RET(retval, m_oHostname.get(m_oUri)) ){
             return DFW_RETVAL_D(retval);
+        }
         if( m_oHostname.size()<=0 ){
             return DFW_RETVAL_NEW(DFW_E_HOST_NOT_FOUND,0);
         }

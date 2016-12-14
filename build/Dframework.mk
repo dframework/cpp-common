@@ -76,6 +76,8 @@ include $(BUILD_STATIC_LIBRARY)
 
 ifeq (${DDK_ENV_TARGET_OS}, "linux")
   include $(BUILD_SHARED_LIBRARY)
+elifeq (${DDK_ENV_TARGET_OS}, "windows")
+  include $(BUILD_SHARED_LIBRARY)
 elifeq (${DDK_ENV_TARGET_OS}, "darwin")
   include $(BUILD_SHARED_LIBRARY)
 endif

@@ -31,6 +31,7 @@ namespace dframework {
         int      m_fd;
         uint64_t m_offset;
         unsigned long m_uTimeout;
+        String   m_sPath;
 
     public:
         File();

@@ -14,7 +14,8 @@ openssl_exit(){
 }
 
 backup_config="Configure.backup"
-MINGW="x86_64-w64-mingw32"
+#MINGW="x86_64-w64-mingw32"
+MINGW="i686-w64-mingw32"
 
 #PWD=`pwd`
 #WORKSPACE="${PWD}/openssl-build"
@@ -28,10 +29,13 @@ cd $D_WORKSPACE
 openssl_exit $? "cd ${D_WORKSPACE} at ${D_PWD}"
 echo "Enter ${D_WORKSPACE} ..."
 
+if test ! -f $OPENSSL_FN ; then
+    cp ../$OPENSSL_FN ./
+    tar xvfz $OPENSSL_FN
+fi
 
-
-cd openssl-1.*
-openssl_exit $? "cd openssl-1.*"
+cd $OPENSSL_NM
+openssl_exit $? "cd $OPENSSL_NM"
 
 cp Configure ${backup_config}
 openssl_exit $? "cp Configure ${backup_config}"
@@ -44,8 +48,13 @@ openssl_exit $? "sed -i 's,.*target already defined.*,$target=$_;,g' Configure"
 
 #
 case ${MINGW} in
-(*i?86*) TARGET=mingw;;
-(*x86_64*) TARGET=mingw64;;
+(*i?86*) 
+    TARGET=mingw
+    export CFLAGS="${CFLAGS} -m32"
+;;
+(*x86_64*)
+     TARGET=mingw64
+;;
 (*) false;;
 esac
 
