@@ -166,6 +166,7 @@ namespace dframework {
         if( isDirectory(path) )
             return NULL;
 #ifdef _WIN32
+        DFW_UNUSED(mode);
         if( -1 == ::mkdir(path) ){
 #else
         mode_t imode = (mode_t)mode;
@@ -648,7 +649,10 @@ namespace dframework {
 
     DFW_STATIC
     sp<Retval> File::setNonBlockSocket(int fd, bool is){
-#ifndef _WIN32
+#ifdef _WIN32
+        DFW_UNUSED(fd);
+        DFW_UNUSED(is);
+#else
 	int flags;
 	flags = fcntl(fd, F_GETFL, 0);
 	if(-1 == flags){
@@ -664,7 +668,7 @@ namespace dframework {
     }
 
     DFW_STATIC
-    sp<Retval> File::isReadable(int fd, unsigned long timeout){
+    sp<Retval> File::isReadable(int fd, int timeout){
         int ret;
         int eno;
 

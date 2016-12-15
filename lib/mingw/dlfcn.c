@@ -264,7 +264,7 @@ void *dlopen( const char *file, int mode )
         int i;
 
         /* MSDN says backslashes *must* be used instead of forward slashes. */
-        for( i = 0 ; i < sizeof(lpFileName) - 1 ; i ++ )
+        for( i = 0 ; i < (int)sizeof(lpFileName) - 1 ; i ++ )
         {
             if( !file[i] )
                 break;

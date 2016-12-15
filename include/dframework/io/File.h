@@ -247,7 +247,7 @@ namespace dframework {
         }
 
         static sp<Retval> setNonBlockSocket(int fd, bool is=true);
-        static sp<Retval> isReadable(int fd, unsigned long timeout);
+        static sp<Retval> isReadable(int fd, int timeout);
 
     };
 

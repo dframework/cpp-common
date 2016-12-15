@@ -6,7 +6,7 @@
 
 namespace dframework {
 
-    int win32_poll(struct pollfd *fds, unsigned int nfds, int timo)
+    int win32_poll(struct pollfd *fds, int nfds, int timo)
     {
         struct timeval timeout, *toptr;
         fd_set ifds, ofds, efds, *ip, *op;

@@ -24,7 +24,10 @@ namespace dframework {
 
     DFW_STATIC
     void Logger::syslog(int level, const char* fmt, ...){
-#ifndef _WIN32
+#ifdef _WIN32
+        DFW_UNUSED(level);
+        DFW_UNUSED(fmt);
+#else
         char* buf = NULL;
         size_t bufsize;
         va_list ap, ap2;

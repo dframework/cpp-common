@@ -129,7 +129,6 @@ namespace dframework {
         size_t b_size = s;
 
         if(!m_pRound->m_sReaderBuffer.empty()){
-            size_t limit; 
             if(m_pRound->m_sReaderBuffer.length() >= s ){
                 memcpy( b, m_pRound->m_sReaderBuffer.toChars(), s);
                 *out = s;

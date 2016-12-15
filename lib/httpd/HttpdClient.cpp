@@ -85,8 +85,8 @@ namespace dframework {
                 m_request_count = 1;
 
             if( configure->isPrintRequestHeader() ){
-                DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "test:: handle=%d, %s"
-                       , getHandle()
+                DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this
+                       , "Request:: handle=%d\n%s", getHandle()
                        , m_req->m_sRequestHeaders.toChars());
             }
 
@@ -398,8 +398,8 @@ namespace dframework {
 
         sp<HttpdConfigure> configure = m_configure;
         if( configure->isPrintResponseHeader() ){
-            DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "test:: handle=%d, %s"
-                  , getHandle() 
+            DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this
+                  , "Response:: handle=%d\n%s", getHandle() 
                   , m_resp->m_sStream.toChars());
         }
         return NULL;

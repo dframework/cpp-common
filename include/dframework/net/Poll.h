@@ -34,7 +34,7 @@ struct pollfd {
 #ifdef __cplusplus
 namespace dframework {
 
-    int win32_poll(struct pollfd *fds, unsigned int nfds, int timo);
+    int win32_poll(struct pollfd *fds, int nfds, int timo);
 
     class Poll : public Object
     {
