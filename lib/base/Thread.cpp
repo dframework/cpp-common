@@ -82,7 +82,7 @@ public:
                 m_status = DFW_THREAD_STATUS_INIT;
                 if(eno==EAGAIN){
                     if(count>10){
-                        return DFW_RETVAL_NEW_MSG(DFW_ERROR, eno
+                        return DFW_RETVAL_NEW_MSG(DFW_E_AGAIN, eno
                                   , "pthread_create result is EAGAIN.");
                     }
                     count++;
@@ -104,11 +104,11 @@ public:
                 if(bRunnable) return NULL;
 
                 rcount++;
-                if(rcount>9000){
+                if(rcount>900){
                     return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0 
                        , "thread is not start. maybe max running thread");
                 }
-                usleep(100);
+                usleep(1000);
             } while(true);
 #endif
             return NULL;
@@ -152,8 +152,9 @@ public:
             if(retval.has()){
             }
         }
-
+#ifndef _WIN32
         pthread_exit(NULL);
+#endif
         return NULL;
     }
 

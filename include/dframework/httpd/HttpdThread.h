@@ -14,6 +14,9 @@ namespace dframework {
 
     class HttpdThread : public Thread
     {
+    public:
+        DFW_DEFINITION_SAFE_COUNT(HttpdThread);
+
     private:
         bool m_bLive;
         sp<HttpdConfigure> m_configure;

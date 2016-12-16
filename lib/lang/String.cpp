@@ -171,19 +171,19 @@ namespace dframework {
         return equals(from.toChars(), from.length());
     }
 
-    dfw_size_t String::indexOf(const char needle) const{
+    int String::indexOf(const char needle) const{
         return indexOf(m_pBuffer, needle);
     }
 
-    dfw_size_t String::indexOf(const char* needle) const{
+    int String::indexOf(const char* needle) const{
         return indexOf(m_pBuffer, needle);
     }
 
-    dfw_size_t String::lastIndexOf(const char needle) const{
+    int String::lastIndexOf(const char needle) const{
         return lastIndexOf(m_pBuffer, needle);
     }
 
-    dfw_size_t String::lastIndexOf(const char* needle) const{
+    int String::lastIndexOf(const char* needle) const{
         return lastIndexOf(m_pBuffer, needle);
     }
 
@@ -380,7 +380,7 @@ namespace dframework {
     }
 
     /* static */
-    dfw_size_t String::indexOf(const char *hay, const char needle){
+    int String::indexOf(const char *hay, const char needle){
         if(!hay)
             return -1;
         char needles[2]; needles[0] = needle; needles[1] = '\0';
@@ -391,7 +391,7 @@ namespace dframework {
     }
 
     /* static */
-    dfw_size_t String::indexOf(const char *hay, const char *needle){
+    int String::indexOf(const char *hay, const char *needle){
         if(!hay || !needle)
             return -1;
         const char *p = ::strstr(hay, (const char *)needle);
@@ -401,7 +401,7 @@ namespace dframework {
     }
 
     /* static */
-    dfw_size_t String::lastIndexOf(const char *hay, const char needle){
+    int String::lastIndexOf(const char *hay, const char needle){
         if(!hay || !needle)
             return -1;
         char needles[2]; needles[0] = needle; needles[1] = '\0';
@@ -409,7 +409,7 @@ namespace dframework {
     }
 
     /* static */
-    dfw_size_t String::lastIndexOf(const char *hay, const char *needle){
+    int String::lastIndexOf(const char *hay, const char *needle){
         if(!hay || !needle)
             return -1;
 #ifdef HAVE_STRRSTR

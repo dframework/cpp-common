@@ -11,13 +11,17 @@
 
 namespace dframework {
 
+    DFW_DECLARATION_SAFE_COUNT(HttpdClient);
+
     HttpdClient::HttpdClient(){
+        DFW_SAFE_ADD(HttpdClient, l);
         m_req = new HttpRequest();
         m_resp = new HttpResponse();
         m_request_count = 0;
     }
 
     HttpdClient::~HttpdClient(){
+        DFW_SAFE_REMOVE(HttpdClient, l);
     }
 
     void HttpdClient::ready(){

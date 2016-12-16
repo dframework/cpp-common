@@ -93,10 +93,10 @@ namespace dframework {
         bool equals(const char* from, dfw_size_t size) const;
         bool equals(const String& from) const;
 
-        dfw_size_t indexOf(const char) const;
-        dfw_size_t indexOf(const char*) const;
-        dfw_size_t lastIndexOf(const char) const;
-        dfw_size_t lastIndexOf(const char*) const;
+        int indexOf(const char) const;
+        int indexOf(const char*) const;
+        int lastIndexOf(const char) const;
+        int lastIndexOf(const char*) const;
 
         String& trim();
 
@@ -117,10 +117,10 @@ namespace dframework {
         static char* strndup(const char* str, int len);
         static bool isspace(const char ch);
 
-        static dfw_size_t indexOf(const char *hay, const char need);
-        static dfw_size_t indexOf(const char *hay, const char* need);
-        static dfw_size_t lastIndexOf(const char *hay, const char need);
-        static dfw_size_t lastIndexOf(const char *hay, const char* need);
+        static int indexOf(const char *hay, const char need);
+        static int indexOf(const char *hay, const char* need);
+        static int lastIndexOf(const char *hay, const char need);
+        static int lastIndexOf(const char *hay, const char* need);
 
         int strncmp_s(const char* s, dfw_size_t size);
         inline int strncmp_s(const String& s) { 

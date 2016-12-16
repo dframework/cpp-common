@@ -17,6 +17,9 @@ namespace dframework {
 
     class HttpdClient : public Object
     {
+    public:
+        DFW_DEFINITION_SAFE_COUNT(HttpdClient);
+
     private:
         sp<ClientSocket> m_sock;
         sp<HttpRequest>  m_req;

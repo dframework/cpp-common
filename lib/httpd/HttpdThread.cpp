@@ -3,11 +3,15 @@
 
 namespace dframework {
 
+    DFW_DECLARATION_SAFE_COUNT(HttpdThread);
+
     HttpdThread::HttpdThread(){
+        DFW_SAFE_ADD(HttpdThread, l);
         m_bLive = true;
     }
 
     HttpdThread::~HttpdThread(){
+        DFW_SAFE_REMOVE(HttpdThread, l);
     }
 
     void HttpdThread::run(){
