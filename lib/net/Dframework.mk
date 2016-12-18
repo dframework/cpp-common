@@ -15,11 +15,16 @@ LOCAL_SRC_FILES :=   \
 LOCAL_INCLUDES := \
     ${include_PATH}
 
-LOCAL_CFLAGS := -DDFW_USE_POLL
+LOCAL_CFLAGS := -DDFW_USE_POLL -DDDK_ENV_TARGET_CPU=${DDK_ENV_TARGET_CPU}
+
+ifeq (${DDK_ENV_TARGET_CPU}, "x86")
+    LOCAL_CFLAGS += -DDDK_ENV_TARGET_CPU_X86
+endif
 
 ifneq (${DDK_ENV_TARGET_OS}, "windows")
     LOCAL_CFLAGS += -fPIC
 endif
+
 
 LOCAL_MODULE := libdframework-common-net
 

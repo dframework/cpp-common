@@ -12,6 +12,9 @@ include $(CLEAR_VARS)
 
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
     LOCAL_SRC_FILES := ../lib/android/langinfo.c
+ifeq (${DDK_ENV_TARGET_CPU}, "x86")
+    LOCAL_SRC_FILES += ../lib/mingw/gdi32.cpp
+endif
 endif
 ifeq (${DDK_ENV_TARGET_OS}, "android")
     LOCAL_SRC_FILES := ../lib/android/langinfo.c
@@ -41,15 +44,17 @@ LOCAL_STATIC_LIBRARIES :=        \
 
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
   LOCAL_STATIC_LIBRARIES +=      \
-    libdframework-common-dl      \
+    libdframework-common-mingw   \
     libpthread                   \
     libws2_32                    \
-    libgdi32                     \
     libpsapi
-
+ifeq (${DDK_ENV_TARGET_CPU}, "x86_64")
+  LOCAL_STATIC_LIBRARIES +=      \
+    libgdi32
+endif
 else
   LOCAL_STATIC_LIBRARIES +=      \
-    libdframework-common-monitor \
+    libdframework-common-monitor
 
   LOCAL_LDFLAGS := -lz
 endif
@@ -83,6 +88,7 @@ elifeq (${DDK_ENV_TARGET_OS}, "darwin")
 endif
 
 pkg_path:=/usr/local
+pkg_win_nm := libdframework-common-${LOCAL_VERSION}-windows-${DDK_ENV_TARGET_CPU}.zip
 
 package:
 
@@ -97,13 +103,13 @@ ifeq (${DDK_ENV_TARGET_OS}, "windows")
 
   @mkdir -p ${dest_PATH}
   @cp ${DDK_ENV_TARGET_BUILD}/libdframework-common.a ${dest_PATH}/libdframework-common.lib
-  @cp -R ../include ${dest_PATH}/
+  @cp -R ${LOCAL_PATH}/../include ${dest_PATH}/
   @d_pwd=`pwd`
   @cd ${org_PATH}
-  @zip -r libdframework-common-${LOCAL_VERSION}.zip ./libdframework-common/* 
+  @zip -r ${pkg_win_nm} ./libdframework-common/* 
   @cd ${d_pwd}
   echo ""
-  echo "  Complete packaging for windows (${org_PATH})"
+  echo "  Complete packaging for windows (${pkg_win_nm})"
   echo ""
 elifeq (${DDK_ENV_TARGET_OS}, "ios")
    @echo "Not supported ios"
@@ -158,9 +164,10 @@ dist:
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
    dist_pass=`sudo cat /root/sis-pass`
    dist_host=`sudo cat /root/sis-dist`
+   dist_port=`sudo cat /root/sis-port`
    org_PATH := ${DDK_ENV_TARGET_PKG}/${LOCAL_MODULE}
-   org_NM := ${org_PATH}/libdframework-common-${LOCAL_VERSION}.zip
-   sshpass -p${dist_pass} scp ${org_NM} ${dist_host}:/data/www-real/zonedrm/www/static/download/
+   org_NM := ${org_PATH}/${pkg_win_nm} 
+   sshpass -p${dist_pass} scp -P ${dist_port} ${org_NM} ${dist_host}:/data/www-real/zonedrm/www/static/download/
    if [ $? -ne 0 ]; then
        echo "    - cp ${org_NM} ... FAIL"
    else

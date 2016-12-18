@@ -376,7 +376,11 @@ namespace dframework {
             uint32_t v = ::strtoul(s.toChars(), NULL, 16);
             ::memset(str, 0, 20);
             addr.s_addr = v;
+#if (defined(_WIN32) && defined(DDK_ENV_TARGET_CPU_X86))
+            ::inet_ntop2(AF_INET, &addr, str, 20);
+#else
             ::inet_ntop(AF_INET, &addr, str, 20);
+#endif
             s = str;
         }else if(s.length()==32){
             char str[60]; ::memset(str, 0, 60);
@@ -387,7 +391,11 @@ namespace dframework {
                 ::memcpy(test, p+(i*8), 8);
                 a6[i] = ::strtoul(test, NULL, 16);
             }
+#if (defined(_WIN32) && defined(DDK_ENV_TARGET_CPU_X86))
+            ::inet_ntop2(AF_INET6, &a6[0], str, 60);
+#else
             ::inet_ntop(AF_INET6, &a6[0], str, 60);
+#endif
             s = str;
         }
         return s;
