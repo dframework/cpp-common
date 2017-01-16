@@ -71,6 +71,7 @@ namespace dframework {
 
         virtual sp<Retval> start();
         virtual void run();
+        void run_l();
         virtual void stop();
 
         sp<Retval> accept();

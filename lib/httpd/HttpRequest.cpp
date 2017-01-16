@@ -199,7 +199,7 @@ namespace dframework {
             m_sUserAgent = sVal;
         }else if( sName.equals("Connection") ){
             m_sConnection = sVal;
-            if(sVal.equals("keep-alive"))
+            if(sVal.equals("Keep-Alive"))
                 m_bKeepAlive = true;
             else if(sVal.equals("close"))
                 m_bKeepAlive = false;

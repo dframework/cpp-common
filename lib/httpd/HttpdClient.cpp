@@ -35,6 +35,7 @@ namespace dframework {
         m_sock = sock;
     }
 
+#define MAX_TIMEOUT 3600
 #define MAX_READ_PACKET 10240
     sp<Retval> HttpdClient::parseRequest(){
         sp<Retval> retval;
@@ -52,7 +53,7 @@ namespace dframework {
             }
 
             dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-s_time) > (1000*60/* FIXME: */) ){
+            if( (c_time-s_time) > (1000*MAX_TIMEOUT/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout read request. handle=%d"
                                         , getHandle());
@@ -346,7 +347,7 @@ namespace dframework {
         sp<Retval> retval;
 
         if( keepAlive ){
-            if(DFW_RET(retval,m_resp->appendHeader("Keep-Alive","timeout=2400")))
+            if(DFW_RET(retval,m_resp->appendHeader("Keep-Alive", "timeout=2400")))
                 return DFW_RETVAL_D(retval);
             if(DFW_RET(retval,m_resp->appendHeader("Connection","Keep-Alive")))
                   return DFW_RETVAL_D(retval);
@@ -462,6 +463,7 @@ namespace dframework {
         String sEnd;
         int minus = 0;
         uint64_t iStart, iEnd, iLength;
+        uint64_t iFileSize = m_resp->m_iFileSize;
 
 //DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "send local file ready");
         AutoLock _l(this);
@@ -525,8 +527,8 @@ namespace dframework {
         case 0 :
             status = DFW_HTTP_STATUS_200;
             iStart = 0;
-            iEnd = m_resp->m_iFileSize-1;
-            iLength = m_resp->m_iFileSize;
+            iEnd = iFileSize-1; //iEnd = m_resp->m_iFileSize-1;
+            iLength = iFileSize; // iLength = m_resp->m_iFileSize;
             break;
 
         case 1 :
@@ -549,20 +551,20 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
             iLength = iEnd - iStart + 1;
 
             sContentRange = String::format("bytes %llu-%llu/%llu"
-                                 , iStart, iEnd, m_resp->m_iFileSize);
+                                 , iStart, iEnd, iFileSize); // , iStart, iEnd, m_resp->m_iFileSize);
             break;
 
         case 2 :
             status = DFW_HTTP_STATUS_206;
             if(sStart.empty()){
-                iStart = m_resp->m_iFileSize;
+                iStart = iFileSize; //iStart = m_resp->m_iFileSize;
             }else{
-                iStart = m_resp->m_iFileSize - ::atoll(sEnd.toChars());
+                iStart = iFileSize - ::atoll(sEnd.toChars()); // iStart = m_resp->m_iFileSize - ::atoll(sEnd.toChars());
             }
-            iEnd = m_resp->m_iFileSize - 1;
+            iEnd = iFileSize - 1; // iEnd = m_resp->m_iFileSize - 1;
             iLength = iEnd - iStart + 1;
             sContentRange = String::format("bytes %llu-%llu/%llu"
-                                 , iStart, iEnd, m_resp->m_iFileSize);
+                                 , iStart, iEnd, iFileSize); // , iStart, iEnd, m_resp->m_iFileSize);
             break;
 
         case 3 :
@@ -577,10 +579,10 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
             }else{
                 iStart = ::atoll(sStart.toChars());
             }
-            iEnd = m_resp->m_iFileSize - 1;
+            iEnd = iFileSize - 1; // iEnd = m_resp->m_iFileSize - 1;
             iLength = iEnd - iStart + 1;
             sContentRange = String::format("bytes %llu-%llu/%llu"
-                                 , iStart, iEnd, m_resp->m_iFileSize);
+                                 , iStart, iEnd, iFileSize); // , iStart, iEnd, m_resp->m_iFileSize);
             break;
 
         default:
@@ -591,13 +593,13 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
         if( iEnd < iStart ){
             return DFW_RETVAL_NEW(DFW_ERROR, 0);
         }
-        if( m_resp->m_iFileSize <= iStart ){
+        if( iFileSize <= iStart ){ // if( m_resp->m_iFileSize <= iStart ){
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
                        , "m_iFileSize:%llu, iStart:%llu"
-                       , m_resp->m_iFileSize, iStart);
+                       , iFileSize, iStart); // , m_resp->m_iFileSize, iStart);
         }
 
-        if( DFW_RET(retval, setResponse(status, (size_t)iLength, true)) ){
+        if( DFW_RET(retval, setResponse(status, (size_t)iLength, m_req->m_bKeepAlive)) ){
             return DFW_RETVAL_D(retval);
         }
         if(DFW_RET(retval,m_resp->appendHeader("Accept-Ranges","bytes"))){
@@ -693,6 +695,11 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
           uint64_t thiz_length = m_resp->m_iFileSendLength - m_resp->m_iFileSended;
           char fbuf[MAX_BUFFER];
           unsigned readable_size = MAX_BUFFER;
+
+          if(m_req->m_sMethod.equals("HEAD")){
+              m_resp->m_iFileStatus = 3;
+              return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
+          }
 
           if( DFW_RET(retval, m_sock->wait_send()) ){
               return DFW_RETVAL_D(retval);

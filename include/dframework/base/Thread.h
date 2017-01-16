@@ -40,6 +40,9 @@ namespace dframework {
         struct sigaction    m_act;
         //sigset_t            m_newmask; // FIXME
         int                 m_lastSigno;
+#ifdef _WIN32
+        bool                m_bExitThread;
+#endif
 
     public:
         pthread_attr_t      m_attr;

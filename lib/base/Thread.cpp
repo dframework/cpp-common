@@ -31,6 +31,9 @@ public:
 
         Time::currentTimeMillis(&m_startTime);
         Time::currentTimeMillis(&m_lastTime);
+#ifdef _WIN32
+        m_bExitThread = false;
+#endif
     }
 
     BaseThread::~BaseThread(){
@@ -123,6 +126,9 @@ public:
         {
             AutoLock _l(p);
             p->m_bRunnable = true;
+#ifdef _WIN32
+            p->m_bExitThread = false;
+#endif
         }
 
         sp<ThreadManager> thdmana = ThreadManager::instance();
@@ -154,6 +160,8 @@ public:
         }
 #ifndef _WIN32
         pthread_exit(NULL);
+#else
+        p->m_bExitThread = true;
 #endif
         return NULL;
     }
@@ -216,6 +224,7 @@ public:
             AutoLock _l(this);
             m_bJoin = true;
         }
+#ifndef _WIN32
         if( (eno = ::pthread_join(m_handle, (void **)&out_join)) ){
             {
                 AutoLock _l(this);
@@ -223,6 +232,13 @@ public:
             }
             return DFW_RETVAL_NEW(DFW_ERROR, eno);
         }
+#else
+        /*
+        while(m_bExitThread){
+            break;
+        }
+        */
+#endif
         return NULL;
     }
 
