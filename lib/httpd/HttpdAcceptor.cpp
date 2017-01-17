@@ -1,3 +1,4 @@
+#include <dframework/base/ThreadManager.h>
 #include <dframework/httpd/HttpdAcceptor.h>
 #include <dframework/net/Net.h>
 #include <dframework/httpd/HttpdService.h>
@@ -15,6 +16,36 @@ namespace dframework {
     }
 
     HttpdAcceptor::~HttpdAcceptor(){
+    }
+
+    void HttpdAcceptor::stop(){
+        sp<Retval> retval;
+
+        ServerAccept::stop();
+
+        int type = m_configure->getServerType();
+        switch(type){
+        case HttpdService::SERVER_TYPE_POLL :
+            break;
+
+        case HttpdService::SERVER_TYPE_THREAD :
+            {
+                sp<ThreadManager> tm = ThreadManager::instance();
+
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "stop threads (count: %d)", tm->size());
+                for(int k=(tm->size()-1); k>=0; k--){
+                    sp<Thread> thread = tm->get(k);
+                    if(thread.has()){
+                        if(thread.get()!=this){
+                            thread->stop();
+                            thread->join();
+                        }
+                    }
+                }
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "stop threads complete (count: %d)", tm->size());
+            }
+            break;
+        }
     }
 
     sp<Retval> HttpdAcceptor::onAccept(sp<ClientSocket>& sock){

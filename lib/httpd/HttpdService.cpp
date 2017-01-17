@@ -142,11 +142,8 @@ namespace dframework {
     void HttpdService::join(){
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join begin");
         if( m_localfile.has() ) m_localfile->join();
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join begin #1");
         if( m_stream.has() )    m_stream->join();
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join begin #2");
         if( m_accept.has() )    m_accept->join();
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join begin #3");
         if( m_worker.has() )    m_worker->join();
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join complete");
     }

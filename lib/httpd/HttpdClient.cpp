@@ -18,9 +18,11 @@ namespace dframework {
         m_req = new HttpRequest();
         m_resp = new HttpResponse();
         m_request_count = 0;
+        m_bStop = false;
     }
 
     HttpdClient::~HttpdClient(){
+        close();
         DFW_SAFE_REMOVE(HttpdClient, l);
     }
 
@@ -28,6 +30,17 @@ namespace dframework {
         AutoLock _l(this);
         m_req = new HttpRequest();
         m_resp = new HttpResponse();
+    }
+
+    void HttpdClient::stop(){
+        AutoLock _l(this);
+        m_bStop = true;
+    }
+
+    void HttpdClient::close(){
+        if(m_sock.has()){
+            m_sock->close();
+        }
     }
 
     void HttpdClient::setSocket(sp<ClientSocket>& sock){
@@ -46,6 +59,12 @@ namespace dframework {
         dfw_time_t s_time = Time::currentTimeMillis();
 
         do{
+            if(m_bStop){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0 
+                                        , "Stop httpd thread. handle=%d"
+                                        , getHandle());
+            }
+
             size_t rsize = 0;
             size_t length = m_req->m_sBuffer.length();
             if( 0 == (size = (MAX_READ_PACKET - length)) ){
@@ -142,6 +161,11 @@ namespace dframework {
 
         dfw_time_t s_time = Time::currentTimeMillis();
         do{
+            if(m_bStop){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0 
+                                        , "Stop httpd thread. handle=%d"
+                                        , getHandle());
+            }
             dfw_time_t c_time = Time::currentTimeMillis();
             if( (c_time-s_time) > (1000*60/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
@@ -182,6 +206,12 @@ namespace dframework {
 
         dfw_time_t s_time = Time::currentTimeMillis();
         do{
+            if(m_bStop){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0 
+                                        , "Stop httpd thread. handle=%d"
+                                        , getHandle());
+            }
+
             dfw_time_t c_time = Time::currentTimeMillis();
             if( (c_time-s_time) > (1000*60/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
@@ -667,6 +697,12 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
     sp<Retval> HttpdClient::sendLocalFile(){
         AutoLock _l(this);
         sp<Retval> retval;
+
+        if(m_bStop){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0 
+                                    , "Stop httpd thread. handle=%d"
+                                    , getHandle());
+        }
 
         switch(m_resp->m_iFileStatus){
         case 0 :

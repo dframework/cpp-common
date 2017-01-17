@@ -19,6 +19,7 @@ namespace dframework {
         HttpdAcceptor();
         virtual ~HttpdAcceptor();
 
+        virtual void stop();
         virtual sp<Retval> onAccept(sp<ClientSocket>& sock);
 
         inline void setWorker(sp<HttpdWorker>& worker){

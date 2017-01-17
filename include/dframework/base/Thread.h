@@ -40,9 +40,9 @@ namespace dframework {
         struct sigaction    m_act;
         //sigset_t            m_newmask; // FIXME
         int                 m_lastSigno;
-#ifdef _WIN32
-        bool                m_bExitThread;
-#endif
+
+    protected:
+        bool                m_bStopped;
 
     public:
         pthread_attr_t      m_attr;
@@ -65,6 +65,8 @@ namespace dframework {
         static void ___sig_handler(int signo);
         sp<Retval> setSigno(int signo);
 
+        void       stop();
+        bool       isstop();
         sp<Retval> detach();
         bool       isdetach();
         sp<Retval> cancel();
@@ -113,7 +115,9 @@ namespace dframework {
         sp<Trace>  ___m_pTrace;
         sp<Trace>  ___m_pLastTrace;
         sp<Trace>  ___m_pLeaveTrace;
-         
+
+    protected:
+        bool m_bStoped;         
 
     public:
         Thread();
@@ -122,6 +126,7 @@ namespace dframework {
         void addTrace(sp<Trace>& stack);
         void removeTrace(sp<Trace>& stack);
         String getTrace();
+
 
         inline virtual void run()         {}
         inline virtual void cleanup()     {}
@@ -132,6 +137,8 @@ namespace dframework {
         inline virtual void onSignal(int signum) { DFW_UNUSED(signum); }
 
         inline virtual sp<Retval> start()    { return ___m_base.start(); }
+        inline virtual void stop()           { ___m_base.stop(); }
+        inline virtual bool isstop()         { ___m_base.isstop(); }
         inline virtual sp<Retval> join()     { return ___m_base.join(); }
         inline virtual bool       isjoin()   { return ___m_base.isjoin(); }
         inline virtual sp<Retval> detach()   { return ___m_base.detach(); }

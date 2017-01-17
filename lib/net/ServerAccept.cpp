@@ -14,7 +14,8 @@ namespace dframework {
     }
 
     ServerSocket::~ServerSocket(){
-        DFW_SOCK_CLOSE(m_iHandle);
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "####");
+        close();
     }
 
     sp<Retval> ServerSocket::ready(int port){
@@ -33,6 +34,11 @@ namespace dframework {
         if( DFW_RET(retval, create(sport)) )
             return DFW_RETVAL_D(retval);
         return NULL;
+    }
+
+    void ServerSocket::close(){
+        AutoLock _l(this);
+        DFW_SOCK_CLOSE(m_iHandle);
     }
 
     sp<Retval> ServerSocket::create(int iport){
@@ -69,6 +75,7 @@ namespace dframework {
                 continue;
             if(DFW_RET(retval, Net::listen(m_iHandle, 1024)))
                 continue;
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "server port : %d", port);
             m_iPort = port;
             return NULL;
         }
@@ -98,7 +105,6 @@ namespace dframework {
     // --------------------------------------------------------------
 
     ServerAccept::ServerAccept(){
-        m_bLive = true;
         m_bStarted = false;
         m_poll.setEvents(POLLIN|POLLERR|POLLNVAL|POLLHUP);
     }
@@ -169,14 +175,34 @@ namespace dframework {
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "ServerAccept Stopped");
     }
 
+    void ServerAccept::stop(){
+        sp<Retval> retval;
+        int size;
+        {
+            AutoLock _l(&m_poll);
+            size = m_poll.size();
+        }
+
+        for(int k=size-1; k>-1; k--){
+            sp<Object> obj;
+            if( DFW_RET(retval, m_poll.getObject(obj, k)) ){
+                continue;
+            }
+            sp<ServerSocket> ssock = obj;
+            ssock->close();
+        }
+
+        Thread::stop();
+    }
+
     void ServerAccept::run_l(){
         sp<Retval> retval;
 
         while(true){
             {
                 AutoLock _l(this);
-                if( !m_bLive ) {
-                    DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "Stop ServerAccept");
+                if( isstop() ) {
+                    DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "serveraccept is stop.");
                     return;
                 }
             }
@@ -187,25 +213,10 @@ namespace dframework {
         }
     }
 
-    void ServerAccept::stop(){
-        AutoLock _l(this);
-        m_bLive = false;
-    }
-
     sp<Retval> ServerAccept::accept(){
         sp<Retval> retval;
         if( DFW_RET(retval, accept_poll()) )
             return DFW_RETVAL_D(retval);
-        /*
-        // FIXME:
-        bool bAccept = false;
-        if( DFW_RET(retval, accept_no_poll(&bAccept)) ){
-            return DFW_RETVAL_D(retval);
-        }
-        if( !bAccept ){
-            usleep(1000*10);
-        }
-        */
         return NULL;
     }
 
@@ -232,7 +243,7 @@ namespace dframework {
         for(int k=size-1; k>-1; k--){
             {
                 AutoLock _l(this);
-                if( !m_bLive ) {
+                if( isstop() ) {
                     return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "serveraccept is stop.");
                 }
             }
@@ -307,54 +318,6 @@ namespace dframework {
 
         return NULL;
     }
-
-    /*
-    // FIXME:
-    sp<Retval> ServerAccept::accept_no_poll(bool* bAccept){
-        sp<Retval> retval;
-
-        *bAccept = false;
-        int size =m_aSockList.size();
-        for( int k=0; k<size; k++) {
-            sp<ServerSocket> ssock;
-            String sIp;
-            int osock;
-            DFW_SOCK_INIT(osock);
-
-            {
-                AutoLock _l(this);
-                ssock = m_aSockList.get(k);
-            }
-
-            if( !ssock.has() )
-                continue;
-
-            int fd = ssock->getHandle();
-        
-            if( !DFW_RET(retval, Net::accept(&osock, sIp, fd)) ){
-                *bAccept = true;
-                sp<ClientSocket> scsock = new ClientSocket(osock, sIp
-                                                     , ssock->getPort());
-                if( DFW_RET(retval, onAccept(scsock)) ){
-                    DFWLOG_CR(DFWLOG_D|DFWLOG_ID(DFWLOG_SERVER_ID)
-                       , scsock.get(), retval
-                       , "Not onAccept. serv-port=%d, ip=%s, sock=%d"
-                       , ssock->getPort(), sIp.toChars(), osock);
-                }else{
-                    DFWLOG_C(DFWLOG_D|DFWLOG_ID(DFWLOG_SERVER_ID)
-                       , scsock.get()
-                       , "OnAccept. serv-port=%d, ip=%s, sock=%d"
-                       , ssock->getPort(), sIp.toChars(), osock);
-                }
-            }else if(retval->value()!=DFW_E_AGAIN){
-                DFWLOG_R(DFWLOG_E|DFWLOG_ID(DFWLOG_SERVER_ID), retval
-                       , "Not accept. serv-port=%d", ssock->getPort());
-            }
-        }
-
-        return NULL;
-    }
-    */
 
     sp<Retval> ServerAccept::onAccept(sp<ClientSocket>& sock){
         DFW_UNUSED(sock);

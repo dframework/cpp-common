@@ -26,12 +26,15 @@ namespace dframework {
         sp<HttpResponse> m_resp;
         sp<Object> m_configure;
         uint64_t   m_request_count;
+        bool       m_bStop;
 
     public:
         HttpdClient();
         virtual ~HttpdClient();
 
         void ready();
+        void stop();
+        void close();
 
         void setSocket(sp<ClientSocket>& sock);
         inline void setConfigure(sp<Object>& configure){

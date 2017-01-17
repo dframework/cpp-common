@@ -22,6 +22,7 @@ public:
         m_bDetach = false;
         m_bCancle = false;
         m_lastSigno = 0;
+        m_bStopped = false;
 
         ::pthread_attr_init(&m_attr);
 
@@ -31,9 +32,6 @@ public:
 
         Time::currentTimeMillis(&m_startTime);
         Time::currentTimeMillis(&m_lastTime);
-#ifdef _WIN32
-        m_bExitThread = false;
-#endif
     }
 
     BaseThread::~BaseThread(){
@@ -126,9 +124,6 @@ public:
         {
             AutoLock _l(p);
             p->m_bRunnable = true;
-#ifdef _WIN32
-            p->m_bExitThread = false;
-#endif
         }
 
         sp<ThreadManager> thdmana = ThreadManager::instance();
@@ -158,11 +153,10 @@ public:
             if(retval.has()){
             }
         }
-#ifndef _WIN32
-        pthread_exit(NULL);
-#else
-        p->m_bExitThread = true;
-#endif
+
+        if(p->isjoin()){
+            pthread_exit(NULL);
+        }
         return NULL;
     }
 
@@ -217,28 +211,27 @@ public:
         return NULL;
     }
 
+    void BaseThread::stop(){
+        AutoLock _l(this);
+        m_bStopped = true;
+    }
+
     sp<Retval> BaseThread::join(){
         sp<Retval> retval;
-        int eno, out_join;
+        int eno;
+        void* out_join;
         {
             AutoLock _l(this);
             m_bJoin = true;
         }
-#ifndef _WIN32
-        if( (eno = ::pthread_join(m_handle, (void **)&out_join)) ){
+
+        if( (eno = ::pthread_join(m_handle, &out_join)) ){
             {
                 AutoLock _l(this);
                 m_bJoin = false;
             }
             return DFW_RETVAL_NEW(DFW_ERROR, eno);
         }
-#else
-        /*
-        while(m_bExitThread){
-            break;
-        }
-        */
-#endif
         return NULL;
     }
 
@@ -274,6 +267,11 @@ public:
         }
         return NULL;
 #endif
+    }
+
+    bool BaseThread::isstop(){
+        AutoLock _l(this);
+        return m_bStopped;
     }
 
     bool BaseThread::isjoin() {
@@ -391,6 +389,7 @@ public:
              ___m_base(this)
     {
         DFW_SAFE_ADD(Thread, l);
+        m_bStoped = false;
     }
 
     Thread::~Thread() {

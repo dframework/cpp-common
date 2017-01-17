@@ -7,11 +7,15 @@ namespace dframework {
 
     HttpdThread::HttpdThread(){
         DFW_SAFE_ADD(HttpdThread, l);
-        m_bLive = true;
     }
 
     HttpdThread::~HttpdThread(){
         DFW_SAFE_REMOVE(HttpdThread, l);
+    }
+
+    void HttpdThread::stop(){
+        Thread::stop();
+        m_client->stop();
     }
 
     void HttpdThread::run(){
@@ -27,6 +31,7 @@ namespace dframework {
                         , m_client.get()
                         , "exit thread.");
         }
+        m_client->close();
         m_configure = NULL;
         m_client = NULL;
     }
@@ -34,8 +39,8 @@ namespace dframework {
     sp<Retval> HttpdThread::run_2(){
         sp<Retval> retval;
         do{
-            if( !m_bLive )
-                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "stop thread.");
+            if( isstop() )
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "stop httpd thread.");
 
             if( DFW_RET(retval, request()) ){
                 return DFW_RETVAL_D(retval);
@@ -48,16 +53,6 @@ namespace dframework {
 
             return DFW_RETVAL_NEW_MSG(DFW_OK, 0, "exit thread(no keepalive)");
         }while(true);
-    }
-
-    void HttpdThread::stop(){
-        AutoLock _l(this);
-        m_bLive = false;
-    }
-
-    bool HttpdThread::isLive(){
-        AutoLock _l(this);
-        return m_bLive;
     }
 
     sp<Retval> HttpdThread::ready(sp<HttpdConfigure>& configure

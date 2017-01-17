@@ -18,7 +18,6 @@ namespace dframework {
         DFW_DEFINITION_SAFE_COUNT(HttpdThread);
 
     private:
-        bool m_bLive;
         sp<HttpdConfigure> m_configure;
         sp<HttpdClient>    m_client;
 
@@ -31,7 +30,6 @@ namespace dframework {
         virtual void run();
         virtual void stop();
 
-        bool isLive();
         sp<Retval> ready(sp<HttpdConfigure>& configure, sp<ClientSocket>& sock);
 
     private:

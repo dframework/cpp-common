@@ -30,6 +30,7 @@ namespace dframework {
         sp<Retval> ready(int port);
         sp<Retval> ready(int sport, int eport);
         sp<Retval> create(int iport);
+        void close();
 
         DFW_OPERATOR_EX_DECLARATION(ServerSocket, m_iHandle);
     
@@ -53,7 +54,6 @@ namespace dframework {
     class ServerAccept : public Thread
     {
     private:
-        bool m_bLive;
         bool m_bStarted;
         ArraySorted<ServerSocket> m_aSockList;
 
@@ -71,10 +71,11 @@ namespace dframework {
 
         virtual sp<Retval> start();
         virtual void run();
-        void run_l();
         virtual void stop();
+        void run_l();
 
         sp<Retval> accept();
+        virtual bool isStart() { return m_bStarted; }
 
         virtual sp<Retval> onAccept(sp<ClientSocket>& sock);
 
