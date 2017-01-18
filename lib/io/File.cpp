@@ -54,7 +54,9 @@ namespace dframework {
         sp<Retval> retval;
         close_l();
         m_sPath = path;
+#ifdef _WIN32
         m_sPath.replace('/','\\');
+#endif
         if( DFW_RET(retval, File::open(&m_fd, m_sPath.toChars(), flag)) ){
             return DFW_RETVAL_D(retval);
         }
@@ -70,7 +72,9 @@ namespace dframework {
         sp<Retval> retval;
         close_l();
         m_sPath = path;
+#ifdef _WIN32
         m_sPath.replace('/','\\');
+#endif
         if( DFW_RET(retval, File::open(&m_fd, m_sPath.toChars(), flag, mode)) ){
             return DFW_RETVAL_D(retval);
         }
