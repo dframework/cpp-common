@@ -16,6 +16,11 @@ namespace dframework {
     HttpdService::~HttpdService(){
     }
 
+    void HttpdService::setReuseAddr(bool bReuseAddr){
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "setReuseAddr(%d)", bReuseAddr);
+        m_accept->setReuseAddr(bReuseAddr);
+    }
+
     sp<Retval> HttpdService::setServerType(int serverType){
         AutoLock _l(this);
         switch(serverType){

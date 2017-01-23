@@ -19,6 +19,7 @@ namespace dframework {
         int m_iEndPort;   // safe port for client.
         int m_iHandle;
         int m_iPollNum;
+        bool m_bReuseAddr;
 
     public:
         ServerSocket();
@@ -27,6 +28,7 @@ namespace dframework {
         inline int getPort() { return m_iPort; }
         inline int getHandle() { return m_iHandle; }
 
+        void setReuseAddr(bool bReuseAddr);
         sp<Retval> ready(int port);
         sp<Retval> ready(int sport, int eport);
         sp<Retval> create(int iport);
@@ -55,6 +57,7 @@ namespace dframework {
     {
     private:
         bool m_bStarted;
+        bool m_bReuseAddr;
         ArraySorted<ServerSocket> m_aSockList;
 
         Poll m_poll;
@@ -66,6 +69,7 @@ namespace dframework {
         ServerAccept();
         virtual ~ServerAccept();
 
+        void setReuseAddr(bool bReuseAddr);
         sp<Retval> appendPort(int port);
         sp<Retval> appendServerSocket(sp<ServerSocket>& sock);
 

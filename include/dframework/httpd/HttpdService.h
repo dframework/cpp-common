@@ -40,6 +40,8 @@ namespace dframework {
             return m_configure;
         }
 
+        void setReuseAddr(bool bReuseAddr);
+
         sp<Retval> setServerType(int serverType);
         inline int getDefaultServerType(){ return m_defaultServerType; }
         int getServerType();

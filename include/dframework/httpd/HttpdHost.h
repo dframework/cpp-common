@@ -44,6 +44,7 @@ namespace dframework {
         sp<ServerSocket> m_serverSocket;
         String  m_sHost;
         String  m_sUserAgent;
+        bool    m_bReuseAddr;
 
         sp<AliasUri>           m_aBaseDocumentRoot;
         Array<AliasUri>        m_aAliasDocumentRoot;
@@ -57,6 +58,10 @@ namespace dframework {
 
         int getPort();
         String& getHost();
+
+        inline setReuseAddr(bool bReuseAddr){
+            m_bReuseAddr = bReuseAddr;
+        }
 
         sp<Retval> ready(int port);
         sp<Retval> ready(const char* sHost, int port);

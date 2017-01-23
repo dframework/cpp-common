@@ -16,6 +16,7 @@ namespace dframework {
 
     HttpdHost::HttpdHost(sp<Object>& configure){
         m_configure = configure;
+        m_bReuseAddr = true;
         m_aBaseDocumentRoot = new AliasUri();
     }
 
@@ -40,7 +41,9 @@ namespace dframework {
     sp<Retval> HttpdHost::ready(const char* pHost, int sport, int eport){
         AutoLock _l(this);
         sp<Retval> retval;
+
         sp<ServerSocket> sock = new ServerSocket();
+        sock->setReuseAddr(m_bReuseAddr);
         if( DFW_RET(retval, sock->ready(sport, eport)) )
             return DFW_RETVAL_D(retval);
 

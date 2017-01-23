@@ -10,12 +10,17 @@ namespace dframework {
         m_iStartPort = 0;
         m_iEndPort = 0;
         m_iPollNum = -1;
+        m_bReuseAddr = true;
         DFW_SOCK_INIT(m_iHandle);
     }
 
     ServerSocket::~ServerSocket(){
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "####");
         close();
+    }
+
+    void ServerSocket::setReuseAddr(bool bReuseAddr){
+        m_bReuseAddr = bReuseAddr;
     }
 
     sp<Retval> ServerSocket::ready(int port){
@@ -38,6 +43,9 @@ namespace dframework {
 
     void ServerSocket::close(){
         AutoLock _l(this);
+        if(m_iHandle!=-1){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "serversocket::close : %d, %d, pid=%d", m_iHandle, m_iPort, getpid());
+        }
         DFW_SOCK_CLOSE(m_iHandle);
     }
 
@@ -63,8 +71,13 @@ namespace dframework {
                 continue;
             if(DFW_RET(retval, Net::setKeepAlive(m_iHandle, 1)))
                 continue;
-            if(DFW_RET(retval, Net::setSockOptInt(m_iHandle, SOL_SOCKET, SO_REUSEADDR, 1)))
-                continue;
+
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "setReuseAddr: %d", m_bReuseAddr);
+            if( m_bReuseAddr ){
+                if(DFW_RET(retval, Net::setSockOptInt(m_iHandle, SOL_SOCKET, SO_REUSEADDR, 1)))
+                    continue;
+            }
+
 #ifdef __FREEBSD__
             if(DFW_RET(retval, Net::setSockOptInt(m_iHandle, SOL_SOCKET, SO_REUSEPORT, 1)))
                 continue;
@@ -75,8 +88,8 @@ namespace dframework {
                 continue;
             if(DFW_RET(retval, Net::listen(m_iHandle, 1024)))
                 continue;
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "server port : %d", port);
             m_iPort = port;
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "serversocket::create : %d, %d, pid=%d", m_iHandle, m_iPort, getpid());
             return NULL;
         }
 
@@ -106,10 +119,16 @@ namespace dframework {
 
     ServerAccept::ServerAccept(){
         m_bStarted = false;
+        m_bReuseAddr = true;
         m_poll.setEvents(POLLIN|POLLERR|POLLNVAL|POLLHUP);
     }
 
     ServerAccept::~ServerAccept(){
+    }
+
+    void ServerAccept::setReuseAddr(bool bReuseAddr){
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "setReuseAddr(%d)", bReuseAddr);
+        m_bReuseAddr = bReuseAddr;
     }
 
     sp<Retval> ServerAccept::appendPort(int port){
@@ -123,6 +142,8 @@ namespace dframework {
         }
 
         sp<ServerSocket> sock = new ServerSocket();
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "ServerSocket::setReuseAddr(%d)", m_bReuseAddr);
+        sock->setReuseAddr(m_bReuseAddr);
         if( DFW_RET(retval, sock->ready(port)) )
             return DFW_RETVAL_D(retval);
 
