@@ -59,7 +59,7 @@ namespace dframework {
         int getPort();
         String& getHost();
 
-        inline setReuseAddr(bool bReuseAddr){
+        inline void setReuseAddr(bool bReuseAddr){
             m_bReuseAddr = bReuseAddr;
         }
 
