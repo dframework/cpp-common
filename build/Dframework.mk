@@ -74,7 +74,7 @@ endif
 #endif
 ##############################################################
 
-LOCAL_VERSION := 0.5.36
+LOCAL_VERSION := 0.5.38
 LOCAL_MODULE := libdframework-common
 
 include $(BUILD_STATIC_LIBRARY)
@@ -180,10 +180,10 @@ eleq (${DDK_ENV_TARGET_OS}, "android")
 else
    dist_pass=`sudo cat /root/sis-pass`
    dist_host=`sudo cat /root/sis-dist`
-   #dist_nm=$(call_package_get_pkgname "${LOCAL_MODULE}" "${LOCAL_VERSION}" "lib")
+   dist_port=`sudo cat /root/sis-port`
    dist_nm=$(call_package_get_pkgname ${LOCAL_MODULE} ${LOCAL_VERSION} lib)
    dist_prefix="${DDK_ENV_TARGET_PKG}/${LOCAL_MODULE}/sis/${dist_nm}"
-   sshpass -p${dist_pass} scp ${dist_prefix}.sh ${dist_host}:/data/www-real/zonedrm/www/static/download/
+   sshpass -p${dist_pass} scp -P ${dist_port} ${dist_prefix}.sh ${dist_host}:/data/www-real/zonedrm/www/static/download/
    if [ $? -ne 0 ]; then
        echo "    - cp ${dist_nm}.sh ... FAIL"
    else
