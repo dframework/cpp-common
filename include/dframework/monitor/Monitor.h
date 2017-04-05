@@ -10,7 +10,7 @@ namespace dframework {
   class Monitor : public Thread
   {
   public:
-      static const int SECONDS_NUM = 5;
+      static const unsigned SECONDS_NUM = 5;
 
   private:
       unsigned MAX_ROWS;
@@ -31,7 +31,7 @@ namespace dframework {
 
       void setSecondsNum(unsigned pos, unsigned seconds);
       unsigned getSecondsNum(unsigned pos){
-          return ((pos<SECONDS_NUM) ? SECONDS[pos] : 0);
+          return (unsigned)((pos<SECONDS_NUM) ? SECONDS[pos] : 0);
       }
 
       void setPath(const char* path) { m_sPath = path; }

@@ -52,7 +52,7 @@ namespace dframework {
   sp<Retval> Monitor::ready(){
       sp<Retval> retval;
 
-      for(int sn=0; sn<SECONDS_NUM; sn++){
+      for(unsigned sn=0; sn<SECONDS_NUM; sn++){
           unsigned seconds = SECONDS[sn];
           for(int k=0; k<m_aDevices.size(); k++){
               sp<MonBase::group> grp = m_aDevices.get(k);

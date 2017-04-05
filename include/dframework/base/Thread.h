@@ -138,7 +138,7 @@ namespace dframework {
 
         inline virtual sp<Retval> start()    { return ___m_base.start(); }
         inline virtual void stop()           { ___m_base.stop(); }
-        inline virtual bool isstop()         { ___m_base.isstop(); }
+        inline virtual bool isstop()         { return ___m_base.isstop(); }
         inline virtual sp<Retval> join()     { return ___m_base.join(); }
         inline virtual bool       isjoin()   { return ___m_base.isjoin(); }
         inline virtual sp<Retval> detach()   { return ___m_base.detach(); }
