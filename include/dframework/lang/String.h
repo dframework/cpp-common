@@ -101,6 +101,7 @@ namespace dframework {
         String& trim();
 
         String& replace(const char from, const char to);
+        String& replace(const char* from, const char* to);
 
         String& shift(dfw_size_t offset);
         String& chuck(dfw_size_t offset);

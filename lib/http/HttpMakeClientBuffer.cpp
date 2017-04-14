@@ -56,6 +56,7 @@ namespace dframework {
         }else{
             sPath = String::format("%s", pPath);
         }
+        sPath.replace(" ", "%20");
 
         m_pR->m_sHeadBuffer = String::format(
               "%s %s HTTP/1.1\r\n"

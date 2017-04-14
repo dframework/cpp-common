@@ -216,6 +216,42 @@ namespace dframework {
         return (*this);
     }
 
+    String& String::replace(const char* from, const char* to){
+        String sVal, sTest;
+        int base = 0;
+        int pos = 0;
+        const char* p = m_pBuffer;
+
+        int fromLen = strlen(from);
+
+        if(!from || !to){
+            return (*this);
+        }
+        if(fromLen==1){
+            return (*this);
+        }
+
+        do{
+            if( !(p = m_pBuffer + base) ){
+                break;
+            }
+            if( (pos = String::indexOf(p, from))==-1 ){
+                break;
+            }
+            if(pos!=0){
+                sTest.set(m_pBuffer+base, pos);
+                sVal.append(sTest);
+            }
+            sVal.append(to);
+            base += (pos+strlen(from));
+        }while(true);
+
+        if(p){
+            sVal.append(p);
+        }
+        return (*this = sVal);
+    }
+
     String& String::shift(dfw_size_t offset){
         if(0==offset){
             return (*this);
