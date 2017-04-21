@@ -4,6 +4,8 @@
 #include <dframework/http/types.h>
 #include <dframework/util/Time.h>
 #include <dframework/log/Logger.h>
+#include <dframework/http/HttpContentType.h>
+#include <dframework/base/System.h>
 
 namespace dframework {
 
@@ -226,6 +228,7 @@ namespace dframework {
     sp<Retval> HttpFs::getattr(const char* path, struct stat* st){
         sp<Retval> retval;
         bool isclosed = false;
+        m_sPath = path;
 
         sp<Listener> listener = new Listener();
         sp<HttpQuery::OnHttpListener> listener_ = listener;
@@ -346,6 +349,7 @@ namespace dframework {
         DFW_UNUSED(mode);
         AutoLock _l(this);
         sp<Retval> retval;
+        m_sPath = path;
         return DFW_RET_C(retval, open_l(path));
     }
 
@@ -483,11 +487,46 @@ namespace dframework {
     }
 
     sp<Retval> HttpFs::getContentType(String& sContentType){
+        sContentType = "video/mp4";
+        return NULL;
+        /*
+        URI::FileInfo fi;
+        fi.parse(m_sPath.toChars());
+        const char* ext = fi.m_sExtension.toChars();
+        String sType = HttpContentType::getContentType(ext);
+        bool bUseEncode = false;
+
+        if( sType.indexOf("text/")==0 ){
+            bUseEncode = true;
+        }else if( sType.indexOf("xml/")==0 ){
+            bUseEncode = true;
+        }else if( sType.indexOf("/xml")!=((dfw_size_t)-1) ){
+            bUseEncode = true;
+        }
+
+        if(bUseEncode){
+            const char* enc = System::encoding();
+            if(enc){
+                sContentType = String::format("%s; charset=%s"
+                                            , sType.toChars(), enc);
+            }else{
+                sContentType = sType;
+            }
+        }else{
+            sContentType = sType;
+        }
+
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+              , "Request:: getContentType=%s", sContentType.toChars());
+
+        return NULL;
+        // *
         if( !m_http.has() )
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
                        , "Has not http object.");
         sContentType = m_http->getContentType();
         return NULL;
+        */
     }
 
     sp<Retval> HttpFs::setAttribute(int type, int value){

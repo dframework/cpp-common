@@ -71,14 +71,18 @@ namespace dframework {
     sp<Retval> HttpdThread::request(){
         sp<Retval> retval;
 
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "### parse request #1");
         if( DFW_RET(retval, m_client->parseRequest()) ){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "### parse request error.");
             return DFW_RETVAL_D(retval);
         }
 
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "### ready request");
         if( DFW_RET(retval, m_client->readyRequest()) ){
             return DFW_RETVAL_D(retval);
         }
 
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "### send response");
         if( DFW_RET(retval, m_client->sendResponse()) ){
             return DFW_RETVAL_D(retval);
         }

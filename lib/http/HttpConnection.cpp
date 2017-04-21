@@ -5,6 +5,7 @@
 #include <dframework/http/HttpLocation.h>
 #include <dframework/http/HttpAuth.h>
 #include <dframework/util/MicroTimeDepth.h>
+#include <dframework/log/Logger.h>
 #ifndef _WIN32
 # include <sys/socket.h>
 #else
@@ -135,6 +136,8 @@ namespace dframework {
     }
 
     sp<Retval> HttpConnection::request(){
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "request");
+
         sp<Retval> retval;
         sp<HttpRound> round = m_pQuery->getLastRound();
 
@@ -247,6 +250,11 @@ namespace dframework {
         if(DFW_RET(retval, m_pQuery->makeRequestBuffer(round))){
             return DFW_RETVAL_D(retval);
         }
+
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+                       , "request_raw send : %s\n"
+                       , round->m_sHeadBuffer.toChars());
+
         if(DFW_RET(retval, m_socket->send_wait(
                            &sendlen
                          , round->m_sHeadBuffer.toChars()

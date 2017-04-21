@@ -33,6 +33,8 @@ namespace dframework {
         String  m_sUri;
         sp<URI> m_oUri;
 
+        String  m_sPath;
+
         sp<HttpQuery> m_http;
         sp<Listener>  m_http_listener;
         uint64_t      m_size;
