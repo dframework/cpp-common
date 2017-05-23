@@ -1,0 +1,765 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CA0491191ED43413009E83C8 /* libpcre2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA0491181ED43409009E83C8 /* libpcre2.a */; };
+		CA0491371ED43498009E83C8 /* libsqlite3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA0491361ED43491009E83C8 /* libsqlite3.a */; };
+		CAFD257A1ED435C900C447DA /* libssh2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CAFD25791ED435C100C447DA /* libssh2.a */; };
+		CAFD25831ED4371F00C447DA /* Condition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD257D1ED4371F00C447DA /* Condition.cpp */; };
+		CAFD25841ED4371F00C447DA /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD257E1ED4371F00C447DA /* Object.cpp */; };
+		CAFD25851ED4371F00C447DA /* Retval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD257F1ED4371F00C447DA /* Retval.cpp */; };
+		CAFD25861ED4371F00C447DA /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25801ED4371F00C447DA /* System.cpp */; };
+		CAFD25871ED4371F00C447DA /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25811ED4371F00C447DA /* Thread.cpp */; };
+		CAFD25881ED4371F00C447DA /* ThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25821ED4371F00C447DA /* ThreadManager.cpp */; };
+		CAFD259D1ED4373C00C447DA /* HttpAuth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD258A1ED4373C00C447DA /* HttpAuth.cpp */; };
+		CAFD259E1ED4373C00C447DA /* HttpBasic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD258B1ED4373C00C447DA /* HttpBasic.cpp */; };
+		CAFD259F1ED4373C00C447DA /* HttpChunked.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD258C1ED4373C00C447DA /* HttpChunked.cpp */; };
+		CAFD25A01ED4373C00C447DA /* HttpClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD258D1ED4373C00C447DA /* HttpClient.cpp */; };
+		CAFD25A11ED4373C00C447DA /* HttpConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD258E1ED4373C00C447DA /* HttpConnection.cpp */; };
+		CAFD25A21ED4373C00C447DA /* HttpContentType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD258F1ED4373C00C447DA /* HttpContentType.cpp */; };
+		CAFD25A31ED4373C00C447DA /* HttpDigest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25901ED4373C00C447DA /* HttpDigest.cpp */; };
+		CAFD25A41ED4373C00C447DA /* HttpFormData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25911ED4373C00C447DA /* HttpFormData.cpp */; };
+		CAFD25A51ED4373C00C447DA /* HttpGet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25921ED4373C00C447DA /* HttpGet.cpp */; };
+		CAFD25A61ED4373C00C447DA /* HttpHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25931ED4373C00C447DA /* HttpHeader.cpp */; };
+		CAFD25A71ED4373C00C447DA /* HttpLocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25941ED4373C00C447DA /* HttpLocation.cpp */; };
+		CAFD25A81ED4373C00C447DA /* HttpMakeClientBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25951ED4373C00C447DA /* HttpMakeClientBuffer.cpp */; };
+		CAFD25A91ED4373C00C447DA /* HttpPost.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25961ED4373C00C447DA /* HttpPost.cpp */; };
+		CAFD25AA1ED4373C00C447DA /* HttpPropfind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25971ED4373C00C447DA /* HttpPropfind.cpp */; };
+		CAFD25AB1ED4373C00C447DA /* HttpQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25981ED4373C00C447DA /* HttpQuery.cpp */; };
+		CAFD25AC1ED4373C00C447DA /* HttpReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25991ED4373C00C447DA /* HttpReader.cpp */; };
+		CAFD25AD1ED4373C00C447DA /* HttpRound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD259A1ED4373C00C447DA /* HttpRound.cpp */; };
+		CAFD25AE1ED4373C00C447DA /* HttpUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD259B1ED4373C00C447DA /* HttpUtils.cpp */; };
+		CAFD25AF1ED4373C00C447DA /* IHttpReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD259C1ED4373C00C447DA /* IHttpReader.cpp */; };
+		CAFD25B31ED4378600C447DA /* XmlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B21ED4378600C447DA /* XmlParser.cpp */; };
+		CAFD25C31ED4379F00C447DA /* HttpdAcceptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B41ED4379F00C447DA /* HttpdAcceptor.cpp */; };
+		CAFD25C41ED4379F00C447DA /* HttpdClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B51ED4379F00C447DA /* HttpdClient.cpp */; };
+		CAFD25C51ED4379F00C447DA /* HttpdConfigure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B61ED4379F00C447DA /* HttpdConfigure.cpp */; };
+		CAFD25C61ED4379F00C447DA /* HttpdHost.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B71ED4379F00C447DA /* HttpdHost.cpp */; };
+		CAFD25C71ED4379F00C447DA /* HttpdModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B81ED4379F00C447DA /* HttpdModules.cpp */; };
+		CAFD25C81ED4379F00C447DA /* HttpdSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25B91ED4379F00C447DA /* HttpdSender.cpp */; };
+		CAFD25C91ED4379F00C447DA /* HttpdSendLocalFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25BA1ED4379F00C447DA /* HttpdSendLocalFile.cpp */; };
+		CAFD25CA1ED4379F00C447DA /* HttpdSendStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25BB1ED4379F00C447DA /* HttpdSendStream.cpp */; };
+		CAFD25CB1ED4379F00C447DA /* HttpdService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25BC1ED4379F00C447DA /* HttpdService.cpp */; };
+		CAFD25CC1ED4379F00C447DA /* HttpdThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25BD1ED4379F00C447DA /* HttpdThread.cpp */; };
+		CAFD25CD1ED4379F00C447DA /* HttpdUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25BE1ED4379F00C447DA /* HttpdUtil.cpp */; };
+		CAFD25CE1ED4379F00C447DA /* HttpdWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25BF1ED4379F00C447DA /* HttpdWorker.cpp */; };
+		CAFD25CF1ED4379F00C447DA /* HttpRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25C01ED4379F00C447DA /* HttpRequest.cpp */; };
+		CAFD25D01ED4379F00C447DA /* HttpResponse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25C11ED4379F00C447DA /* HttpResponse.cpp */; };
+		CAFD25D11ED4379F00C447DA /* OriginFs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25C21ED4379F00C447DA /* OriginFs.cpp */; };
+		CAFD25DD1ED437C600C447DA /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D31ED437C600C447DA /* Base64.cpp */; };
+		CAFD25DE1ED437C600C447DA /* MD5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D41ED437C600C447DA /* MD5.cpp */; };
+		CAFD25DF1ED437C600C447DA /* MicroTimeDepth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D51ED437C600C447DA /* MicroTimeDepth.cpp */; };
+		CAFD25E01ED437C600C447DA /* NamedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D61ED437C600C447DA /* NamedObject.cpp */; };
+		CAFD25E11ED437C600C447DA /* NamedValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D71ED437C600C447DA /* NamedValue.cpp */; };
+		CAFD25E21ED437C600C447DA /* Opt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D81ED437C600C447DA /* Opt.cpp */; };
+		CAFD25E31ED437C600C447DA /* Regexp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25D91ED437C600C447DA /* Regexp.cpp */; };
+		CAFD25E41ED437C600C447DA /* StringArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25DA1ED437C600C447DA /* StringArray.cpp */; };
+		CAFD25E51ED437C600C447DA /* Time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25DB1ED437C600C447DA /* Time.cpp */; };
+		CAFD25E61ED437C600C447DA /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25DC1ED437C600C447DA /* Util.cpp */; };
+		CAFD25EB1ED437E100C447DA /* SSH2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25E81ED437E100C447DA /* SSH2.cpp */; };
+		CAFD25EC1ED437E100C447DA /* SSH2Global.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25E91ED437E100C447DA /* SSH2Global.cpp */; };
+		CAFD25ED1ED437E100C447DA /* SSH2Session.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25EA1ED437E100C447DA /* SSH2Session.cpp */; };
+		CAFD25F01ED437FC00C447DA /* Sqlite3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25EF1ED437FC00C447DA /* Sqlite3.cpp */; };
+		CAFD25F91ED4381A00C447DA /* HostManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F21ED4381A00C447DA /* HostManager.cpp */; };
+		CAFD25FA1ED4381A00C447DA /* Hostname.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F31ED4381A00C447DA /* Hostname.cpp */; };
+		CAFD25FB1ED4381A00C447DA /* Net.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F41ED4381A00C447DA /* Net.cpp */; };
+		CAFD25FC1ED4381A00C447DA /* Poll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F51ED4381A00C447DA /* Poll.cpp */; };
+		CAFD25FD1ED4381A00C447DA /* ServerAccept.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F61ED4381A00C447DA /* ServerAccept.cpp */; };
+		CAFD25FE1ED4381A00C447DA /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F71ED4381A00C447DA /* Socket.cpp */; };
+		CAFD25FF1ED4381A00C447DA /* URI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD25F81ED4381A00C447DA /* URI.cpp */; };
+		CAFD26021ED4383500C447DA /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26011ED4383500C447DA /* Logger.cpp */; };
+		CAFD26081ED4384F00C447DA /* Float.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26041ED4384F00C447DA /* Float.cpp */; };
+		CAFD26091ED4384F00C447DA /* Integer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26051ED4384F00C447DA /* Integer.cpp */; };
+		CAFD260A1ED4384F00C447DA /* Long.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26061ED4384F00C447DA /* Long.cpp */; };
+		CAFD260B1ED4384F00C447DA /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26071ED4384F00C447DA /* String.cpp */; };
+		CAFD26161ED4386A00C447DA /* Dir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD260D1ED4386A00C447DA /* Dir.cpp */; };
+		CAFD26171ED4386A00C447DA /* DirBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD260E1ED4386A00C447DA /* DirBox.cpp */; };
+		CAFD26181ED4386A00C447DA /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD260F1ED4386A00C447DA /* File.cpp */; };
+		CAFD26191ED4386A00C447DA /* HttpFs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26101ED4386A00C447DA /* HttpFs.cpp */; };
+		CAFD261A1ED4386A00C447DA /* LocalFs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26111ED4386A00C447DA /* LocalFs.cpp */; };
+		CAFD261B1ED4386A00C447DA /* RecentlyFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26121ED4386A00C447DA /* RecentlyFiles.cpp */; };
+		CAFD261C1ED4386A00C447DA /* SSH2Fs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26131ED4386A00C447DA /* SSH2Fs.cpp */; };
+		CAFD261D1ED4386A00C447DA /* Stat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26141ED4386A00C447DA /* Stat.cpp */; };
+		CAFD261E1ED4386A00C447DA /* UriFs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAFD26151ED4386A00C447DA /* UriFs.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CA0491171ED43409009E83C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CA0491131ED43409009E83C8 /* pcre2.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA0490D01ED43365009E83C8;
+			remoteInfo = pcre2;
+		};
+		CA0491351ED43491009E83C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CA0491311ED43491009E83C8 /* sqlite3.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA0491231ED4342C009E83C8;
+			remoteInfo = sqlite3;
+		};
+		CAFD25781ED435C100C447DA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CAFD25721ED435C100C447DA /* ssh2.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA0491411ED434B7009E83C8;
+			remoteInfo = ssh2;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CA0490B91ED43336009E83C8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		CA0490BB1ED43336009E83C8 /* libcpp-common.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcpp-common.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA0491131ED43409009E83C8 /* pcre2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = pcre2.xcodeproj; path = ../pcre2/pcre2.xcodeproj; sourceTree = "<group>"; };
+		CA0491311ED43491009E83C8 /* sqlite3.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = sqlite3.xcodeproj; path = ../sqlite3/sqlite3.xcodeproj; sourceTree = "<group>"; };
+		CAFD25721ED435C100C447DA /* ssh2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ssh2.xcodeproj; path = ../ssh2/ssh2.xcodeproj; sourceTree = "<group>"; };
+		CAFD257D1ED4371F00C447DA /* Condition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Condition.cpp; path = ../../lib/base/Condition.cpp; sourceTree = "<group>"; };
+		CAFD257E1ED4371F00C447DA /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Object.cpp; path = ../../lib/base/Object.cpp; sourceTree = "<group>"; };
+		CAFD257F1ED4371F00C447DA /* Retval.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Retval.cpp; path = ../../lib/base/Retval.cpp; sourceTree = "<group>"; };
+		CAFD25801ED4371F00C447DA /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../lib/base/System.cpp; sourceTree = "<group>"; };
+		CAFD25811ED4371F00C447DA /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Thread.cpp; path = ../../lib/base/Thread.cpp; sourceTree = "<group>"; };
+		CAFD25821ED4371F00C447DA /* ThreadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadManager.cpp; path = ../../lib/base/ThreadManager.cpp; sourceTree = "<group>"; };
+		CAFD258A1ED4373C00C447DA /* HttpAuth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpAuth.cpp; path = ../../lib/http/HttpAuth.cpp; sourceTree = "<group>"; };
+		CAFD258B1ED4373C00C447DA /* HttpBasic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpBasic.cpp; path = ../../lib/http/HttpBasic.cpp; sourceTree = "<group>"; };
+		CAFD258C1ED4373C00C447DA /* HttpChunked.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpChunked.cpp; path = ../../lib/http/HttpChunked.cpp; sourceTree = "<group>"; };
+		CAFD258D1ED4373C00C447DA /* HttpClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpClient.cpp; path = ../../lib/http/HttpClient.cpp; sourceTree = "<group>"; };
+		CAFD258E1ED4373C00C447DA /* HttpConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpConnection.cpp; path = ../../lib/http/HttpConnection.cpp; sourceTree = "<group>"; };
+		CAFD258F1ED4373C00C447DA /* HttpContentType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpContentType.cpp; path = ../../lib/http/HttpContentType.cpp; sourceTree = "<group>"; };
+		CAFD25901ED4373C00C447DA /* HttpDigest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpDigest.cpp; path = ../../lib/http/HttpDigest.cpp; sourceTree = "<group>"; };
+		CAFD25911ED4373C00C447DA /* HttpFormData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpFormData.cpp; path = ../../lib/http/HttpFormData.cpp; sourceTree = "<group>"; };
+		CAFD25921ED4373C00C447DA /* HttpGet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpGet.cpp; path = ../../lib/http/HttpGet.cpp; sourceTree = "<group>"; };
+		CAFD25931ED4373C00C447DA /* HttpHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpHeader.cpp; path = ../../lib/http/HttpHeader.cpp; sourceTree = "<group>"; };
+		CAFD25941ED4373C00C447DA /* HttpLocation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpLocation.cpp; path = ../../lib/http/HttpLocation.cpp; sourceTree = "<group>"; };
+		CAFD25951ED4373C00C447DA /* HttpMakeClientBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpMakeClientBuffer.cpp; path = ../../lib/http/HttpMakeClientBuffer.cpp; sourceTree = "<group>"; };
+		CAFD25961ED4373C00C447DA /* HttpPost.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpPost.cpp; path = ../../lib/http/HttpPost.cpp; sourceTree = "<group>"; };
+		CAFD25971ED4373C00C447DA /* HttpPropfind.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpPropfind.cpp; path = ../../lib/http/HttpPropfind.cpp; sourceTree = "<group>"; };
+		CAFD25981ED4373C00C447DA /* HttpQuery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpQuery.cpp; path = ../../lib/http/HttpQuery.cpp; sourceTree = "<group>"; };
+		CAFD25991ED4373C00C447DA /* HttpReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpReader.cpp; path = ../../lib/http/HttpReader.cpp; sourceTree = "<group>"; };
+		CAFD259A1ED4373C00C447DA /* HttpRound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpRound.cpp; path = ../../lib/http/HttpRound.cpp; sourceTree = "<group>"; };
+		CAFD259B1ED4373C00C447DA /* HttpUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpUtils.cpp; path = ../../lib/http/HttpUtils.cpp; sourceTree = "<group>"; };
+		CAFD259C1ED4373C00C447DA /* IHttpReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IHttpReader.cpp; path = ../../lib/http/IHttpReader.cpp; sourceTree = "<group>"; };
+		CAFD25B21ED4378600C447DA /* XmlParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XmlParser.cpp; path = ../../lib/xml/XmlParser.cpp; sourceTree = "<group>"; };
+		CAFD25B41ED4379F00C447DA /* HttpdAcceptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdAcceptor.cpp; path = ../../lib/httpd/HttpdAcceptor.cpp; sourceTree = "<group>"; };
+		CAFD25B51ED4379F00C447DA /* HttpdClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdClient.cpp; path = ../../lib/httpd/HttpdClient.cpp; sourceTree = "<group>"; };
+		CAFD25B61ED4379F00C447DA /* HttpdConfigure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdConfigure.cpp; path = ../../lib/httpd/HttpdConfigure.cpp; sourceTree = "<group>"; };
+		CAFD25B71ED4379F00C447DA /* HttpdHost.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdHost.cpp; path = ../../lib/httpd/HttpdHost.cpp; sourceTree = "<group>"; };
+		CAFD25B81ED4379F00C447DA /* HttpdModules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdModules.cpp; path = ../../lib/httpd/HttpdModules.cpp; sourceTree = "<group>"; };
+		CAFD25B91ED4379F00C447DA /* HttpdSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdSender.cpp; path = ../../lib/httpd/HttpdSender.cpp; sourceTree = "<group>"; };
+		CAFD25BA1ED4379F00C447DA /* HttpdSendLocalFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdSendLocalFile.cpp; path = ../../lib/httpd/HttpdSendLocalFile.cpp; sourceTree = "<group>"; };
+		CAFD25BB1ED4379F00C447DA /* HttpdSendStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdSendStream.cpp; path = ../../lib/httpd/HttpdSendStream.cpp; sourceTree = "<group>"; };
+		CAFD25BC1ED4379F00C447DA /* HttpdService.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdService.cpp; path = ../../lib/httpd/HttpdService.cpp; sourceTree = "<group>"; };
+		CAFD25BD1ED4379F00C447DA /* HttpdThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdThread.cpp; path = ../../lib/httpd/HttpdThread.cpp; sourceTree = "<group>"; };
+		CAFD25BE1ED4379F00C447DA /* HttpdUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdUtil.cpp; path = ../../lib/httpd/HttpdUtil.cpp; sourceTree = "<group>"; };
+		CAFD25BF1ED4379F00C447DA /* HttpdWorker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpdWorker.cpp; path = ../../lib/httpd/HttpdWorker.cpp; sourceTree = "<group>"; };
+		CAFD25C01ED4379F00C447DA /* HttpRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpRequest.cpp; path = ../../lib/httpd/HttpRequest.cpp; sourceTree = "<group>"; };
+		CAFD25C11ED4379F00C447DA /* HttpResponse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpResponse.cpp; path = ../../lib/httpd/HttpResponse.cpp; sourceTree = "<group>"; };
+		CAFD25C21ED4379F00C447DA /* OriginFs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OriginFs.cpp; path = ../../lib/httpd/OriginFs.cpp; sourceTree = "<group>"; };
+		CAFD25D31ED437C600C447DA /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../lib/util/Base64.cpp; sourceTree = "<group>"; };
+		CAFD25D41ED437C600C447DA /* MD5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MD5.cpp; path = ../../lib/util/MD5.cpp; sourceTree = "<group>"; };
+		CAFD25D51ED437C600C447DA /* MicroTimeDepth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroTimeDepth.cpp; path = ../../lib/util/MicroTimeDepth.cpp; sourceTree = "<group>"; };
+		CAFD25D61ED437C600C447DA /* NamedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NamedObject.cpp; path = ../../lib/util/NamedObject.cpp; sourceTree = "<group>"; };
+		CAFD25D71ED437C600C447DA /* NamedValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NamedValue.cpp; path = ../../lib/util/NamedValue.cpp; sourceTree = "<group>"; };
+		CAFD25D81ED437C600C447DA /* Opt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Opt.cpp; path = ../../lib/util/Opt.cpp; sourceTree = "<group>"; };
+		CAFD25D91ED437C600C447DA /* Regexp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Regexp.cpp; path = ../../lib/util/Regexp.cpp; sourceTree = "<group>"; };
+		CAFD25DA1ED437C600C447DA /* StringArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringArray.cpp; path = ../../lib/util/StringArray.cpp; sourceTree = "<group>"; };
+		CAFD25DB1ED437C600C447DA /* Time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Time.cpp; path = ../../lib/util/Time.cpp; sourceTree = "<group>"; };
+		CAFD25DC1ED437C600C447DA /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Util.cpp; path = ../../lib/util/Util.cpp; sourceTree = "<group>"; };
+		CAFD25E81ED437E100C447DA /* SSH2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SSH2.cpp; path = ../../lib/ssh2/SSH2.cpp; sourceTree = "<group>"; };
+		CAFD25E91ED437E100C447DA /* SSH2Global.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SSH2Global.cpp; path = ../../lib/ssh2/SSH2Global.cpp; sourceTree = "<group>"; };
+		CAFD25EA1ED437E100C447DA /* SSH2Session.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SSH2Session.cpp; path = ../../lib/ssh2/SSH2Session.cpp; sourceTree = "<group>"; };
+		CAFD25EF1ED437FC00C447DA /* Sqlite3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sqlite3.cpp; path = ../../lib/sql/Sqlite3.cpp; sourceTree = "<group>"; };
+		CAFD25F21ED4381A00C447DA /* HostManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HostManager.cpp; path = ../../lib/net/HostManager.cpp; sourceTree = "<group>"; };
+		CAFD25F31ED4381A00C447DA /* Hostname.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Hostname.cpp; path = ../../lib/net/Hostname.cpp; sourceTree = "<group>"; };
+		CAFD25F41ED4381A00C447DA /* Net.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Net.cpp; path = ../../lib/net/Net.cpp; sourceTree = "<group>"; };
+		CAFD25F51ED4381A00C447DA /* Poll.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Poll.cpp; path = ../../lib/net/Poll.cpp; sourceTree = "<group>"; };
+		CAFD25F61ED4381A00C447DA /* ServerAccept.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerAccept.cpp; path = ../../lib/net/ServerAccept.cpp; sourceTree = "<group>"; };
+		CAFD25F71ED4381A00C447DA /* Socket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Socket.cpp; path = ../../lib/net/Socket.cpp; sourceTree = "<group>"; };
+		CAFD25F81ED4381A00C447DA /* URI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = URI.cpp; path = ../../lib/net/URI.cpp; sourceTree = "<group>"; };
+		CAFD26011ED4383500C447DA /* Logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Logger.cpp; path = ../../lib/log/Logger.cpp; sourceTree = "<group>"; };
+		CAFD26041ED4384F00C447DA /* Float.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Float.cpp; path = ../../lib/lang/Float.cpp; sourceTree = "<group>"; };
+		CAFD26051ED4384F00C447DA /* Integer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Integer.cpp; path = ../../lib/lang/Integer.cpp; sourceTree = "<group>"; };
+		CAFD26061ED4384F00C447DA /* Long.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Long.cpp; path = ../../lib/lang/Long.cpp; sourceTree = "<group>"; };
+		CAFD26071ED4384F00C447DA /* String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = String.cpp; path = ../../lib/lang/String.cpp; sourceTree = "<group>"; };
+		CAFD260D1ED4386A00C447DA /* Dir.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dir.cpp; path = ../../lib/io/Dir.cpp; sourceTree = "<group>"; };
+		CAFD260E1ED4386A00C447DA /* DirBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DirBox.cpp; path = ../../lib/io/DirBox.cpp; sourceTree = "<group>"; };
+		CAFD260F1ED4386A00C447DA /* File.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = File.cpp; path = ../../lib/io/File.cpp; sourceTree = "<group>"; };
+		CAFD26101ED4386A00C447DA /* HttpFs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HttpFs.cpp; path = ../../lib/io/HttpFs.cpp; sourceTree = "<group>"; };
+		CAFD26111ED4386A00C447DA /* LocalFs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LocalFs.cpp; path = ../../lib/io/LocalFs.cpp; sourceTree = "<group>"; };
+		CAFD26121ED4386A00C447DA /* RecentlyFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RecentlyFiles.cpp; path = ../../lib/io/RecentlyFiles.cpp; sourceTree = "<group>"; };
+		CAFD26131ED4386A00C447DA /* SSH2Fs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SSH2Fs.cpp; path = ../../lib/io/SSH2Fs.cpp; sourceTree = "<group>"; };
+		CAFD26141ED4386A00C447DA /* Stat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Stat.cpp; path = ../../lib/io/Stat.cpp; sourceTree = "<group>"; };
+		CAFD26151ED4386A00C447DA /* UriFs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UriFs.cpp; path = ../../lib/io/UriFs.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CA0490B81ED43336009E83C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAFD257A1ED435C900C447DA /* libssh2.a in Frameworks */,
+				CA0491371ED43498009E83C8 /* libsqlite3.a in Frameworks */,
+				CA0491191ED43413009E83C8 /* libpcre2.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CA0490B21ED43336009E83C8 = {
+			isa = PBXGroup;
+			children = (
+				CAFD25721ED435C100C447DA /* ssh2.xcodeproj */,
+				CA0491311ED43491009E83C8 /* sqlite3.xcodeproj */,
+				CA0491131ED43409009E83C8 /* pcre2.xcodeproj */,
+				CAFD257B1ED436F600C447DA /* dframework */,
+				CA0490BC1ED43336009E83C8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CA0490BC1ED43336009E83C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CA0490BB1ED43336009E83C8 /* libcpp-common.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CA0491141ED43409009E83C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CA0491181ED43409009E83C8 /* libpcre2.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CA0491321ED43491009E83C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CA0491361ED43491009E83C8 /* libsqlite3.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CAFD25731ED435C100C447DA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25791ED435C100C447DA /* libssh2.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CAFD257B1ED436F600C447DA /* dframework */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD257C1ED4370400C447DA /* base */,
+				CAFD25891ED4372600C447DA /* http */,
+				CAFD25B01ED4374300C447DA /* httpd */,
+				CAFD260C1ED4385400C447DA /* io */,
+				CAFD26031ED4383B00C447DA /* lang */,
+				CAFD26001ED4382000C447DA /* log */,
+				CAFD25F11ED4380100C447DA /* net */,
+				CAFD25EE1ED437E800C447DA /* sql */,
+				CAFD25D21ED437A700C447DA /* util */,
+				CAFD25E71ED437CB00C447DA /* ssh2 */,
+				CAFD25B11ED4375D00C447DA /* xml */,
+			);
+			name = dframework;
+			sourceTree = "<group>";
+		};
+		CAFD257C1ED4370400C447DA /* base */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD257D1ED4371F00C447DA /* Condition.cpp */,
+				CAFD257E1ED4371F00C447DA /* Object.cpp */,
+				CAFD257F1ED4371F00C447DA /* Retval.cpp */,
+				CAFD25801ED4371F00C447DA /* System.cpp */,
+				CAFD25811ED4371F00C447DA /* Thread.cpp */,
+				CAFD25821ED4371F00C447DA /* ThreadManager.cpp */,
+			);
+			name = base;
+			sourceTree = "<group>";
+		};
+		CAFD25891ED4372600C447DA /* http */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD258A1ED4373C00C447DA /* HttpAuth.cpp */,
+				CAFD258B1ED4373C00C447DA /* HttpBasic.cpp */,
+				CAFD258C1ED4373C00C447DA /* HttpChunked.cpp */,
+				CAFD258D1ED4373C00C447DA /* HttpClient.cpp */,
+				CAFD258E1ED4373C00C447DA /* HttpConnection.cpp */,
+				CAFD258F1ED4373C00C447DA /* HttpContentType.cpp */,
+				CAFD25901ED4373C00C447DA /* HttpDigest.cpp */,
+				CAFD25911ED4373C00C447DA /* HttpFormData.cpp */,
+				CAFD25921ED4373C00C447DA /* HttpGet.cpp */,
+				CAFD25931ED4373C00C447DA /* HttpHeader.cpp */,
+				CAFD25941ED4373C00C447DA /* HttpLocation.cpp */,
+				CAFD25951ED4373C00C447DA /* HttpMakeClientBuffer.cpp */,
+				CAFD25961ED4373C00C447DA /* HttpPost.cpp */,
+				CAFD25971ED4373C00C447DA /* HttpPropfind.cpp */,
+				CAFD25981ED4373C00C447DA /* HttpQuery.cpp */,
+				CAFD25991ED4373C00C447DA /* HttpReader.cpp */,
+				CAFD259A1ED4373C00C447DA /* HttpRound.cpp */,
+				CAFD259B1ED4373C00C447DA /* HttpUtils.cpp */,
+				CAFD259C1ED4373C00C447DA /* IHttpReader.cpp */,
+			);
+			name = http;
+			sourceTree = "<group>";
+		};
+		CAFD25B01ED4374300C447DA /* httpd */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25B41ED4379F00C447DA /* HttpdAcceptor.cpp */,
+				CAFD25B51ED4379F00C447DA /* HttpdClient.cpp */,
+				CAFD25B61ED4379F00C447DA /* HttpdConfigure.cpp */,
+				CAFD25B71ED4379F00C447DA /* HttpdHost.cpp */,
+				CAFD25B81ED4379F00C447DA /* HttpdModules.cpp */,
+				CAFD25B91ED4379F00C447DA /* HttpdSender.cpp */,
+				CAFD25BA1ED4379F00C447DA /* HttpdSendLocalFile.cpp */,
+				CAFD25BB1ED4379F00C447DA /* HttpdSendStream.cpp */,
+				CAFD25BC1ED4379F00C447DA /* HttpdService.cpp */,
+				CAFD25BD1ED4379F00C447DA /* HttpdThread.cpp */,
+				CAFD25BE1ED4379F00C447DA /* HttpdUtil.cpp */,
+				CAFD25BF1ED4379F00C447DA /* HttpdWorker.cpp */,
+				CAFD25C01ED4379F00C447DA /* HttpRequest.cpp */,
+				CAFD25C11ED4379F00C447DA /* HttpResponse.cpp */,
+				CAFD25C21ED4379F00C447DA /* OriginFs.cpp */,
+			);
+			name = httpd;
+			sourceTree = "<group>";
+		};
+		CAFD25B11ED4375D00C447DA /* xml */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25B21ED4378600C447DA /* XmlParser.cpp */,
+			);
+			name = xml;
+			sourceTree = "<group>";
+		};
+		CAFD25D21ED437A700C447DA /* util */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25D31ED437C600C447DA /* Base64.cpp */,
+				CAFD25D41ED437C600C447DA /* MD5.cpp */,
+				CAFD25D51ED437C600C447DA /* MicroTimeDepth.cpp */,
+				CAFD25D61ED437C600C447DA /* NamedObject.cpp */,
+				CAFD25D71ED437C600C447DA /* NamedValue.cpp */,
+				CAFD25D81ED437C600C447DA /* Opt.cpp */,
+				CAFD25D91ED437C600C447DA /* Regexp.cpp */,
+				CAFD25DA1ED437C600C447DA /* StringArray.cpp */,
+				CAFD25DB1ED437C600C447DA /* Time.cpp */,
+				CAFD25DC1ED437C600C447DA /* Util.cpp */,
+			);
+			name = util;
+			sourceTree = "<group>";
+		};
+		CAFD25E71ED437CB00C447DA /* ssh2 */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25E81ED437E100C447DA /* SSH2.cpp */,
+				CAFD25E91ED437E100C447DA /* SSH2Global.cpp */,
+				CAFD25EA1ED437E100C447DA /* SSH2Session.cpp */,
+			);
+			name = ssh2;
+			sourceTree = "<group>";
+		};
+		CAFD25EE1ED437E800C447DA /* sql */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25EF1ED437FC00C447DA /* Sqlite3.cpp */,
+			);
+			name = sql;
+			sourceTree = "<group>";
+		};
+		CAFD25F11ED4380100C447DA /* net */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD25F21ED4381A00C447DA /* HostManager.cpp */,
+				CAFD25F31ED4381A00C447DA /* Hostname.cpp */,
+				CAFD25F41ED4381A00C447DA /* Net.cpp */,
+				CAFD25F51ED4381A00C447DA /* Poll.cpp */,
+				CAFD25F61ED4381A00C447DA /* ServerAccept.cpp */,
+				CAFD25F71ED4381A00C447DA /* Socket.cpp */,
+				CAFD25F81ED4381A00C447DA /* URI.cpp */,
+			);
+			name = net;
+			sourceTree = "<group>";
+		};
+		CAFD26001ED4382000C447DA /* log */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD26011ED4383500C447DA /* Logger.cpp */,
+			);
+			name = log;
+			sourceTree = "<group>";
+		};
+		CAFD26031ED4383B00C447DA /* lang */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD26041ED4384F00C447DA /* Float.cpp */,
+				CAFD26051ED4384F00C447DA /* Integer.cpp */,
+				CAFD26061ED4384F00C447DA /* Long.cpp */,
+				CAFD26071ED4384F00C447DA /* String.cpp */,
+			);
+			name = lang;
+			sourceTree = "<group>";
+		};
+		CAFD260C1ED4385400C447DA /* io */ = {
+			isa = PBXGroup;
+			children = (
+				CAFD260D1ED4386A00C447DA /* Dir.cpp */,
+				CAFD260E1ED4386A00C447DA /* DirBox.cpp */,
+				CAFD260F1ED4386A00C447DA /* File.cpp */,
+				CAFD26101ED4386A00C447DA /* HttpFs.cpp */,
+				CAFD26111ED4386A00C447DA /* LocalFs.cpp */,
+				CAFD26121ED4386A00C447DA /* RecentlyFiles.cpp */,
+				CAFD26131ED4386A00C447DA /* SSH2Fs.cpp */,
+				CAFD26141ED4386A00C447DA /* Stat.cpp */,
+				CAFD26151ED4386A00C447DA /* UriFs.cpp */,
+			);
+			name = io;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CA0490BA1ED43336009E83C8 /* cpp-common */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CA0490C41ED43336009E83C8 /* Build configuration list for PBXNativeTarget "cpp-common" */;
+			buildPhases = (
+				CA0490B71ED43336009E83C8 /* Sources */,
+				CA0490B81ED43336009E83C8 /* Frameworks */,
+				CA0490B91ED43336009E83C8 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "cpp-common";
+			productName = "cpp-common";
+			productReference = CA0490BB1ED43336009E83C8 /* libcpp-common.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CA0490B31ED43336009E83C8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = dframework;
+				TargetAttributes = {
+					CA0490BA1ED43336009E83C8 = {
+						CreatedOnToolsVersion = 8.3.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = CA0490B61ED43336009E83C8 /* Build configuration list for PBXProject "cpp-common" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CA0490B21ED43336009E83C8;
+			productRefGroup = CA0490BC1ED43336009E83C8 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = CA0491141ED43409009E83C8 /* Products */;
+					ProjectRef = CA0491131ED43409009E83C8 /* pcre2.xcodeproj */;
+				},
+				{
+					ProductGroup = CA0491321ED43491009E83C8 /* Products */;
+					ProjectRef = CA0491311ED43491009E83C8 /* sqlite3.xcodeproj */;
+				},
+				{
+					ProductGroup = CAFD25731ED435C100C447DA /* Products */;
+					ProjectRef = CAFD25721ED435C100C447DA /* ssh2.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				CA0490BA1ED43336009E83C8 /* cpp-common */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		CA0491181ED43409009E83C8 /* libpcre2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libpcre2.a;
+			remoteRef = CA0491171ED43409009E83C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CA0491361ED43491009E83C8 /* libsqlite3.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libsqlite3.a;
+			remoteRef = CA0491351ED43491009E83C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CAFD25791ED435C100C447DA /* libssh2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libssh2.a;
+			remoteRef = CAFD25781ED435C100C447DA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CA0490B71ED43336009E83C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAFD25DE1ED437C600C447DA /* MD5.cpp in Sources */,
+				CAFD26021ED4383500C447DA /* Logger.cpp in Sources */,
+				CAFD25D01ED4379F00C447DA /* HttpResponse.cpp in Sources */,
+				CAFD25CA1ED4379F00C447DA /* HttpdSendStream.cpp in Sources */,
+				CAFD25C71ED4379F00C447DA /* HttpdModules.cpp in Sources */,
+				CAFD25FC1ED4381A00C447DA /* Poll.cpp in Sources */,
+				CAFD25AC1ED4373C00C447DA /* HttpReader.cpp in Sources */,
+				CAFD259E1ED4373C00C447DA /* HttpBasic.cpp in Sources */,
+				CAFD25E21ED437C600C447DA /* Opt.cpp in Sources */,
+				CAFD25E41ED437C600C447DA /* StringArray.cpp in Sources */,
+				CAFD25E01ED437C600C447DA /* NamedObject.cpp in Sources */,
+				CAFD25FE1ED4381A00C447DA /* Socket.cpp in Sources */,
+				CAFD25CC1ED4379F00C447DA /* HttpdThread.cpp in Sources */,
+				CAFD26171ED4386A00C447DA /* DirBox.cpp in Sources */,
+				CAFD25A21ED4373C00C447DA /* HttpContentType.cpp in Sources */,
+				CAFD25FB1ED4381A00C447DA /* Net.cpp in Sources */,
+				CAFD25C51ED4379F00C447DA /* HttpdConfigure.cpp in Sources */,
+				CAFD25C91ED4379F00C447DA /* HttpdSendLocalFile.cpp in Sources */,
+				CAFD25C81ED4379F00C447DA /* HttpdSender.cpp in Sources */,
+				CAFD25CF1ED4379F00C447DA /* HttpRequest.cpp in Sources */,
+				CAFD25FF1ED4381A00C447DA /* URI.cpp in Sources */,
+				CAFD25A31ED4373C00C447DA /* HttpDigest.cpp in Sources */,
+				CAFD25DD1ED437C600C447DA /* Base64.cpp in Sources */,
+				CAFD26191ED4386A00C447DA /* HttpFs.cpp in Sources */,
+				CAFD260B1ED4384F00C447DA /* String.cpp in Sources */,
+				CAFD25F91ED4381A00C447DA /* HostManager.cpp in Sources */,
+				CAFD25861ED4371F00C447DA /* System.cpp in Sources */,
+				CAFD261E1ED4386A00C447DA /* UriFs.cpp in Sources */,
+				CAFD25A11ED4373C00C447DA /* HttpConnection.cpp in Sources */,
+				CAFD25D11ED4379F00C447DA /* OriginFs.cpp in Sources */,
+				CAFD26161ED4386A00C447DA /* Dir.cpp in Sources */,
+				CAFD25AF1ED4373C00C447DA /* IHttpReader.cpp in Sources */,
+				CAFD25C41ED4379F00C447DA /* HttpdClient.cpp in Sources */,
+				CAFD25CB1ED4379F00C447DA /* HttpdService.cpp in Sources */,
+				CAFD25E31ED437C600C447DA /* Regexp.cpp in Sources */,
+				CAFD25A01ED4373C00C447DA /* HttpClient.cpp in Sources */,
+				CAFD25A51ED4373C00C447DA /* HttpGet.cpp in Sources */,
+				CAFD25841ED4371F00C447DA /* Object.cpp in Sources */,
+				CAFD25A61ED4373C00C447DA /* HttpHeader.cpp in Sources */,
+				CAFD25ED1ED437E100C447DA /* SSH2Session.cpp in Sources */,
+				CAFD261D1ED4386A00C447DA /* Stat.cpp in Sources */,
+				CAFD259F1ED4373C00C447DA /* HttpChunked.cpp in Sources */,
+				CAFD25C61ED4379F00C447DA /* HttpdHost.cpp in Sources */,
+				CAFD25AB1ED4373C00C447DA /* HttpQuery.cpp in Sources */,
+				CAFD25A81ED4373C00C447DA /* HttpMakeClientBuffer.cpp in Sources */,
+				CAFD25831ED4371F00C447DA /* Condition.cpp in Sources */,
+				CAFD25EB1ED437E100C447DA /* SSH2.cpp in Sources */,
+				CAFD25881ED4371F00C447DA /* ThreadManager.cpp in Sources */,
+				CAFD26091ED4384F00C447DA /* Integer.cpp in Sources */,
+				CAFD25AE1ED4373C00C447DA /* HttpUtils.cpp in Sources */,
+				CAFD261A1ED4386A00C447DA /* LocalFs.cpp in Sources */,
+				CAFD25FD1ED4381A00C447DA /* ServerAccept.cpp in Sources */,
+				CAFD25871ED4371F00C447DA /* Thread.cpp in Sources */,
+				CAFD25E61ED437C600C447DA /* Util.cpp in Sources */,
+				CAFD25F01ED437FC00C447DA /* Sqlite3.cpp in Sources */,
+				CAFD25AD1ED4373C00C447DA /* HttpRound.cpp in Sources */,
+				CAFD26081ED4384F00C447DA /* Float.cpp in Sources */,
+				CAFD25CD1ED4379F00C447DA /* HttpdUtil.cpp in Sources */,
+				CAFD260A1ED4384F00C447DA /* Long.cpp in Sources */,
+				CAFD25C31ED4379F00C447DA /* HttpdAcceptor.cpp in Sources */,
+				CAFD25EC1ED437E100C447DA /* SSH2Global.cpp in Sources */,
+				CAFD261B1ED4386A00C447DA /* RecentlyFiles.cpp in Sources */,
+				CAFD25A41ED4373C00C447DA /* HttpFormData.cpp in Sources */,
+				CAFD25B31ED4378600C447DA /* XmlParser.cpp in Sources */,
+				CAFD261C1ED4386A00C447DA /* SSH2Fs.cpp in Sources */,
+				CAFD25CE1ED4379F00C447DA /* HttpdWorker.cpp in Sources */,
+				CAFD25AA1ED4373C00C447DA /* HttpPropfind.cpp in Sources */,
+				CAFD25851ED4371F00C447DA /* Retval.cpp in Sources */,
+				CAFD25E51ED437C600C447DA /* Time.cpp in Sources */,
+				CAFD25E11ED437C600C447DA /* NamedValue.cpp in Sources */,
+				CAFD25A71ED4373C00C447DA /* HttpLocation.cpp in Sources */,
+				CAFD25DF1ED437C600C447DA /* MicroTimeDepth.cpp in Sources */,
+				CAFD25FA1ED4381A00C447DA /* Hostname.cpp in Sources */,
+				CAFD25A91ED4373C00C447DA /* HttpPost.cpp in Sources */,
+				CAFD259D1ED4373C00C447DA /* HttpAuth.cpp in Sources */,
+				CAFD26181ED4386A00C447DA /* File.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CA0490C21ED43336009E83C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/opt/dframework/cpp-common/include",
+					"/opt/dframework/cpp-common/xcode-workspace/packages/include",
+					"/opt/dframework/cpp-common/packages/libssh2/src-darwin/include",
+					"/opt/dframework/cpp-common/packages/pcre2/src",
+					"/opt/dframework/cpp-common/packages",
+					"/opt/dframework/cpp-common/packages/libssh2/src-darwin",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-fPIC";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		CA0490C31ED43336009E83C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/opt/dframework/cpp-common/include",
+					"/opt/dframework/cpp-common/xcode-workspace/packages/include",
+					"/opt/dframework/cpp-common/packages/libssh2/src-darwin/include",
+					"/opt/dframework/cpp-common/packages/pcre2/src",
+					"/opt/dframework/cpp-common/packages",
+					"/opt/dframework/cpp-common/packages/libssh2/src-darwin",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "-fPIC";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CA0490C51ED43336009E83C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CA0490C61ED43336009E83C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CA0490B61ED43336009E83C8 /* Build configuration list for PBXProject "cpp-common" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA0490C21ED43336009E83C8 /* Debug */,
+				CA0490C31ED43336009E83C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CA0490C41ED43336009E83C8 /* Build configuration list for PBXNativeTarget "cpp-common" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA0490C51ED43336009E83C8 /* Debug */,
+				CA0490C61ED43336009E83C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CA0490B31ED43336009E83C8 /* Project object */;
+}
