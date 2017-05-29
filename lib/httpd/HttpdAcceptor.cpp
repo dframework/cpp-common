@@ -32,7 +32,7 @@ namespace dframework {
             {
                 sp<ThreadManager> tm = ThreadManager::instance();
 
-                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "stop threads (count: %d)", tm->size());
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "stop httpd client threads (count: %d)", tm->size());
                 for(int k=(tm->size()-1); k>=0; k--){
                     sp<Thread> thread = tm->get(k);
                     if(thread.has()){
@@ -42,7 +42,7 @@ namespace dframework {
                         }
                     }
                 }
-                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "stop threads complete (count: %d)", tm->size());
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "stop httpd client threads complete (count: %d)", tm->size());
             }
             break;
         }

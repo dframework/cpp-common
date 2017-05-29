@@ -153,7 +153,7 @@ namespace dframework {
         m_sVersion.set(buf);
         m_sBuffer.shift(test-m_sBuffer.toChars()+2);
         m_cstatus = HTTPD_CSTATUS_HEADER;
-
+        m_sRequestLine = String::format("%s %s %s/%s", m_sMethod.toChars(), m_sRequest.toChars(), m_sProtocol.toChars(), m_sVersion.toChars());
         return NULL;
     }
 

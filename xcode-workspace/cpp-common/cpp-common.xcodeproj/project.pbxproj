@@ -128,6 +128,7 @@
 		CA0490BB1ED43336009E83C8 /* libcpp-common.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcpp-common.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0491131ED43409009E83C8 /* pcre2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = pcre2.xcodeproj; path = ../pcre2/pcre2.xcodeproj; sourceTree = "<group>"; };
 		CA0491311ED43491009E83C8 /* sqlite3.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = sqlite3.xcodeproj; path = ../sqlite3/sqlite3.xcodeproj; sourceTree = "<group>"; };
+		CA479E801ED67E37002263C5 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = ../../include; sourceTree = "<group>"; };
 		CAFD25721ED435C100C447DA /* ssh2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ssh2.xcodeproj; path = ../ssh2/ssh2.xcodeproj; sourceTree = "<group>"; };
 		CAFD257D1ED4371F00C447DA /* Condition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Condition.cpp; path = ../../lib/base/Condition.cpp; sourceTree = "<group>"; };
 		CAFD257E1ED4371F00C447DA /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Object.cpp; path = ../../lib/base/Object.cpp; sourceTree = "<group>"; };
@@ -227,6 +228,7 @@
 				CAFD25721ED435C100C447DA /* ssh2.xcodeproj */,
 				CA0491311ED43491009E83C8 /* sqlite3.xcodeproj */,
 				CA0491131ED43409009E83C8 /* pcre2.xcodeproj */,
+				CA479E801ED67E37002263C5 /* include */,
 				CAFD257B1ED436F600C447DA /* dframework */,
 				CA0490BC1ED43336009E83C8 /* Products */,
 			);

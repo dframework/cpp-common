@@ -108,50 +108,39 @@ namespace dframework {
             if( m_request_count == (uint64_t)-1 ){
                 m_request_count = 1;
             }
-
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "### -------- #1 no F");
             if( configure->isPrintRequestHeader() ){
                 DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this
                        , "Request:: handle=%d\n%s", getHandle()
                        , m_req->m_sRequestHeaders.toChars());
             }
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "### -------- #4");
             return NULL;
         }while(true);
     }
 
     sp<Retval> HttpdClient::readyRequest(){
         sp<Retval> retval;
-
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###b: 0");
+        
         sp<HttpdConfigure> configure = m_configure;
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###b: 1");
         sp<HttpdHost> host = configure->getHost(m_req->m_sHost, m_sock->getServerPort());
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###b: 2");
         if( !host.has() ){
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###b: 3");
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, HTTPD_STATUS_500
                                     , "Not found host. host=%s:%d"
                                     , m_req->m_sHost.toChars(), m_sock->getServerPort());
         }
 
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###b: 4");
         sp<Object> hostobj = host;
         setHost(hostobj);
 
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###a: 1");
         DFWLOG_C(DFWLOG_L|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "r:");
 
         // ----------------------------------------------------------
         // module
         sp<HttpdClient> thiz = this;
         for(int k=0; k<host->getModSize(); k++){
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###a: 2 (%d)", k);
             dfw_httpstatus_t outstatus = DFW_HTTP_STATUS_0;
             sp<HttpdMod> mod = host->getMod(k);
             if( DFW_RET(retval, mod->request(thiz, &outstatus))){
                 if(outstatus!=DFW_HTTP_STATUS_0){
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###a: 4");
                     return DFW_RETVAL_D_SET_ERR(retval, HTTPD_STATUS_500);
                 }
             }
@@ -159,7 +148,6 @@ namespace dframework {
         // module
         // ----------------------------------------------------------
 
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "###a: 3");
         return NULL;
     }
 
@@ -205,20 +193,15 @@ namespace dframework {
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, DFW_HTTP_STATUS_404, "Not support cgi.");
         }
 
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "#1");
-
         dfw_httpstatus_t outstatus = DFW_HTTP_STATUS_0;
         if( DFW_RET(retval, se_checkLocalFile(&outstatus)) ){
             sp<Retval> retval2;
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "#2");
             if( DFW_RET(retval2, sendResponseStatus()) )
                 return DFW_RETVAL_D(retval2);
             if( retval->value() == DFW_OK )
                 return NULL;
             return DFW_RETVAL_D(retval);
         }
-
-        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "#3");
 
         dfw_time_t s_time = Time::currentTimeMillis();
         do{
@@ -673,7 +656,6 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
 
 #if 0
         if( m_req->m_bCacheControl ) {
-DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control true");
             if( 0==m_req->m_iCacheControlMaxAge ){
             }else{
             }
@@ -686,8 +668,6 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control true");
                 return DFW_RETVAL_D(retval);
             if(DFW_RET(retval,m_resp->appendHeader("Pragma","no-cache")))
                 return DFW_RETVAL_D(retval);
-        }else{
-DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "cache-control false");
         }
 #endif
 

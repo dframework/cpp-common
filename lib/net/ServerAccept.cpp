@@ -184,8 +184,9 @@ namespace dframework {
         sp<Retval> retval;
         {
             AutoLock _l(this);
-            if( m_bStarted )
+            if( m_bStarted ){
                 return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "This is started.");
+            }
         }
         return DFW_RET_C(retval, Thread::start());
     }
@@ -228,7 +229,9 @@ namespace dframework {
                 }
             }
             if( DFW_RET(retval, accept()) ){
-                DFWLOG_R(DFWLOG_F|DFWLOG_ID(DFWLOG_SERVER_ID), retval, "");
+                if(retval->error() || retval->value()){
+                    DFWLOG_R(DFWLOG_F|DFWLOG_ID(DFWLOG_SERVER_ID), retval, "failed accept !!!");
+                }
                 continue;
             }
         }
@@ -236,8 +239,9 @@ namespace dframework {
 
     sp<Retval> ServerAccept::accept(){
         sp<Retval> retval;
-        if( DFW_RET(retval, accept_poll()) )
+        if( DFW_RET(retval, accept_poll()) ){
             return DFW_RETVAL_D(retval);
+        }
         return NULL;
     }
 
@@ -347,8 +351,9 @@ namespace dframework {
 
     sp<Retval> ServerAccept::repairServer(sp<ServerSocket>& sock){
         sp<Retval> retval;
-        if( DFW_RET(retval, sock->create(sock->getPort())) )
+        if( DFW_RET(retval, sock->create(sock->getPort())) ){
             return DFW_RETVAL_D(retval);
+        }
         return NULL;
     }
 

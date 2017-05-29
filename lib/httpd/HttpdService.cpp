@@ -17,7 +17,6 @@ namespace dframework {
     }
 
     void HttpdService::setReuseAddr(bool bReuseAddr){
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "setReuseAddr(%d)", bReuseAddr);
         m_accept->setReuseAddr(bReuseAddr);
     }
 
@@ -140,28 +139,23 @@ namespace dframework {
 
         if( DFW_RET(retval, m_accept->start()) )
             return DFW_RETVAL_D(retval);
-
         return NULL;
     }
 
     void HttpdService::join(){
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join begin");
         if( m_localfile.has() ) m_localfile->join();
         if( m_stream.has() )    m_stream->join();
         if( m_accept.has() )    m_accept->join();
         if( m_worker.has() )    m_worker->join();
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService join complete");
     }
 
     sp<Retval> HttpdService::stop(){
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService stop begin");
-        m_configure->stop();
+        if( m_configure.has() ) m_configure->stop();
         if( m_localfile.has() ) m_localfile->stop();
         if( m_stream.has() )    m_stream->stop();
         if( m_accept.has() )    m_accept->stop();
         if( m_worker.has() )    m_worker->stop();
         join();
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService stop complete");
         return NULL;
     }
 
