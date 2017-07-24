@@ -1,8 +1,8 @@
 .DS_Store
 /android/obj
 /packages/curl
-/packages/openssl/ios/OpenSSL-for-iPhone
-/packages/openssl/workspace
+/packages/pcre2/pcre2-10.20.tar.gz
+/packages/pcre2/pcre2-10.20/
 /packages/libssh2/src-mingw
 /packages/libssh2/workspace
 /packages/libssh2/ios/workspace
@@ -24,6 +24,9 @@
 /packages/openssl/ios/ios9.3-armv7s
 /packages/openssl/ios/ios9.3-i386
 /packages/openssl/ios/ios9.3-x86_64
+/packages/openssl/ios/OpenSSL-for-iPhone
+/packages/openssl/workspace
+/packages/openssl/windows/
+/packages/openssl/workspace.removed/
 /lib/fscore-removed
 /include/dframework/fscore-removed
-

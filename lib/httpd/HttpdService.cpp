@@ -150,12 +150,19 @@ namespace dframework {
     }
 
     sp<Retval> HttpdService::stop(){
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-begin");
+
         if( m_configure.has() ) m_configure->stop();
         if( m_localfile.has() ) m_localfile->stop();
         if( m_stream.has() )    m_stream->stop();
         if( m_accept.has() )    m_accept->stop();
         if( m_worker.has() )    m_worker->stop();
+
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-ing");
+
         join();
+
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-complete");
         return NULL;
     }
 

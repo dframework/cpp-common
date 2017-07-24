@@ -154,9 +154,13 @@ public:
             }
         }
 
-        if(p->isjoin()){
-            pthread_exit(NULL);
+        {
+            AutoLock _l(p);
+            if(p->m_bJoin){
+                pthread_exit(NULL);
+            }
         }
+
         return NULL;
     }
 

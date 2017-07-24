@@ -35,9 +35,13 @@ namespace dframework {
     void HttpdClient::stop(){
         AutoLock _l(this);
         m_bStop = true;
+        if(m_sock.has()){
+            m_sock->stop();
+        }
     }
 
     void HttpdClient::close(){
+        AutoLock _l(this);
         if(m_sock.has()){
             m_sock->close();
         }
@@ -165,6 +169,7 @@ namespace dframework {
                                         , "Stop httpd thread. handle=%d"
                                         , getHandle());
             }
+
             dfw_time_t c_time = Time::currentTimeMillis();
             if( (c_time-s_time) > (1000*60/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 

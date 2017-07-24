@@ -48,6 +48,7 @@ namespace dframework {
         int m_SendSoSize;   // os socket buffer size
 
         time_t m_useTime;
+        bool m_bStop;
 
         sp<Retval> wait(int rdwr, int msec/*1/1000sec*/);
         sp<Retval> connect_raw();
@@ -119,6 +120,8 @@ namespace dframework {
         sp<Retval> getSendBufferSize(int* size);
 
         sp<Retval> getSendBufferLeftSize(int *size);
+
+        inline void stop(){ m_bStop = true; }
 
         friend class ServerSocket;
         friend class ClientSocket;

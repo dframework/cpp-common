@@ -38,12 +38,13 @@ namespace dframework {
         m_SendSoSize = 102400;
         m_iPort = 0;
         m_useTime = 0;
+        m_bStop = false;
     }
     
     Socket::~Socket(){
         close();
     }
-   
+
     sp<Retval> Socket::setFcntl(int v){
 #ifndef _WIN32
         sp<Retval> retval;
@@ -312,19 +313,27 @@ namespace dframework {
         return NULL;
     }
 
-    sp<Retval> Socket::wait(int rdwr, int msec/*1/1000sec*/)
+    sp<Retval> Socket::wait(int rdwr, int in_msec/*1/1000sec*/)
     {
+        const int test_sec = 1000;
         int ret;
         int eno;
+        int waiting = 0;
+
         struct pollfd fds;
         fds.fd = m_iHandle;
         fds.events = ((rdwr==0)?POLLIN:POLLOUT)|POLLERR|POLLHUP|POLLNVAL;
+
         do{
+            if( m_bStop ){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Socket is stop");
+            }
+
             fds.revents = 0;
 #ifdef _WIN32
-            if( -1 == (ret = win32_poll(&fds, 1, msec)) )
+            if( -1 == (ret = win32_poll(&fds, 1, test_sec)) )
 #else
-            if( -1 == (ret = ::poll(&fds, 1, msec)) )
+            if( -1 == (ret = ::poll(&fds, 1, test_sec)) )
 #endif
             {
                 eno = errno;
@@ -340,9 +349,19 @@ namespace dframework {
                 }
                 return DFW_RETVAL_NEW(DFW_E_POLL,eno);
             }else if( 0 == ret ){
-                return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT,0
-                           , "handle=%d, rdwr=%d, timeout=%d, TIMEOUT"
-                           , m_iHandle, rdwr, msec);
+                if( m_bStop ){
+                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                               , "handle=%d, rdwr=%d, timeout=%d, STOP"
+                               , m_iHandle, rdwr, in_msec);
+                }
+
+                waiting += test_sec;
+                if(waiting>=in_msec){
+                    return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT,0
+                               , "handle=%d, rdwr=%d, timeout=%d, TIMEOUT"
+                               , m_iHandle, rdwr, in_msec);
+                }
+                continue;
             }
 
             if( (fds.revents & POLLIN)==POLLIN && rdwr==0){
@@ -355,20 +374,20 @@ namespace dframework {
             if( (fds.revents & POLLERR) == POLLERR ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_POLLERR,0
                            , "handle=%d, rdwr=%d, timeout=%d, POLLERR"
-                           , m_iHandle, rdwr, msec);
+                           , m_iHandle, rdwr, in_msec);
             }else if( (fds.revents & POLLHUP) == POLLHUP ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_POLLHUP,0
                            , "handle=%d, rdwr=%d, timeout=%d, POLLHUP"
-                           , m_iHandle, rdwr, msec);
+                           , m_iHandle, rdwr, in_msec);
             }else if( (fds.revents & POLLNVAL) == POLLNVAL ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_POLLNVAL,0
                            , "handle=%d, rdwr=%d, timeout=%d, POLLNVAL"
-                           , m_iHandle, rdwr, msec);
-            }else{
-                return DFW_RETVAL_NEW_MSG(DFW_E_POLL,0
-                           , "handle=%d, rdwr=%d, timeout=%d"
-                           , m_iHandle, rdwr, msec);
+                           , m_iHandle, rdwr, in_msec);
             }
+
+            return DFW_RETVAL_NEW_MSG(DFW_E_POLL,0
+                       , "handle=%d, rdwr=%d, timeout=%d"
+                       , m_iHandle, rdwr, in_msec);
         }while(true);
 
         /*
@@ -555,6 +574,11 @@ namespace dframework {
             if(0==l_size) {
                 return NULL;
             }
+
+            if( m_bStop ){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Socket is stop.");
+            }
+
 #if defined(MSG_NOSIGNAL)
             int s_size = ::send(m_iHandle, data+offset, l_size, MSG_NOSIGNAL);
 #else
@@ -613,6 +637,10 @@ namespace dframework {
         do{
             if(0==l_size){
                 return NULL;
+            }
+
+            if( m_bStop ){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Socket is stop.");
             }
 
             size_t r_size = ::recv(m_iHandle, o_data+offset, l_size, 0);
