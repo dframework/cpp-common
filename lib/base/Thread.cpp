@@ -223,7 +223,7 @@ public:
     sp<Retval> BaseThread::join(){
         sp<Retval> retval;
         int eno;
-        void* out_join;
+        void* out_join = NULL;
         {
             AutoLock _l(this);
             m_bJoin = true;
