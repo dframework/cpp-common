@@ -208,7 +208,7 @@ namespace dframework {
             return DFW_RETVAL_D(retval);
         }
 
-        dfw_time_t s_time = Time::currentTimeMillis();
+        m_ssTime = Time::currentTimeMillis();
         do{
             if(m_bStop){
                 return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0 
@@ -216,12 +216,12 @@ namespace dframework {
                                         , getHandle());
             }
 
-            /*dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-s_time) > (1000*60) ){
+            dfw_time_t c_time = Time::currentTimeMillis();
+            if( (c_time-m_ssTime) > (1000*60) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout response. handle=%d"
                                         , getHandle());
-            }*/
+            }
 
             if( DFW_RET(retval, sendLocalFile()) ){
                 int rvalue = retval->value();
@@ -809,6 +809,9 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
               ::memcpy(m_resp->m_buffer, fbuf+s_osize, m_resp->m_iBufferLen);
           if( !(m_resp->m_iFileSended < m_resp->m_iFileSendLength) )
               m_resp->m_iFileStatus = 3;
+
+          m_ssTime = Time::currentTimeMillis();
+
           if( retval.has() )
               return DFW_RETVAL_D(retval);
           return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);

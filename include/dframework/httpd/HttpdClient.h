@@ -28,6 +28,8 @@ namespace dframework {
         uint64_t   m_request_count;
         bool       m_bStop;
 
+        dfw_time_t m_ssTime; // send start time;
+
     public:
         HttpdClient();
         virtual ~HttpdClient();
