@@ -1,3 +1,4 @@
+#include <dframework/base/ThreadManager.h>
 #include <dframework/httpd/HttpdService.h>
 #include <dframework/log/Logger.h>
 
@@ -152,15 +153,66 @@ namespace dframework {
     sp<Retval> HttpdService::stop(){
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-begin");
 
-        if( m_configure.has() ) m_configure->stop();
-        if( m_localfile.has() ) m_localfile->stop();
-        if( m_stream.has() )    m_stream->stop();
-        if( m_accept.has() )    m_accept->stop();
-        if( m_worker.has() )    m_worker->stop();
+/*
+
+        if( m_configure.has() ){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has configure");
+            m_configure->stop();
+        }else{
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not configure");
+        }
+        if( m_localfile.has() ){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has localfile");
+            m_localfile->stop();
+        }else{
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not localfile");
+        }
+        if( m_stream.has() ){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has stream");
+            m_stream->stop();
+        }else{
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not stream");
+        }
+        if( m_accept.has() ){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has accept");
+            m_accept->stop();
+        }else{
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not accept");
+        }
+        if( m_worker.has() ){
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has worker");
+            m_worker->stop();
+        }else{
+            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not worker");
+        }
 
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-ing");
 
         join();
+*/
+
+        sp<ThreadManager> tm = ThreadManager::instance();
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+             , "Stop threads (count: %d)", tm->size());
+
+        for(int k=(tm->size()-1); k>=0; k--){
+            sp<Thread> thread = tm->get(k);
+            if(thread.has()){
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+                    , "Stop thread :: stop(%d)", k);
+                thread->stop();
+
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+                    , "Stop thread :: join(%d)", k);
+                thread->join();
+                DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+                    , "Stop thread :: complete(%d)", k);
+            }
+        }
+
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
+              , "Stop threads complete (count: %d)"
+              , tm->size());
 
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-complete");
         return NULL;

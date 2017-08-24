@@ -23,6 +23,7 @@ namespace dframework {
 
         ServerAccept::stop();
 
+        /*
         int type = m_configure->getServerType();
         switch(type){
         case HttpdService::SERVER_TYPE_POLL :
@@ -63,6 +64,7 @@ namespace dframework {
             }
             break;
         }
+        */
     }
 
     sp<Retval> HttpdAcceptor::onAccept(sp<ClientSocket>& sock){
