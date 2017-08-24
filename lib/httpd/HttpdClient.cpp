@@ -216,12 +216,12 @@ namespace dframework {
                                         , getHandle());
             }
 
-            dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-s_time) > (1000*60/* FIXME: */) ){
+            /*dfw_time_t c_time = Time::currentTimeMillis();
+            if( (c_time-s_time) > (1000*60) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
-                                        , "Timeout read request. handle=%d"
+                                        , "Timeout response. handle=%d"
                                         , getHandle());
-            }
+            }*/
 
             if( DFW_RET(retval, sendLocalFile()) ){
                 int rvalue = retval->value();
