@@ -95,6 +95,7 @@ namespace dframework {
                         , uint64_t offset)
     {
         sp<Retval> retval;
+
         if( (offset!=m_offset) && DFW_RET(retval, seek(offset)) ){
             return DFW_RETVAL_D(retval);
         }

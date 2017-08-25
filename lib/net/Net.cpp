@@ -273,7 +273,7 @@ namespace dframework {
         return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not support fcntl_k for windows.");
 #else
         int stat;
-        int retry = 0;
+        //int retry = 0;
         do{
             if( (-1!=(stat=::fcntl(sock, cmd/*F_GETFL*/, arg)))){
                 if(out) *out = stat;
@@ -287,12 +287,12 @@ namespace dframework {
 
             switch(eno){
             case EAGAIN :
-                if(retry>10){
+                //if(retry>10){
                     return DFW_RETVAL_NEW(DFW_E_AGAIN,0);
-                }
-                usleep(1000*100);
-                retry++;
-                continue;
+                //}
+                //usleep(1000*100);
+                //retry++;
+                //continue;
             /*case EINTR:
                 continue;*/
             }

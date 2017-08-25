@@ -86,7 +86,7 @@ namespace dframework {
             if( DFW_RET(retval, m_sock->wait_recv()) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
-                    usleep(10000);
+                    //usleep(1000);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -96,7 +96,7 @@ namespace dframework {
                 if( 0 == rsize ){
                     int rvalue = retval->value();
                     if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
-                        usleep(10000);
+                        //usleep(1000);
                         continue;
                     }
                     return DFW_RETVAL_D(retval);
@@ -186,7 +186,7 @@ namespace dframework {
             if( DFW_RET(retval, sendStream(&comp)) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT){
-                    usleep(10000);
+                    //usleep(1000);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -232,7 +232,7 @@ namespace dframework {
             if( DFW_RET(retval, sendLocalFile()) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT){
-                    usleep(10000);
+                    //usleep(1000);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -580,15 +580,25 @@ namespace dframework {
                 iStart = ::atoll(sStart.toChars());
             }
             if(sEnd.empty()){
-                iEnd = 0;
+                iEnd = iFileSize-1;
             }else{
                 iEnd = ::atoll(sEnd.toChars());
             }
-            /*if(m_resp->m_iFileSize <= iEnd){
-                iEnd = m_resp->m_iFileSize - 1;
-DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
-
-            }*/
+            if(iFileSize <= iEnd){
+                struct stat st; ::memset(&st, 0, sizeof(struct stat));
+                sp<OriginFs> fs = new OriginFs();
+                if( DFW_RET(retval, fs->ready(m_req->m_host)) ){
+                    return DFW_RETVAL_D(retval);
+                }
+                if( DFW_RET(retval, fs->getattr(m_req->m_sRequest.toChars(), &st)) ){
+                    if( retval->value()==DFW_E_NOENT){
+                        return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not found %s", m_req->m_sRequest.toChars());
+                    }
+                    return DFW_RETVAL_D(retval);
+                }
+                m_resp->m_iFileSize = iFileSize = (size_t)st.st_size;
+                iEnd = iFileSize - 1;
+            }
             iLength = iEnd - iStart + 1;
 
             sContentRange = String::format("bytes %llu-%llu/%llu"
@@ -764,7 +774,12 @@ DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "#1 iEnd(2)=%llu", iEnd);
               }
 
               if( 0 == out_fsize){
-                  return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
+                  return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
+                             , "Not read file."
+                               " readable_size=%u, offset=%llu at %s"
+                             , readable_size
+                             , fileOffset
+                             , m_req->m_sRequest.toChars());
               }
                           
               m_resp->m_iBufferLen = out_fsize;
