@@ -60,6 +60,7 @@ namespace dframework {
         sp<HttpdConfigure> configure = m_configure;
         size_t size;
         char buffer[MAX_READ_PACKET];
+        dfw_time_t c_time;
         dfw_time_t s_time = Time::currentTimeMillis();
 
         do{
@@ -75,7 +76,7 @@ namespace dframework {
                 return DFW_RETVAL_NEW(DFW_ERROR, HTTPD_STATUS_500);
             }
 
-            dfw_time_t c_time = Time::currentTimeMillis();
+            c_time = Time::currentTimeMillis();
             if( (c_time-s_time) > (1000*MAX_TIMEOUT/* FIXME: */) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout read request. handle=%d"
@@ -85,6 +86,7 @@ namespace dframework {
             if( DFW_RET(retval, m_sock->wait_recv()) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
+                    usleep(10000);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -94,11 +96,14 @@ namespace dframework {
                 if( 0 == rsize ){
                     int rvalue = retval->value();
                     if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
+                        usleep(10000);
                         continue;
                     }
                     return DFW_RETVAL_D(retval);
                 }
             }
+
+            s_time = Time::currentTimeMillis();
 
             if( DFW_RET(retval, m_req->parseRequest(buffer, rsize)) ){
                 int rvalue = retval->value();
@@ -181,6 +186,7 @@ namespace dframework {
             if( DFW_RET(retval, sendStream(&comp)) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT){
+                    usleep(10000);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -226,6 +232,7 @@ namespace dframework {
             if( DFW_RET(retval, sendLocalFile()) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT){
+                    usleep(10000);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
