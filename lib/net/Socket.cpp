@@ -34,8 +34,8 @@ namespace dframework {
         m_ConnTimeMSec = 10000;
         m_TimeoutMSec = 10000;
         m_iSockType = SOCK_STREAM;
-        m_RecvSoSize = 102400;
-        m_SendSoSize = 102400;
+        m_RecvSoSize = 0; //102400;
+        m_SendSoSize = 0; //102400;
         m_iPort = 0;
         m_useTime = 0;
         m_bStop = false;
@@ -294,11 +294,14 @@ namespace dframework {
         if(DFW_RET(retval, setKeepAlive(1)))
             return DFW_RETVAL_D(retval);
 
-        if(DFW_RET(retval, setRecvBufferSize(m_RecvSoSize)))
-            return DFW_RETVAL_D(retval);
-        
-        if(DFW_RET(retval, setSendBufferSize(m_SendSoSize)))
-            return DFW_RETVAL_D(retval);
+        if( m_RecvSoSize>0 ){
+            if(DFW_RET(retval, setRecvBufferSize(m_RecvSoSize)))
+                return DFW_RETVAL_D(retval);
+        }
+        if(m_SendSoSize>0){
+            if(DFW_RET(retval, setSendBufferSize(m_SendSoSize)))
+                return DFW_RETVAL_D(retval);
+        }
 
 #if 0
         struct timeval tv;
@@ -592,8 +595,9 @@ namespace dframework {
 #endif
 
                 if( Net::isInprogress(eno) ){
-                    if(!iswait)
-                        return DFW_RETVAL_NEW(DFW_E_AGAIN,eno);
+                    if(!iswait){
+                        return DFW_RETVAL_NEW(DFW_E_TIMEOUT,eno);
+                    }
                     if(!DFW_RET(retval, wait_send())){
                         continue;
                     }

@@ -51,6 +51,13 @@ namespace dframework {
                 continue;
             }
 
+#if !defined(__APPLE__) && !defined(_WIN32)
+            // left send packet.
+#else
+            if(!isstop()){
+                sleep(2);
+            }
+#endif
             return DFW_RETVAL_NEW_MSG(DFW_OK, 0, "exit thread(no keepalive)");
         }while(true);
     }

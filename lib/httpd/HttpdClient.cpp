@@ -19,6 +19,7 @@ namespace dframework {
         m_resp = new HttpResponse();
         m_request_count = 0;
         m_bStop = false;
+        m_bEnableResizeableFile = false;
     }
 
     HttpdClient::~HttpdClient(){
@@ -52,8 +53,8 @@ namespace dframework {
         m_sock = sock;
     }
 
-#define MAX_TIMEOUT 3600
-#define MAX_READ_PACKET 10240
+#define MAX_TIMEOUT (600)
+#define MAX_READ_PACKET 102400
     sp<Retval> HttpdClient::parseRequest(){
         sp<Retval> retval;
 
@@ -86,7 +87,7 @@ namespace dframework {
             if( DFW_RET(retval, m_sock->wait_recv()) ){
                 int rvalue = retval->value();
                 if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
-                    //usleep(1000);
+                    sleep(0);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -96,7 +97,7 @@ namespace dframework {
                 if( 0 == rsize ){
                     int rvalue = retval->value();
                     if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
-                        //usleep(1000);
+                        sleep(0);
                         continue;
                     }
                     return DFW_RETVAL_D(retval);
@@ -185,8 +186,8 @@ namespace dframework {
             int comp = 0;
             if( DFW_RET(retval, sendStream(&comp)) ){
                 int rvalue = retval->value();
-                if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT){
-                    //usleep(1000);
+                if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT ){
+                    sleep(0);
                     continue;
                 }
                 return DFW_RETVAL_D(retval);
@@ -223,19 +224,23 @@ namespace dframework {
             }
 
             dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-m_ssTime) > (1000*60) ){
+            if( (c_time-m_ssTime) > (1000*20) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout response. handle=%d"
                                         , getHandle());
             }
 
             if( DFW_RET(retval, sendLocalFile()) ){
-                int rvalue = retval->value();
-                if( rvalue == DFW_E_AGAIN || rvalue == DFW_E_TIMEOUT){
-                    //usleep(1000);
+                switch(retval->value()){
+                case DFW_E_AGAIN:
+                case DFW_E_TIMEOUT:
+                    usleep(20000);
                     continue;
+                case DFW_T_CONTINUE:
+                    continue;
+                default:
+                    return DFW_RETVAL_D(retval);
                 }
-                return DFW_RETVAL_D(retval);
             }
 
             DFWLOG_C(DFWLOG_L|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "l:");
@@ -585,19 +590,32 @@ namespace dframework {
                 iEnd = ::atoll(sEnd.toChars());
             }
             if(iFileSize <= iEnd){
-                struct stat st; ::memset(&st, 0, sizeof(struct stat));
-                sp<OriginFs> fs = new OriginFs();
-                if( DFW_RET(retval, fs->ready(m_req->m_host)) ){
-                    return DFW_RETVAL_D(retval);
-                }
-                if( DFW_RET(retval, fs->getattr(m_req->m_sRequest.toChars(), &st)) ){
-                    if( retval->value()==DFW_E_NOENT){
-                        return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not found %s", m_req->m_sRequest.toChars());
+                if( !m_bEnableResizeableFile ){
+                    iEnd = iFileSize - 1;
+                }else{
+                    struct stat st; ::memset(&st, 0, sizeof(struct stat));
+                    sp<OriginFs> fs = new OriginFs();
+                    if( DFW_RET(retval, fs->ready(m_req->m_host)) ){
+                        return DFW_RETVAL_D(retval);
                     }
-                    return DFW_RETVAL_D(retval);
+                    if( DFW_RET(retval, fs->getattr(m_req->m_sRequest.toChars(), &st)) ){
+                        if( retval->value()==DFW_E_NOENT){
+                            return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not found %s", m_req->m_sRequest.toChars());
+                        }
+                        return DFW_RETVAL_D(retval);
+                    }
+                    if(iFileSize != st.st_size){
+                        uint64_t newSize = st.st_size;
+                        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this
+                            , "Update Filesize: old-size=%llu, new-size=%lu"
+                            , iFileSize, newSize);
+                        m_resp->m_iFileSize = iFileSize = (size_t)st.st_size;
+                    }else{
+                        DFWLOG_C(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), this
+                            , "Warring Filesize: old-size=%llu, range-end-postion=%llu"
+                            , iFileSize, iEnd);
+                    }
                 }
-                m_resp->m_iFileSize = iFileSize = (size_t)st.st_size;
-                iEnd = iFileSize - 1;
             }
             iLength = iEnd - iStart + 1;
 
@@ -727,7 +745,7 @@ namespace dframework {
             if( DFW_RET(retval, sendLocalFile_ready()) ){
                 return DFW_RETVAL_D(retval);
             }
-            return DFW_RETVAL_NEW(DFW_E_AGAIN, EAGAIN);
+            return DFW_RETVAL_NEW(DFW_T_CONTINUE, 0);
 
         case 1 :
           {
@@ -737,7 +755,7 @@ namespace dframework {
               }
               m_resp->m_iFileStatus = 2;
           }
-          return DFW_RETVAL_NEW(DFW_E_AGAIN, EAGAIN);
+          return DFW_RETVAL_NEW(DFW_T_CONTINUE, 0);
 
         case 2 :
           {
@@ -752,7 +770,7 @@ namespace dframework {
 
           if(m_req->m_sMethod.equals("HEAD")){
               m_resp->m_iFileStatus = 3;
-              return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
+              return DFW_RETVAL_NEW(DFW_T_CONTINUE, 0);
           }
 
           if( DFW_RET(retval, m_sock->wait_send()) ){
@@ -836,26 +854,25 @@ namespace dframework {
 
           if( retval.has() )
               return DFW_RETVAL_D(retval);
-          return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
+          return DFW_RETVAL_NEW(DFW_T_CONTINUE, 0);
         }
 
         case 3:
-//          {
-//#if !defined(__APPLE__) && !defined(_WIN32)
-//              int leftsize = 0;
-//              if( DFW_RET(retval,m_sock->getSendBufferLeftSize(&leftsize)))
-//                  return DFW_RETVAL_D(retval);
-//              if( leftsize == 0 )
-//                  return NULL;
-//#else
-              return NULL;
-//#endif
-//          }// end case 3: {
-//          return DFW_RETVAL_NEW(DFW_E_AGAIN, EAGAIN);
+          {
+#if !defined(__APPLE__) && !defined(_WIN32)
+              int leftsize = 0;
+              if( DFW_RET(retval,m_sock->getSendBufferLeftSize(&leftsize))){
+                  return DFW_RETVAL_D(retval);
+              }
+              if( leftsize > 0 ){
+                  return DFW_RETVAL_NEW(DFW_E_AGAIN, EAGAIN);
+              }
+#endif
+          }
+          return NULL;
         }
 
-        return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0
-                   , "Unknown send file status.");
+        return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Unknown send file status.");
     }
 
 };

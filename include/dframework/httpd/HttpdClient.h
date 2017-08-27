@@ -28,7 +28,8 @@ namespace dframework {
         uint64_t   m_request_count;
         bool       m_bStop;
 
-        dfw_time_t m_ssTime; // send start time;
+        dfw_time_t m_ssTime;                // send start time;
+        bool       m_bEnableResizeableFile; // ex: for writing file, default: false
 
     public:
         HttpdClient();
@@ -165,6 +166,9 @@ namespace dframework {
         inline uint64_t getSendedSize() {
             return (m_resp.has() ? m_resp->getSendedSize() : 0); 
         }
+
+        inline void setResizeableFile(bool enable){ m_bEnableResizeableFile = enable; }
+        inline bool getResizeableFile(){ return m_bEnableResizeableFile; }
 
         friend class HttpdWorker;
         friend class HttpdThread;
