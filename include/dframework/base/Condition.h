@@ -21,13 +21,13 @@ namespace dframework {
 #else
         pthread_cond_t  ___m_cond_handle;
         pthread_mutex_t ___m_cond_mutex_handle;
-        dfw_retval_t    ___m_cond_errno;
-        dfw_retval_t    ___m_cond_mutex_errno;
+        dfw_errno_t     ___m_cond_errno;
+        dfw_errno_t     ___m_cond_mutex_errno;
 #endif
         Object          ___m_safe;
         bool            ___m_b_wait;
-        dfw_retval_t    ___init_mutex();
-        dfw_retval_t    ___init_cond();
+        dfw_errno_t     ___init_mutex();
+        dfw_errno_t     ___init_cond();
         sp<Retval>      ___check_init();
         sp<Retval>      ___wait_real();
         sp<Retval>      ___timedwait_real(long milliSeconds);

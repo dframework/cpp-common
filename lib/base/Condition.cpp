@@ -20,85 +20,96 @@ namespace dframework {
     Condition::~Condition()
     {
 #if (defined(_WIN32) || defined(_WIN64)) && (!defined(__MINGW32__))
-        if(___m_cond_handle)
+        if(___m_cond_handle){
             ::CloseHandle(___m_cond_handle);
+        }
 #else
-        if(!DFW_RETVAL_HASX(___m_cond_errno))
+        if(!___m_cond_errno){
             ::pthread_cond_destroy(&___m_cond_handle);
-        if(!DFW_RETVAL_HASX(___m_cond_mutex_errno))
+        }
+        if(!___m_cond_mutex_errno){
             ::pthread_mutex_destroy(&___m_cond_mutex_handle);
+        }
 #endif
     }
 
-    dfw_retval_t Condition::___init_mutex(){
+    dfw_errno_t Condition::___init_mutex(){
         dfw_errno_t eno;
         int count = 1;
         do{
-            if( !(eno = ::pthread_mutex_init(&___m_cond_mutex_handle, NULL)) )
-                return DFW_OK_LOCAL;
+            if( !(eno = ::pthread_mutex_init(&___m_cond_mutex_handle, NULL)) ){
+                return 0;
+            }
             if(eno==EAGAIN){
-                if(count>10)
-                    return {DFW_E_AGAIN, eno};
+                if(count>10){
+                    return eno;
+                }
                 usleep(1000);
                 count++;
                 continue;
             }
-            switch(eno){
+            return eno;
+            /*switch(eno){
             case EINTR:
-                return {DFW_E_INTR, eno};
+                return eno;
             case EINVAL:
-                return {DFW_E_INVAL, eno};
+                return eno;
             case EDEADLK:
-                return {DFW_E_DEADLK, eno};
+                return eno;
             case EBUSY:
-                return {DFW_E_BUSY, eno};
+                return eno;
             case ETIMEDOUT:
-                return {DFW_E_TIMEOUT, eno};
+                return eno;
             case EPERM:
-                return {DFW_E_PERM, eno};
+                return eno;
             }
-            return {Retval::retno(eno), eno};
+            return {Retval::retno(eno), eno};*/
         }while (true);
     }
     
-    dfw_retval_t Condition::___init_cond(){
+    dfw_errno_t Condition::___init_cond(){
         dfw_errno_t eno;
         int count = 1;
         do{
-            if( !(eno = ::pthread_cond_init(&___m_cond_handle, NULL)) )
-                return DFW_OK_LOCAL;
+            if( !(eno = ::pthread_cond_init(&___m_cond_handle, NULL)) ){
+                return 0;
+            }
             if(eno==EAGAIN){
-                if(count>10)
-                    return {DFW_E_AGAIN, eno};
+                if(count>10){
+                    return eno;
+                }
                 usleep(1000);
                 count++;
                 continue;
             }
-            switch(eno){
+            return eno;
+            /*switch(eno){
             case EINTR:
-                return {DFW_E_INTR, eno};
+                return DFW_E_INTR;
             case EINVAL:
-                return {DFW_E_INVAL, eno};
+                return DFW_E_INVAL;
             case EBUSY:
-                return {DFW_E_BUSY, eno};
+                return DFW_E_BUSY;
             case ENOMEM:
-                return {DFW_E_NOMEM, eno};
+                return DFW_E_NOMEM;
             }
-            return {Retval::retno(eno), eno};
+            return Retval::retno(eno);*/
         }while (true);
     }
     
     sp<Retval> Condition::___check_init(){
-        if(DFW_RETVAL_HASX(___m_cond_mutex_errno)){
+        if(___m_cond_mutex_errno){
             ___m_cond_mutex_errno=___init_mutex();
-            if(DFW_RETVAL_HASX(___m_cond_mutex_errno))
-                return DFW_RETVAL_NEWX(___m_cond_mutex_errno);
+            if(___m_cond_mutex_errno){
+                return DFW_RETVAL_NEW(Retval::retno(___m_cond_mutex_errno), ___m_cond_mutex_errno);
+            }
         }
 
-        if(DFW_RETVAL_HASX(___m_cond_errno)){
+        if(___m_cond_errno){
             ___m_cond_errno=___init_cond();
-            if(DFW_RETVAL_HASX(___m_cond_errno))
-                return DFW_RETVAL_NEWX(___m_cond_errno);
+            if(___m_cond_errno){
+                return DFW_RETVAL_NEW(Retval::retno(___m_cond_errno), ___m_cond_errno);
+            }
         }
 
         return NULL;
@@ -108,7 +119,7 @@ namespace dframework {
     {
 #if (defined(_WIN32) || defined(_WIN64)) && (!defined(__MINGW32__))
         WaitForSingleObject(___m_cond_handle, 0);
-        return DFW_OK;
+        return NULL;
 #else
         sp<Retval> retval = ___check_init();
         if(DFW_RETVAL_H(retval)) return DFW_RETVAL_D(retval);
