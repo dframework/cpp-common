@@ -858,8 +858,8 @@ namespace dframework {
         }
 
         case 3:
-          {
 #if !defined(__APPLE__) && !defined(_WIN32)
+          {
               int leftsize = 0;
               if( DFW_RET(retval,m_sock->getSendBufferLeftSize(&leftsize))){
                   return DFW_RETVAL_D(retval);
@@ -867,8 +867,8 @@ namespace dframework {
               if( leftsize > 0 ){
                   return DFW_RETVAL_NEW(DFW_E_AGAIN, EAGAIN);
               }
-#endif
           }
+#endif
           return NULL;
         }
 
