@@ -71,8 +71,7 @@ namespace dframework {
                 continue;
             if(DFW_RET(retval, Net::setKeepAlive(m_iHandle, 1)))
                 continue;
-
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "setReuseAddr: %d", m_bReuseAddr);
+            
             if( m_bReuseAddr ){
                 if(DFW_RET(retval, Net::setSockOptInt(m_iHandle, SOL_SOCKET, SO_REUSEADDR, 1)))
                     continue;
@@ -127,7 +126,6 @@ namespace dframework {
     }
 
     void ServerAccept::setReuseAddr(bool bReuseAddr){
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "setReuseAddr(%d)", bReuseAddr);
         m_bReuseAddr = bReuseAddr;
     }
 
@@ -142,7 +140,6 @@ namespace dframework {
         }
 
         sp<ServerSocket> sock = new ServerSocket();
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "ServerSocket::setReuseAddr(%d)", m_bReuseAddr);
         sock->setReuseAddr(m_bReuseAddr);
         if( DFW_RET(retval, sock->ready(port)) )
             return DFW_RETVAL_D(retval);

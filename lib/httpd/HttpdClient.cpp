@@ -140,9 +140,9 @@ namespace dframework {
 
         sp<Object> hostobj = host;
         setHost(hostobj);
-
+        
         DFWLOG_C(DFWLOG_L|DFWLOG_ID(DFWLOG_HTTPD_ID), this, "r:");
-
+        
         // ----------------------------------------------------------
         // module
         sp<HttpdClient> thiz = this;

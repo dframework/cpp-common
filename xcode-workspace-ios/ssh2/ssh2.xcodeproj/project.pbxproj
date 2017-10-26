@@ -267,7 +267,7 @@
 					"$(PROJECT_DIR)/../packages/libssh2/src-darwin",
 					"$(PROJECT_DIR)/../packages/libssh2/src-darwin/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../packages/lib";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -319,7 +319,7 @@
 					"$(PROJECT_DIR)/../packages/libssh2/src-darwin",
 					"$(PROJECT_DIR)/../packages/libssh2/src-darwin/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../packages/lib";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = (
@@ -344,9 +344,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/../packages/lib",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
 		};
@@ -362,9 +364,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/../packages/lib",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};

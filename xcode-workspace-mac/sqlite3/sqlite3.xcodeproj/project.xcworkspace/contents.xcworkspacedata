@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../../../packages/sqlite3/sqlite3.c">
+   </FileRef>
+   <FileRef
       location = "self:sqlite3.xcodeproj">
    </FileRef>
 </Workspace>

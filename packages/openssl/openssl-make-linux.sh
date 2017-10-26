@@ -6,6 +6,9 @@ OPENSSL_NM="openssl-1.0.1r"
 OPENSSL_FN="${OPENSSL_NM}.tar.gz"
 OPENSSL_BD="${D_PWD}/${D_WORKSPACE}/build"
 
+D_TARGET="x86_64"
+#D_TARGET="i386"
+
 tmp_unamea=`uname -a`
 tmp_unameb=`expr "${tmp_unamea}" : '\(^[A-Za-z0-9]\{1,\}\)[[:blank:]]'`
 D_OSNAME=`echo $tmp_unameb | tr "[A-Z]" "[a-z]"`
@@ -56,8 +59,13 @@ echo "Enter ${D_WORKSPACE}/${OPENSSL_NM} ..."
 
     
 if [ "$D_OSNAME" = "darwin" ]; then
-    ./Configure darwin64-x86_64-cc --prefix=$OPENSSL_BD shared
-    openssl_exit $? "./Configure darwin64-x86_64-cc --prefix=$OPENSSL_BD shared at ${D_WORKSPACE}/${OPENSSL_NM}\n${tmp}"
+    if [ "${D_TARGET}" = "x86_64" ]; then
+        ./Configure darwin64-${D_TARGET}-cc --prefix=$OPENSSL_BD shared
+        openssl_exit $? "./Configure darwin64-${D_TARGET}-cc --prefix=$OPENSSL_BD shared"
+    else
+        ./Configure darwin-${D_TARGET}-cc --prefix=$OPENSSL_BD shared
+        openssl_exit $? "./Configure darwin-${D_TARGET}-cc --prefix=$OPENSSL_BD shared"
+    fi
 else
     ./config --prefix=$OPENSSL_BD shared
     openssl_exit $? "./config --prefix=${OPENSSL_BD} at ${D_WORKSPACE}/${OPENSSL_NM}\n${tmp}"
@@ -70,8 +78,8 @@ make install
 openssl_exit $? "make install at ${D_WORKSPACE}/${OPENSSL_NM}"
 
 cd $D_PWD
-mkdir -p ${D_OSNAME}/x86_64
-cp -R ${D_PWD}/${D_WORKSPACE}/build/* ${D_OSNAME}/x86_64/
+mkdir -p ${D_OSNAME}/${D_TARGET}
+cp -R ${D_PWD}/${D_WORKSPACE}/build/* ${D_OSNAME}/${D_TARGET}/
 
 echo ""
 echo "Success openssl for LINUX."

@@ -62,8 +62,7 @@ namespace dframework {
         }while(true);
     }
 
-    sp<Retval> HttpdThread::ready(sp<HttpdConfigure>& configure
-                                , sp<ClientSocket>& sock)
+    sp<Retval> HttpdThread::ready(sp<HttpdConfigure>& configure, sp<ClientSocket>& sock)
     {
         AutoLock _l(this);
         sp<Retval> retval;
@@ -77,22 +76,19 @@ namespace dframework {
 
     sp<Retval> HttpdThread::request(){
         sp<Retval> retval;
-
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::request, handle=%d", m_client->getHandle());
+        
+        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::request2, handle=%d", m_client->getHandle());
         if( DFW_RET(retval, m_client->parseRequest()) ){
-            //DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::complete-request 1");
             return DFW_RETVAL_D(retval);
         }
 
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::ready-reqeust, handle=%d", m_client->getHandle());
         if( DFW_RET(retval, m_client->readyRequest()) ){
-            //DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::complete-request 2");
             return DFW_RETVAL_D(retval);
         }
 
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::send-response, handle=%d", m_client->getHandle());
         if( DFW_RET(retval, m_client->sendResponse()) ){
-            //DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdThread::complete-request 3");
             return DFW_RETVAL_D(retval);
         }
 

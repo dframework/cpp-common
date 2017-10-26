@@ -26,6 +26,10 @@ namespace dframework {
         inline sp<Retval> split(String& buffer, const char* str){
             return split(buffer.toChars(), str);
         }
+        
+        inline sp<Retval> insert(sp<String>& value){
+            return m_aList.insert(value);
+        }
 
     };
 
