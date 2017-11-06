@@ -7,15 +7,25 @@ namespace dframework {
 
     HttpdThread::HttpdThread(){
         DFW_SAFE_ADD(HttpdThread, l);
+        m_client = NULL;
     }
 
     HttpdThread::~HttpdThread(){
+        AutoLock _l(this);
+        m_configure = NULL;
+        if(m_client.has()){
+            m_client->close();
+            m_client = NULL;
+        }
         DFW_SAFE_REMOVE(HttpdThread, l);
     }
 
     void HttpdThread::stop(){
+        AutoLock _l(this);
+        if(m_client.has()){
+            m_client->stop();
+        }
         Thread::stop();
-        m_client->stop();
     }
 
     void HttpdThread::run(){
@@ -31,9 +41,14 @@ namespace dframework {
                         , m_client.get()
                         , "exit thread.");
         }
-        m_client->close();
-        m_configure = NULL;
-        m_client = NULL;
+        
+        
+        {
+            AutoLock _l(this);
+            if(m_client.has()){
+                m_client->close();
+            }
+        }
     }
 
     sp<Retval> HttpdThread::run_2(){
