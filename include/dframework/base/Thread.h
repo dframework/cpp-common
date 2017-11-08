@@ -61,6 +61,9 @@ namespace dframework {
 
         static void* ___run(void *obj);
         void run();
+        
+        static void ___cleanup(void *obj);
+        void cleanup();
 
         static void ___sig_handler(int signo);
         sp<Retval> setSigno(int signo);
@@ -134,6 +137,7 @@ namespace dframework {
         inline virtual sp<Retval> onPrepare()   { return NULL; }
         inline virtual sp<Retval> onStart()     { return NULL; }
         inline virtual void onStoped()    {}
+        inline virtual void onCleanup()   {}
         inline virtual void onSignal(int signum) { DFW_UNUSED(signum); }
 
         inline virtual sp<Retval> start()    { return ___m_base.start(); }

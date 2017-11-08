@@ -118,6 +118,8 @@ public:
 
     void* BaseThread::___run(void *obj)
     {
+        pthread_cleanup_push(BaseThread::___cleanup, obj);
+        
         BaseThread *p = (BaseThread*)obj;
         sp<Thread> i_thread = p->m_thread;
 
@@ -157,10 +159,11 @@ public:
         {
             AutoLock _l(p);
             if(p->m_bJoin){
-                pthread_exit(NULL);
+                pthread_exit(obj);
             }
         }
 
+        pthread_cleanup_pop(0);
         return NULL;
     }
 
@@ -181,7 +184,19 @@ public:
 
         m_thread->onStoped();
     }
-
+    
+    void BaseThread::___cleanup(void *obj)
+    {
+        BaseThread *p = (BaseThread*)obj;
+        if(p){
+            p->cleanup();
+        }
+    }
+    
+    void BaseThread::cleanup(){
+        m_thread->onCleanup();
+    }
+    
     void BaseThread::___sig_handler(int signo){
         sp<Thread> thread;
         sp<ThreadManager> mana = ThreadManager::instance();
@@ -376,7 +391,7 @@ public:
 
     void Thread::Trace::alloc(char** d, const char* s){
         if(!s){ *d = NULL; return; }
-        int size = strlen(s);
+        size_t size = strlen(s);
         *d = (char*) ::malloc( size + 1 );
         if( *d ){
             char* t = *d;

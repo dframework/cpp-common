@@ -21,6 +21,7 @@ namespace dframework {
 
         virtual void stop();
         virtual sp<Retval> onAccept(sp<ClientSocket>& sock);
+        inline virtual void onCleanup();
 
         inline void setWorker(sp<HttpdWorker>& worker){
             m_worker = worker; 

@@ -74,6 +74,8 @@ namespace dframework {
             return ready(sHost.toChars(), sport, eport);
         }
 
+        sp<Retval> repaireServerSocket();
+        
         inline void setUserAgent(const char* sAgent){
             m_sUserAgent = sAgent;
         }

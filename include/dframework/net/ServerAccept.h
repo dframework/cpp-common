@@ -56,7 +56,8 @@ namespace dframework {
     class ServerAccept : public Thread
     {
     private:
-        bool m_bStarted;
+        //bool m_bStarted;
+        int  m_iServerStatus;
         bool m_bReuseAddr;
         ArraySorted<ServerSocket> m_aSockList;
 
@@ -66,25 +67,34 @@ namespace dframework {
         // FIXME: sp<Retval> accept_no_poll(bool* bAccept);
 
     public:
+        static const int STATUS_STOP = -1;
+        static const int STATUS_NONE = 0;
+        static const int STATUS_RUNNING = 2;
+        
+    public:
         ServerAccept();
         virtual ~ServerAccept();
 
+        virtual void onCleanup();
+        
         void setReuseAddr(bool bReuseAddr);
         sp<Retval> appendPort(int port);
         sp<Retval> appendServerSocket(sp<ServerSocket>& sock);
-
+        
         virtual sp<Retval> start();
         virtual void run();
         virtual void stop();
         void run_l();
 
         sp<Retval> accept();
-        virtual bool isStart() { return m_bStarted; }
+        //virtual bool isStart() { return m_bStarted; }
+        virtual int  serverStatus() { return m_iServerStatus; }
 
         virtual sp<Retval> onAccept(sp<ClientSocket>& sock);
-
+        
+        sp<Retval> clearServerSockets();
     private:
-        sp<Retval> repairServer(sp<ServerSocket>& sock);
+        sp<Retval> repairServerSocket(sp<ServerSocket>& sock);
     };
 
 };

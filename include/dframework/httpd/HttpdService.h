@@ -39,8 +39,13 @@ namespace dframework {
         sp<HttpdConfigure> getConfigure(){
             return m_configure;
         }
+        
+        inline int serverStatus(){
+            return m_accept.has() ? m_accept->serverStatus() : ServerAccept::STATUS_NONE;
+        }
 
         void setReuseAddr(bool bReuseAddr);
+        sp<Retval> repaireService(); // background app on ios
 
         sp<Retval> setServerType(int serverType);
         inline int getDefaultServerType(){ return m_defaultServerType; }

@@ -103,6 +103,24 @@ namespace dframework {
         AutoLock _l(this);
         return m_used;
     }
+    
+    sp<Retval> Poll::clear(){
+        AutoLock _l(this);
+        static const int pollsize = sizeof(struct pollfd);
+        
+        for(int k=0; k<m_used; k++){
+            Object* pobj = (Object*)m_ppsocks[k];
+            if( DFW_SOCK_ENABLE(m_polls[k].fd) )
+                DFW_SOCK_CLOSE(m_polls[k].fd);
+            if(pobj!=NULL)
+                sp<Object>::docking( pobj );
+        }
+        m_used = 0;
+        ::memset(m_polls, -1, pollsize*m_memsize);
+        ::memset(m_ppsocks, 0, sizeof(void*)*m_memsize);
+        
+        return NULL;
+    }
 
     sp<Retval> Poll::prepare()
     {
@@ -121,7 +139,7 @@ namespace dframework {
             }
             ::memset(polls, -1, pollsize*memsize);
             ::memset(ppsocks, 0, sizeof(void*)*memsize);
-	}else{
+        }else{
             memsize += DFW_POLL_PIECE_SIZE;
             if( !(polls = (struct pollfd*)::malloc(pollsize*memsize)) )
                 return DFW_RETVAL_NEW(DFW_E_NOMEM, ENOMEM);

@@ -20,6 +20,34 @@ namespace dframework {
     void HttpdService::setReuseAddr(bool bReuseAddr){
         m_accept->setReuseAddr(bReuseAddr);
     }
+    
+    sp<Retval> HttpdService::repaireService(){
+        sp<Retval> retval;
+        if( !m_accept.has() ){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not found HttpdAccept object.");
+        }
+        if( !m_configure.has() ){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Not found HttpdConfigure object.");
+        }
+        if( DFW_RET(retval, m_accept->clearServerSockets()) ){
+            return DFW_RETVAL_D(retval);
+        }
+        
+        for(int k=0; k<m_configure->m_aHosts.size(); k++){
+            sp<HttpdHost> host = m_configure->m_aHosts.get(k);
+            if(!host.has()){
+                continue;
+            }
+            if( DFW_RET(retval, host->repaireServerSocket()) ){
+                return DFW_RETVAL_D(retval);
+            }
+            if( DFW_RET(retval, m_accept->appendServerSocket(host->m_serverSocket)) ){
+                return DFW_RETVAL_D(retval);
+            }
+        }
+        
+        return NULL;
+    }
 
     sp<Retval> HttpdService::setServerType(int serverType){
         AutoLock _l(this);
@@ -151,49 +179,9 @@ namespace dframework {
     }
 
     sp<Retval> HttpdService::stop(){
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-begin");
-
-/*
-
-        if( m_configure.has() ){
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has configure");
-            m_configure->stop();
-        }else{
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not configure");
-        }
-        if( m_localfile.has() ){
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has localfile");
-            m_localfile->stop();
-        }else{
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not localfile");
-        }
-        if( m_stream.has() ){
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has stream");
-            m_stream->stop();
-        }else{
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not stream");
-        }
-        if( m_accept.has() ){
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has accept");
-            m_accept->stop();
-        }else{
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not accept");
-        }
-        if( m_worker.has() ){
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has worker");
-            m_worker->stop();
-        }else{
-            DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "Has not worker");
-        }
-
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-ing");
-
-        join();
-*/
-
         sp<ThreadManager> tm = ThreadManager::instance();
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
-             , "Stop threads (count: %d)", tm->size());
+               , "HttpdService::prev stop threads. count: %d", tm->size());
 
         for(int k=(tm->size()-1); k>=0; k--){
             sp<Thread> thread = tm->get(k);
@@ -211,10 +199,7 @@ namespace dframework {
         }
 
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
-              , "Stop threads complete (count: %d)"
-              , tm->size());
-
-        DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID), "HttpdService::stop-complete");
+               , "HttpdService::stop-complete. count: %d", tm->size());
         return NULL;
     }
 

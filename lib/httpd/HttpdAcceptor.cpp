@@ -18,6 +18,10 @@ namespace dframework {
     HttpdAcceptor::~HttpdAcceptor(){
     }
 
+    void HttpdAcceptor::onCleanup(){
+        ServerAccept::onCleanup();
+    }
+    
     void HttpdAcceptor::stop(){
         sp<Retval> retval;
 

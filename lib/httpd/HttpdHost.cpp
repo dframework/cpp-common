@@ -55,6 +55,17 @@ namespace dframework {
     HttpdHost::~HttpdHost(){
     }
 
+    sp<Retval> HttpdHost::repaireServerSocket(){
+        sp<Retval> retval;
+        sp<ServerSocket> sock = new ServerSocket();
+        sock->setReuseAddr(m_bReuseAddr);
+        if( DFW_RET(retval, sock->ready(getPort())) ){
+            return DFW_RETVAL_D(retval);
+        }
+        m_serverSocket = sock;
+        return NULL;
+    }
+    
     int HttpdHost::getPort(){
         AutoLock _l(this);
         if( m_serverSocket.has())
@@ -71,7 +82,7 @@ namespace dframework {
 
     sp<HttpdHost::AliasUri> HttpdHost::getAliasUri(const char* path){
         AutoLock _l(this);
-        unsigned pathlen = strlen(path);
+        size_t pathlen = strlen(path);
         if( 1==pathlen )
             return m_aBaseDocumentRoot;
 

@@ -57,6 +57,7 @@ namespace dframework {
         }
         int size();
 
+        sp<Retval> clear();
         sp<Retval> append(int* out_num, int fd, sp<Object> obj);
         inline sp<Retval> append(int fd, sp<Object> obj){
             return append(NULL, fd, obj);

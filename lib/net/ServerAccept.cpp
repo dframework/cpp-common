@@ -115,9 +115,9 @@ namespace dframework {
     }
 
     // --------------------------------------------------------------
-
+    
     ServerAccept::ServerAccept(){
-        m_bStarted = false;
+        m_iServerStatus = STATUS_NONE;
         m_bReuseAddr = true;
         m_poll.setEvents(POLLIN|POLLERR|POLLNVAL|POLLHUP);
     }
@@ -125,6 +125,14 @@ namespace dframework {
     ServerAccept::~ServerAccept(){
     }
 
+    void ServerAccept::onCleanup(){
+        {
+            AutoLock _l(this);
+            m_iServerStatus = STATUS_STOP;
+        }
+        Thread::onCleanup();
+    }
+    
     void ServerAccept::setReuseAddr(bool bReuseAddr){
         m_bReuseAddr = bReuseAddr;
     }
@@ -176,12 +184,12 @@ namespace dframework {
 
         return NULL;
     }
-
+    
     sp<Retval> ServerAccept::start(){
         sp<Retval> retval;
         {
             AutoLock _l(this);
-            if( m_bStarted ){
+            if( m_iServerStatus==STATUS_RUNNING ){
                 return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "This is started.");
             }
         }
@@ -189,8 +197,14 @@ namespace dframework {
     }
 
     void ServerAccept::run(){
+        {
+            AutoLock _l(this);
+            m_iServerStatus = STATUS_RUNNING;
+        }
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "ServerAccept Start");
+        
         run_l();
+        
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_SERVER_ID), "ServerAccept Stopped");
     }
 
@@ -246,11 +260,10 @@ namespace dframework {
         sp<Retval> retval;
         int poll_count = 0;
 
-        {
         AutoLock _l(&m_poll);
         int size = m_poll.size();
         if( size == 0 ){
-            ::usleep(200);
+            ::usleep(100000);
             return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Has not server socket.");
         }
 
@@ -278,7 +291,7 @@ namespace dframework {
                 continue;
             }
             sp<ServerSocket> ssock = obj;
-
+            
             if( (!(iserror = m_poll.getPollErr(k))) && m_poll.isPollIn(k) ){
                 int osock;
                 DFW_SOCK_INIT(osock);
@@ -310,7 +323,7 @@ namespace dframework {
                        , ssock->getPort(), iserror);
                 m_poll.remove(k);
                 m_aSockList.remove(ssock);
-                if( DFW_RET(retval, repairServer(ssock)) ){
+                if( DFW_RET(retval, repairServerSocket(ssock)) ){
                     DFWLOG_R(DFWLOG_F|DFWLOG_ID(DFWLOG_SERVER_ID), retval
                        , "repair-server-error. serv-port=%d, error=%d"
                        , ssock->getPort(), iserror);
@@ -336,7 +349,7 @@ namespace dframework {
 
             m_poll.resetRevents(k);
         }
-        } // end AutoLock
+        // end AutoLock
 
         return NULL;
     }
@@ -346,7 +359,15 @@ namespace dframework {
         return NULL;
     }
 
-    sp<Retval> ServerAccept::repairServer(sp<ServerSocket>& sock){
+    sp<Retval> ServerAccept::clearServerSockets(){
+        AutoLock _l(this);
+        AutoLock _l2(&m_poll);
+        m_poll.clear();
+        m_aSockList.clear();
+        return NULL;
+    }
+    
+    sp<Retval> ServerAccept::repairServerSocket(sp<ServerSocket>& sock){
         sp<Retval> retval;
         if( DFW_RET(retval, sock->create(sock->getPort())) ){
             return DFW_RETVAL_D(retval);

@@ -12,17 +12,6 @@ namespace dframework {
     sp<Retval> HttpdConfigure::addHost(sp<HttpdHost>& host){
         AutoLock _l(this);
         sp<Retval> retval;
-#if 0
-        sp<HttpdHost> find = m_aHosts.get(host);
-        if(find.has())
-            return NULL;
-        sp<Integer> searchPort = new Integer(host->getPort());
-        sp<Integer> findPort = m_aPorts.get(searchPort);
-        if( !findPort.has() ){
-            if( DFW_RET(retval, m_aPorts.insert(searchPort)) )
-                return DFW_RETVAL_D(retval);
-        }
-#endif
         if( DFW_RET(retval, m_aHosts.insert(host)) )
             return DFW_RETVAL_D(retval);
         return NULL;
@@ -91,30 +80,6 @@ namespace dframework {
             return DFW_RETVAL_D(retval);
         return NULL;
     }
-
-#if 0
-    sp<URI> HttpdConfigure::getDocumentRoot(String& sHost, int port){
-        AutoLock _l(this);
-        sp<Retval> retval;
-        for(int k=0; k<m_aHosts.size(); k++){
-            sp<HttpdHost> host = m_aHosts.get(k);
-            if( host.has() ){
-                if( sHost.equals( host->getHostAlias() ) ){
-                    return host->getDocumentRoot();
-                }
-            }
-        }
-        for(int k=0; k<m_aHosts.size(); k++){
-            sp<HttpdHost> host = m_aHosts.get(k);
-            if( host.has() ){
-                if( port == host->getPort() ){
-                    return host->getDocumentRoot();
-                }
-            }
-        }
-        return NULL;
-    }
-#endif
-
+    
 };
 
