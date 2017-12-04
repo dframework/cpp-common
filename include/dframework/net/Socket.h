@@ -101,8 +101,7 @@ namespace dframework {
         
         sp<Retval> connect(const char *uri);
         sp<Retval> connect(URI& uri);
-        sp<Retval> connectbyip(int addrType
-                             , const char *ip, int port, bool isopen);
+        sp<Retval> connectbyip(int addrType, int sockType, const char *ip, int port);
 
         inline sp<Retval> wait_connect(){ return wait(1, m_ConnTimeMSec); }
         inline sp<Retval> wait_send(){ return wait(1, m_TimeoutMSec); }

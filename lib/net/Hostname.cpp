@@ -30,12 +30,27 @@
 #endif
 
 namespace dframework {
-
-    Hostname::Result::Result(const String& ip, int type) 
+    
+    Hostname::Result::Result(const String& ip, int type, void* ai_addr, int ai_addr_len)
             : Object()
     {
+        if(ai_addr_len){
+            m_SockAddr = (void*)malloc(ai_addr_len);
+            memcpy(m_SockAddr, ai_addr, ai_addr_len);
+        }else{
+            m_SockAddr = NULL;
+        }
+        
+        m_iSockAddrLen = ai_addr_len;
         m_sIp = ip;
         m_iAddrType = type;
+    }
+    
+    Hostname::Result::~Result(){
+        if(m_SockAddr){
+            ::free(m_SockAddr);
+            m_SockAddr = NULL;
+        }
     }
 
     // --------------------------------------------------------------
@@ -58,7 +73,7 @@ namespace dframework {
             sp<Hostname::Result> result = hn.getResult(k);
             if(result.has()){
                 sp<Hostname::Result> nr
-                    = new Hostname::Result(result->m_sIp, result->m_iAddrType);
+                    = new Hostname::Result(result->m_sIp, result->m_iAddrType, result->m_SockAddr, result->m_iSockAddrLen);
                 m_aResultList.insert(nr);
             }
         }
@@ -217,7 +232,7 @@ namespace dframework {
 
     sp<Retval> Hostname::addCache(sp<Hostname::Result> result){
         sp<Hostname::Result> ns 
-              = new Hostname::Result(result->m_sIp, result->m_iAddrType);
+              = new Hostname::Result(result->m_sIp, result->m_iAddrType, result->m_SockAddr, result->m_iAddrType);
         sp<Retval> retval = m_aCacheList.insert(ns);
         if(DFW_RETVAL_H(retval)) return DFW_RETVAL_D(retval);
         return NULL;
@@ -258,8 +273,8 @@ namespace dframework {
         if(hostip.empty())
             return DFW_RETVAL_NEW(DFW_E_INVAL, 0);
 
-        if( !DFW_RET(retval, parse_addrtype(hostip)) )
-            return NULL;
+        //if( !DFW_RET(retval, parse_addrtype(hostip)) )
+        //    return NULL;
 
         dfw_ulong_t cacheTime = 0;
         if(bCache && (!DFW_RET(retval, m_Cache.search(hostip, *this))) ){
@@ -284,6 +299,7 @@ namespace dframework {
         return DFW_RETVAL_D(retval);
     }
 
+    /*
     sp<Retval> Hostname::parse_addrtype(const String& hostip)
     {
         sp<Retval> retval;
@@ -311,6 +327,7 @@ namespace dframework {
 
         return DFW_RETVAL_NEW_MSG(DFW_ERROR,0, "input=%s", hostip.toChars());
     }
+    */
 
     sp<Retval> Hostname::parse_hostbyname(const String& hostip)
     {
@@ -328,7 +345,10 @@ namespace dframework {
 #ifdef USE_GAI_ADDRCONFIG /* added in the RFC3493 API */
         hints.ai_flags = AI_ADDRCONFIG;
 #endif
+        hints.ai_flags = AI_PASSIVE;
         hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
+        
         do{
             hptr = NULL;
             int eno = ::getaddrinfo(hostip.toChars(), NULL, &hints, &hptr);
@@ -374,19 +394,20 @@ namespace dframework {
             switch(hptr->ai_family){
                 case AF_INET:
                     ptr = &((struct sockaddr_in *) hptr->ai_addr)->sin_addr;
-                    retval  = inet_ntop4((const unsigned char *)ptr, addrstr, 112);
+                    if(DFW_RET(retval, inet_ntop4((const unsigned char *)ptr, addrstr, 112)))
+                        return DFW_RETVAL_D(retval);
                     break;
                 case AF_INET6:
                     ptr = &((struct sockaddr_in6 *) hptr->ai_addr)->sin6_addr;
-                    retval = inet_ntop6((const unsigned char *)ptr, addrstr, 112);
+                    if(DFW_RET(retval, inet_ntop6((const unsigned char *)ptr, addrstr, 112)))
+                        return DFW_RETVAL_D(retval);
                     break;
                 default :
                     return DFW_RETVAL_NEW(DFW_E_ADDRTYPE, 0);
             }
-            if(DFW_RETVAL_H(retval)) return DFW_RETVAL_D(retval);
-
+            
             String hostip = addrstr;
-            sp<Result> result = new Result(hostip, hptr->ai_family);
+            sp<Result> result = new Result(hostip, hptr->ai_family, hptr->ai_addr, hptr->ai_addrlen);
             if( !m_aResultList.get(result).has() )
                 m_aResultList.insert(result);
 

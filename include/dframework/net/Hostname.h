@@ -17,10 +17,12 @@ namespace dframework {
         public:
             String m_sIp;
             int    m_iAddrType;
+            void*  m_SockAddr; // struct sockaddr_in(6)
+            int    m_iSockAddrLen;
 
         public:
-            Result(const String& ip, int type);
-            inline virtual ~Result() {}
+            Result(const String& ip, int type, void* ai_addr, int ai_addr_len);
+            virtual ~Result();
 
             DFW_OPERATOR_EX_DECLARATION(Result, m_sIp);
         };
@@ -101,7 +103,7 @@ namespace dframework {
     private:
         sp<Retval> parse_start(bool bCache);
         sp<Retval> parse_start_l(bool bCache);
-        sp<Retval> parse_addrtype(const String& hostip);
+        //sp<Retval> parse_addrtype(const String& hostip);
         sp<Retval> parse_hostbyname(const String& hostip);
         sp<Retval> inet_ntop4(const dfw_byte_t* src, char *dst, long size);
         sp<Retval> inet_ntop6(const dfw_byte_t* src, char *dst, long size);

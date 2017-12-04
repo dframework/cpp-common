@@ -109,7 +109,6 @@ namespace dframework {
     sp<Retval> HttpConnection::connect_real(sp<HttpRound>& round){
         sp<Retval> retval;
         int num = -1;
-        int opentype = -1;
         int port = round->m_oUri.getPort();
         sp<Hostname::Result> ips;
 
@@ -125,13 +124,11 @@ namespace dframework {
 
             const char *ip = ips->m_sIp.toChars();
             int atype = ips->m_iAddrType;
-            if(atype!=opentype){
-                if( DFW_RET(retval, m_socket->open(atype, SOCK_STREAM)) )
-                    return DFW_RETVAL_D(retval);
-                opentype = atype;
-            }
-            if(!DFW_RET(retval, m_socket->connectbyip(atype, ip, port, false)))
+            printf("---------------\n");
+            printf("ip: %s\n", ip);
+            if(!DFW_RET(retval, m_socket->connectbyip(atype, SOCK_STREAM, ip, port)))
                 return NULL;
+            printf("%s\n\n\n\n", retval->dump().toBytes());
         }while(true);
     }
 

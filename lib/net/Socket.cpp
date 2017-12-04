@@ -216,7 +216,6 @@ namespace dframework {
             return DFW_RETVAL_NEW(DFW_E_HOST_NOT_FOUND,0);
 
         int num = 0;
-        int opentype = -1;
         int port = uri.getPort();
         sp<Hostname::Result> ips;
 
@@ -224,15 +223,7 @@ namespace dframework {
             if(DFW_RET(ips, host.getResult(num))){
                 const char *ip = ips->m_sIp.toChars();
                 int atype = ips->m_iAddrType;
-                if(atype!=opentype){
-                    if(DFW_RET(retval
-                        , Socket::open(atype, SOCK_STREAM)) ){
-                        return DFW_RETVAL_D(retval);
-                    }
-                    opentype = atype;
-                }
-                if(!DFW_RET(retval
-                    , Socket::connectbyip(atype, ip, port, false)) ){
+                if(!DFW_RET(retval, connectbyip(atype, SOCK_STREAM, ip, port)) ){
                     return NULL;
                 }
             }
@@ -255,22 +246,17 @@ namespace dframework {
         return NULL;
     }
 
-    sp<Retval> Socket::connectbyip(
-            int addrType, const char *ip, int port, bool isopen)
+    sp<Retval> Socket::connectbyip(int addrType, int sockType, const char *ip, int port)
     {
         sp<Retval> retval;
         m_iAddrType = addrType;
+        m_iSockType = sockType;
         m_sIp = ip;
         m_iPort = port;
 
-        if(isopen){
-            if(DFW_RET(retval,Socket::open(addrType, m_iSockType)) )
-                return DFW_RETVAL_D(retval);
-        }else{
-            if(-1==m_iHandle)
-                return DFW_RETVAL_NEW(DFW_E_CONNECT,0);
-        }
-
+        if(DFW_RET(retval, open(addrType, sockType)) )
+            return DFW_RETVAL_D(retval);
+        
         if( DFW_RET(retval, connect_real()) )
             return DFW_RETVAL_D(retval);
 
@@ -434,17 +420,39 @@ namespace dframework {
 
     sp<Retval> Socket::connect_raw(){
         sp<Retval> retval;
-        struct sockaddr_in sa;
+        int res;
+        struct sockaddr_in sa4;
+        struct sockaddr_in6 sa6;
 
-        ::memset( (void *)&sa, 0, sizeof(sa));
-        sa.sin_family = m_iAddrType;
-        sa.sin_addr.s_addr = inet_addr(m_sIp.toChars());
-        sa.sin_port = htons(m_iPort);
-
+        switch(m_iAddrType){
+            case AF_INET:
+                ::memset( (void *)&sa4, 0, sizeof(sa4));
+                sa4.sin_family = m_iAddrType;
+                sa4.sin_addr.s_addr = inet_addr(m_sIp.toChars());
+                sa4.sin_port = htons(m_iPort);
+                break;
+            case AF_INET6:
+                ::memset( (void *)&sa6, 0, sizeof(sa6));
+                sa6.sin6_family = m_iAddrType;
+                inet_pton(AF_INET6, m_sIp.toChars(), &(sa6.sin6_addr));
+                sa6.sin6_port = htons(m_iPort);
+                break;
+        }
+        
         do{
-            if( (-1 == ::connect(m_iHandle
-                               , (struct sockaddr*)&sa
-                               , sizeof(sa))) )
+            switch(m_iAddrType){
+                case AF_INET:
+                    res = ::connect(m_iHandle
+                                    , (struct sockaddr*)&sa4
+                                    , sizeof(sa4));
+                    break;
+                case AF_INET6:
+                    res = ::connect(m_iHandle
+                                    , (struct sockaddr*)&sa6
+                                    , sizeof(sa6));
+                    break;
+            }
+            if( -1 == res )
             {
 #ifdef _WIN32
 		int eno = WSAGetLastError();
