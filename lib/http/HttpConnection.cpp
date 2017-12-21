@@ -124,11 +124,11 @@ namespace dframework {
 
             const char *ip = ips->m_sIp.toChars();
             int atype = ips->m_iAddrType;
-            printf("---------------\n");
-            printf("ip: %s\n", ip);
+            //printf("---------------\n");
+            //printf("ip: %s\n", ip);
             if(!DFW_RET(retval, m_socket->connectbyip(atype, SOCK_STREAM, ip, port)))
                 return NULL;
-            printf("%s\n\n\n\n", retval->dump().toBytes());
+            //printf("%s\n\n\n\n", retval->dump().toBytes());
         }while(true);
     }
 
