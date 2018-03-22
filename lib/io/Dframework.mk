@@ -20,8 +20,9 @@ LOCAL_INCLUDES := \
 LOCAL_MODULE :=libdframework-common-io
 
 ifneq (${DDK_ENV_TARGET_OS}, "windows")
-    LOCAL_CFLAGS := -fPIC
+    LOCAL_CFLAGS := -fPIC 
 endif
+    LOCAL_CFLAGS += -D_LARGE_FILES=1 -D_FILE_OFFSET_BITS=64 -D__USE_FILE_OFFSET64=1
 
 include $(BUILD_STATIC_LIBRARY)
 
