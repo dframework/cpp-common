@@ -53,7 +53,7 @@ namespace dframework {
         m_sock = sock;
     }
 
-#define MAX_TIMEOUT (600)
+#define MAX_TIMEOUT (60*120)
 #define MAX_READ_PACKET 102400
     sp<Retval> HttpdClient::parseRequest(){
         sp<Retval> retval;
@@ -224,7 +224,7 @@ namespace dframework {
             }
 
             dfw_time_t c_time = Time::currentTimeMillis();
-            if( (c_time-m_ssTime) > (1000*20) ){
+            if( (c_time-m_ssTime) > (1000*MAX_TIMEOUT) ){
                 return DFW_RETVAL_NEW_MSG(DFW_E_TIMEOUT, 0 
                                         , "Timeout response. handle=%d"
                                         , getHandle());
