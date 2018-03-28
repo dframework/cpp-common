@@ -118,8 +118,9 @@ public:
 
     void* BaseThread::___run(void *obj)
     {
+#ifndef _WIN32
         pthread_cleanup_push(BaseThread::___cleanup, obj);
-        
+#endif
         BaseThread *p = (BaseThread*)obj;
         sp<Thread> i_thread = p->m_thread;
 
@@ -163,7 +164,9 @@ public:
             }
         }
 
+#ifndef _WIN32
         pthread_cleanup_pop(0);
+#endif
         return NULL;
     }
 

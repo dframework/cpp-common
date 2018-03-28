@@ -43,7 +43,7 @@ if [ "$D_MINGW" = "" ]; then
   ;;
 esac
 else
-  D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/windows"
+  D_LIBSSL_PREFIX="--with-libssl-prefix=${D_PWD}/../openssl/windows/${CPU_TYPE}"
   D_DEST_SRC="src-mingw"
 fi
 

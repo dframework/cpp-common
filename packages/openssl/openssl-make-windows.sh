@@ -1,11 +1,5 @@
 #!/bin/sh
 
-D_PWD=`pwd`
-D_WORKSPACE="workspace"
-OPENSSL_NM="openssl-1.0.1r"
-OPENSSL_FN="${OPENSSL_NM}.tar.gz"
-OPENSSL_BD="${D_PWD}/${D_WORKSPACE}/build"
-
 openssl_exit(){
     if [ $1 -ne 0 ]; then
         echo "error: $2"
@@ -13,12 +7,28 @@ openssl_exit(){
     fi
 }
 
-backup_config="Configure.backup"
-#MINGW="x86_64-w64-mingw32"
-MINGW="i686-w64-mingw32"
 
-#PWD=`pwd`
-#WORKSPACE="${PWD}/openssl-build"
+D_PWD=`pwd`
+D_WORKSPACE="workspace"
+OPENSSL_NM="openssl-1.0.1r"
+OPENSSL_FN="${OPENSSL_NM}.tar.gz"
+OPENSSL_BD="${D_PWD}/${D_WORKSPACE}/build"
+
+D_TARGET="x86_64"
+#D_TARGET="x86"
+D_OSNAME="windows"
+
+
+backup_config="Configure.backup"
+
+case ${D_TARGET} in
+    (x86)
+        MINGW="i686-w64-mingw32"
+    ;;
+    (x86_64)
+        MINGW="x86_64-w64-mingw32"
+    ;;
+esac
 
 if test ! -d $D_WORKSPACE ; then
     mkdir -p $D_WORKSPACE
@@ -82,5 +92,19 @@ openssl_exit $? "cd ${OPENSSL_BD}/usr/include"
 sed -i '/#define HEADER_X509V3_H/a \\n#ifdef X509_NAME\n#undef X509_NAME\n#endif' openssl/x509v3.h
 openssl_exit $? "sed -i '/#define HEADER_X509V3_H/a \\n#ifdef X509_NAME\n#undef X509_NAME\n#endif' openssl/x509v3.h"
 
+
+cd $D_PWD
+mkdir -p ${D_OSNAME}/${D_TARGET}
+cp -R ${D_PWD}/${D_WORKSPACE}/build/usr/* ${D_OSNAME}/${D_TARGET}/
+
+
+#cp windows/x86/lib/libcrypto.a /opt/dframework/ddk/out/windows-x86/build/
+#openssl_exit $? "cp windows/x86/lib/*.a /opt/dframework/ddk/out/windows-x86/build/"
+#cp windows/x86_64/lib/*.a /opt/dframework/ddk/out/windows-x86/build/
+#openssl_exit $? "cp windows/x86_64/lib/*.a /opt/dframework/ddk/out/windows-x86/build/"
+
+
+echo ""
 echo "\n ... OK"
+echo ""
 
