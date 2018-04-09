@@ -450,9 +450,12 @@ namespace dframework {
 //#endif
                 sa6.sin6_port = htons(m_iPort);
                 break;
+            default:
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Unknown addr type.");
         }
         
         do{
+            res = -2;
             switch(m_iAddrType){
                 case AF_INET:
                     res = ::connect(m_iHandle
@@ -464,7 +467,13 @@ namespace dframework {
                                     , (struct sockaddr*)&sa6
                                     , sizeof(sa6));
                     break;
+                default:
+                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Unknown addr type.");
             }
+            
+            if( -2==res)
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Unknown result code.");
+            
             if( -1 == res )
             {
 #ifdef _WIN32

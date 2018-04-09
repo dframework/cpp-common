@@ -333,6 +333,8 @@ namespace dframework {
         if(!DFW_RET(retval, round->readLine())) return NULL;
 
         do{
+            status = -1;
+            
             if( DFW_RET(retval, m_socket->wait_recv()) )
                 return DFW_RETVAL_D(retval);
 
@@ -346,7 +348,11 @@ namespace dframework {
                     }
                 }
             }
-
+            
+            if( -1==status){
+                return DFW_RETVAL_NEW_MSG(DFW_ERROR, 0, "Unknown status.");
+            }
+            
             if( DFW_E_DISCONNECT==status){
                 return DFW_RETVAL_NEW_MSG(DFW_E_DISCONNECT, 0
                            , "Disconnected for reading"

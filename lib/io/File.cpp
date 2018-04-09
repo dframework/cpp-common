@@ -14,8 +14,12 @@
 
 ssize_t pread (int fd, void *buf, size_t count, off_t offset)
 {
-  if (::lseek64(fd, offset, SEEK_SET) != offset)
-    return -1;
+#ifdef __APPLE__
+    if (::lseek(fd, offset, SEEK_SET) != offset)
+#else
+    if (::lseek64(fd, offset, SEEK_SET) != offset)
+#endif
+        return -1;
   return ::read(fd, buf, count);
 }
 
@@ -469,7 +473,11 @@ namespace dframework {
         dfw_retno_t rno = DFW_ERROR;
         const char* msg = NULL;
 
+#ifdef __APPLE__
+        dfw_uint_t res = (dfw_uint_t)::lseek(fd, offset, SEEK_SET);
+#else
         dfw_uint_t res = (dfw_uint_t)::lseek64(fd, offset, SEEK_SET);
+#endif
         if(((dfw_uint_t)-1) == res){
             eno = errno;
             msg = Retval::errno_short(&rno, eno, "Not seek.");
@@ -488,7 +496,11 @@ namespace dframework {
         dfw_retno_t rno = DFW_ERROR;
         const char* msg = NULL;
 
+#ifdef __APPLE__
+        dfw_uint_t res = (dfw_uint_t)::lseek(fd, offset, SEEK_END);
+#else
         dfw_uint_t res = (dfw_uint_t)::lseek64(fd, offset, SEEK_END);
+#endif
         if(((dfw_uint_t)-1) == res){
             eno = errno;
             msg = Retval::errno_short(&rno, eno, "Not lastSeek.");
