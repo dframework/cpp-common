@@ -224,12 +224,12 @@ namespace dframework {
 
         int fromLen = strlen(from);
 
-        if(!from || !to){
+        if(!from){
             return (*this);
         }
-        if(fromLen==1){
-            return (*this);
-        }
+        //if(fromLen==1){
+        //    return (*this);
+        //}
 
         do{
             if( !(p = m_pBuffer + base) ){

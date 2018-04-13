@@ -11,6 +11,7 @@
 #else
 # include <winsock2.h>
 #endif
+#include <syslog.h>
 
 namespace dframework {
 
@@ -248,6 +249,7 @@ namespace dframework {
             return DFW_RETVAL_D(retval);
         }
 
+	//syslog(LOG_INFO, round->m_sHeadBuffer.toChars());
         DFWLOG(DFWLOG_I|DFWLOG_ID(DFWLOG_HTTPD_ID)
                        , "request_raw send : %s\n"
                        , round->m_sHeadBuffer.toChars());
