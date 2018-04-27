@@ -552,7 +552,8 @@ namespace dframework {
 #endif
 
         if( DFW_RET(retval, m_resp->m_originFs->open(
-                                             m_req->m_sRequest.toChars()
+                                             m_req->m_sFile.toChars()
+                                             //m_req->m_sRequest.toChars()
                                             , flags)) ){
             return DFW_RETVAL_D(retval);
         }
