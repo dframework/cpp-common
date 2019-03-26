@@ -112,15 +112,15 @@ namespace dframework {
 
         sp<Retval> ___parseHostAndPath(const String&);
         sp<Retval> ___parseHostAndPath(const char*);
-        void ___parse_HP_FileScheme(
-              Regexp& regexp, int last
-            , const char* str
-            , String& host, String& slash, String& path);
-        void ___parse_UP_HP(Regexp&, const char*);
-        void ___parse_HP(Regexp&, const char*);
-        void ___parse_account(const String& str);
-        void ___parse_host(const char *str);
-        void ___parse_path(const char *str);
+        //void ___parse_HP_FileScheme(
+        //      Regexp& regexp, int last
+        //    , const char* str
+        //    , String& host, String& slash, String& path);
+        //void ___parse_UP_HP(Regexp&, const char*);
+        //void ___parse_HP(Regexp&, const char*);
+        //void ___parse_account(const String& str);
+        //void ___parse_host(const char *str);
+        //void ___parse_path(const char *str);
 
     public:
         URI();
