@@ -1,16 +1,16 @@
 #include <dframework/net/URI.h>
 #include <dframework/util/Regexp.h>
 #include <dframework/lang/Integer.h>
-
+ 
 namespace dframework {
-
+ 
     String URI::PathInfo::path(int no) const{
         sp<String> val = m_aPaths.get(no);
         if(val.has())
             return *val;
         return NULL;
     }
-
+ 
     String URI::PathInfo::fullpath(int no) const{
         String rpath;
         int max = ( (m_aPaths.size() < (no+1))
@@ -26,7 +26,7 @@ namespace dframework {
         }
         return rpath;
     };
-
+ 
     void URI::PathInfo::parse(const char *path, int len){
         int off = 0;
         bool buslash = false;
@@ -42,7 +42,7 @@ namespace dframework {
                 ++off;
                 continue;
             }
-
+ 
             if((!buslash&&'/'==path[off]) && !reslash){
                 reslash = true;
                 name = new String(temp, tk);
@@ -59,25 +59,25 @@ namespace dframework {
                 }
                 temp[tk++] = path[off];
             }
-
+ 
             if(buslash){
                 buslash = false;
             }
             ++off;
         }
-
+ 
         if(tk>0){
             name = new String(temp,tk);
             m_aPaths.insert(name);
         }
-
+ 
         m_sPath = "";
         m_sWinPath = "";
         m_sPrefixPath = "";
         m_sWinPrefixPath = "";
         m_sName = "";
         int s = m_aPaths.size();
-
+ 
         if(s>0){
             sp<String> p = m_aPaths.get(0);
             if(p->empty()){
@@ -117,12 +117,12 @@ namespace dframework {
             }
         }
     }
-
+ 
     // -------------------------------------------------------------
-
+ 
     URI::FileInfo::FileInfo() : m_bUse(false) {
     }
-
+ 
     void URI::FileInfo::clean(){
         m_bUse = false;
         m_sDirname = "";
@@ -130,7 +130,7 @@ namespace dframework {
         m_sName = "";
         m_sExtension = "";
     }
-
+ 
     void URI::FileInfo::parse(const char *path){
         clean();
         m_bUse = true;
@@ -170,24 +170,24 @@ namespace dframework {
             m_sExtension = m_sFilename.toChars()+lidx+1;
         }
     }
-
+ 
     String URI::FileInfo::path(){
-        URI::PathInfo path;
+       URI::PathInfo path;
         path.set(m_sDirname.toChars(), m_sDirname.length());
         return path.path();
     }
-
+ 
     String URI::FileInfo::winPath(){
         URI::PathInfo path;
         path.set(m_sDirname.toChars(), m_sDirname.length());
         return path.winPath();
     }
-
+ 
     URI::FileInfo& URI::FileInfo::operator=(const char *path){
         set(path);
         return (*this);
     }
-
+ 
     URI::FileInfo& URI::FileInfo::operator=(const FileInfo &info){
         clean();
         m_bUse = info.m_bUse;
@@ -197,23 +197,23 @@ namespace dframework {
         m_sExtension = info.m_sExtension;
         return (*this);
     }
-
+ 
     // -------------------------------------------------------------
-    
+   
     URI::Attr::Attr(int type)
             : Object()
     {
         m_type = type;
         m_integer = 0;
     }
-
+ 
     URI::Attr::Attr(int type, int value)
             : Object()
     {
         m_type = type;
         m_integer = value;
     }
-
+ 
     URI::Attr::Attr(int type, const char* value)
             : Object()
     {
@@ -221,7 +221,7 @@ namespace dframework {
         m_integer = 0;
         m_value = value;
     }
-
+ 
     URI::Attr::Attr(int type, const char* name, const char* value)
             : Object()
     {
@@ -230,38 +230,38 @@ namespace dframework {
         m_name = name;
         m_value = value;
     }
-
+ 
     URI::Attr::~Attr(){
     }
-    
+   
     // -------------------------------------------------------------
-
+ 
     URI::URI(){
     }
-
+ 
     URI::URI(const char* uri) : Object::Object()
     {
         parse(uri);
     }
-
+ 
     URI::URI(const String& uri) : Object::Object()
     {
         parse(uri);
     }
-
+ 
     URI::URI(const URI& uri) : Object::Object()
     {
         set(uri);
     }
-
+ 
     URI::URI(sp<URI>& uri) : Object::Object()
     {
         set(uri);
     }
-
+ 
     URI::~URI(){
     }
-
+ 
     String URI::toString() const {
       String to;
       if(!m_sScheme.empty()) to.appendFmt("%s://", m_sScheme.toChars());
@@ -275,7 +275,7 @@ namespace dframework {
       if(!m_sFragment.empty()) to.appendFmt("#%s",m_sFragment.toChars());
       return to;
     }
-
+ 
     void URI::clear(){
         m_sUri = "";
         m_sScheme = "";
@@ -287,7 +287,7 @@ namespace dframework {
         m_sQuery = "";
         m_sFragment = "";
     }
-
+ 
     void URI::set(const URI& uri){
         m_sUri = uri.getUri();
         m_sScheme = uri.getScheme();
@@ -299,7 +299,7 @@ namespace dframework {
         m_sQuery = uri.getQuery();
         m_sFragment = uri.getFragment();
     }
-
+ 
     void URI::set(sp<URI>& uri){
         m_sUri = uri->getUri();
         m_sScheme = uri->getScheme();
@@ -311,94 +311,41 @@ namespace dframework {
         m_sQuery = uri->getQuery();
         m_sFragment = uri->getFragment();
     }
-
+ 
     sp<Retval> URI::parse(const char* uri){
         String s = uri;
 //        return parse(s);
-
+ 
         sp<Retval> retval;
         return DFW_RET_C(retval, parse(s));
     }
-
+ 
     sp<Retval> URI::parse(const String& uri){
         clear();
         m_sUri = uri;
         m_sUri.trim();
-
+ 
         if( m_sUri.empty() )
             return DFW_RETVAL_NEW(DFW_E_INVAL,0);
-
-        Regexp regexp("^([\\S]+?)://([\\s\\S]+)$");
+       
+        Regexp regexp("^([\\S]+?)://([\\s\\S]*)$");
         sp<Retval> retval = regexp.regexp(m_sUri);
         if( !retval.has() ){
             m_sScheme = regexp.getMatchString(1);
             return ___parseHostAndPath(regexp.getMatchString(2));
         }else{
             m_sScheme = "file";
-            int idx = m_sUri.indexOf("://");
-            m_sPath = m_sUri;
-	    if(idx==0)
-                m_sPath.substring(3);
-            return ___parseHostAndPath(m_sPath);
+            return ___parseHostAndPath(m_sUri);
         }
     }
-
+ 
     sp<Retval> URI::___parseHostAndPath(const String& hp){
-//printf("2 =====>> %s\n", hp.toChars());
-        int idx = hp.indexOf('/');
-        String host;
-	String path;
-        String port;
-        if(idx==-1){
-            m_sHost = hp;
-        }else if(idx==0){
-            m_sPath = hp;
-        }else if(idx>0){
-            host = hp;
-	    path = hp;
-            host.substring(0, idx);
-            path.substring(idx);
-
-            idx = host.indexOf(":");
-            if(idx!=-1){
-               port = host;
-               port.substring(idx+1);
-               host.substring(0, idx);
-            }
-            if(port.length())
-                m_iPort = Integer::parseInt(port.toChars());
-
-            idx = path.indexOf("?");
-            if(idx!=-1){
-                String q = path;
-		q.substring(idx+1);
- 		path.substring(0, idx);
-
-                idx = q.indexOf("#");
-                if(idx!=-1){
-		    String f = q;
-		    m_sFragment = f.substring(idx+1);
-		    m_sQuery = q.substring(0, idx);
-		}
-            }
-
-            m_sHost = host;
-            m_sPath = path;
-        }
-//printf("* ====> sche: %s\n", m_sScheme.toChars());
-//printf("* ====> host: %s\n", m_sHost.toChars());
-//printf("* ====> path: %s\n", m_sPath.toChars());
-//printf("* ====> port: %d\n", m_iPort);
-//printf("* ====> quer: %s\n", m_sQuery.toChars());
-//printf("* ====> frag: %s\n", m_sFragment.toChars());
-        return NULL;
+        return ___parseHostAndPath(hp.toChars());
     }
-
+ 
     sp<Retval> URI::___parseHostAndPath(const char* hp){
-        String uri = hp;
-        return ___parseHostAndPath(uri);
-        /*
         sp<Retval> retval;
+        /*
         Regexp uphp_exp("^([a-zA-Z0-9-_]*)@([^\\~\\`\\!\\@\\#\\$\\%\\\\\\^\\&\\*\\(\\)\\_\\+\\-\\=\\{\\}\\[\\]\\;\"\'\\<\\>\\,\\?\\/]*)([/]?)([\\s\\S]*)");
         // user:pass@host.name/folder/file.txt
         // user:pass@host.name/
@@ -412,38 +359,37 @@ namespace dframework {
             ___parse_UP_HP(uphp_exp, hp);
             return NULL;
         }
-
+        */
+ 
         // host.name/folder/file.txt
         // host.name/
         // --------- ---------------
         // (1)     (2)(3)
-        //Regexp hp_exp("^([^\\~\\`\\!\\@\\#\\$\\%\\\\\\^\\&\\*\\(\\)\\_\\+\\-\\=\\{\\}\\[\\]\\;\"\'\\<\\>\\,\\?\\/]*)([/]?)([\\s\\S]*)"); // .:
-        Regexp hp_exp("^([\S]+?)\\([\s\S]+)");
+        Regexp hp_exp("^([\\S]*?)([/]{1})([\\s\\S]*)"); // .:
         retval = hp_exp.regexp(hp);
         if( !retval.has() ){
             ___parse_HP(hp_exp, hp);
             return NULL;
         }
+ 
         return retval;
-        */
     }
-
-    /* 
+ 
     void URI::___parse_HP_FileScheme(
               Regexp& regexp, int last
             , const char* str
-            , String& host, String& slash, String& path
+           , String& host, String& slash, String& path
          )
     {
         const char *p = regexp.getMatch(last);
         const dfw_ulong_t len = regexp.getMatchLength(last);
-
+ 
         if(m_sScheme.equals("file")){
             if(len>0){
                 if(p){
                     path.set(p, len);
                 }else{
-                    // this is pcre2 bug? p is not null !!! T.T
+                    /* this is pcre2 bug? p is not null !!! T.T */
                     dfw_ulong_t off = regexp.getOffset(3);
                     if(!slash.empty())
                         off++;
@@ -464,8 +410,7 @@ namespace dframework {
                 path.set("", 0);
         }
     }
-    */
-    /*
+ 
     void URI::___parse_UP_HP(Regexp& regexp, const char *str){
         sp<Retval> retval;
         String slash;
@@ -475,15 +420,13 @@ namespace dframework {
         if(regexp.getMatchLength(3)){
            slash.set("/", 1);
         }
-
+ 
         ___parse_HP_FileScheme(regexp, 4, str, host, slash, path);
         ___parse_account( account );
         ___parse_host( host.toChars() );
         ___parse_path( path.toChars() );
     }
-    */
-
-    /*
+ 
     void URI::___parse_HP(Regexp& regexp, const char *str){
         String path;
         String slash;
@@ -491,13 +434,12 @@ namespace dframework {
         if(regexp.getMatchLength(2)){
             slash.set("/", 1);
         }
-
+ 
         ___parse_HP_FileScheme(regexp, 3, str, host, slash, path);
         ___parse_host( host.toChars() );
         ___parse_path( path.toChars() );
     }
-    */
-    /*
+ 
     void URI::___parse_account(const String& str){
         if( str.empty() ) return;
         const char* p = strstr(str.toChars(), ":");
@@ -509,8 +451,7 @@ namespace dframework {
             m_sPass.set(str.toChars()+len+1);
         }
     }
-    */
-    /*
+ 
     void URI::___parse_host(const char *str){
         if(str && '/'==str[0]) return;
         dfw_ulong_t index = String::lastIndexOf(str, ":");
@@ -522,8 +463,7 @@ namespace dframework {
             m_iPort = Integer::parseInt(port.toChars());
         }
     }
-    */
-    /*
+ 
     void URI::___parse_path(const char *str){
         dfw_ulong_t index = String::indexOf(str, "?");
         if((dfw_ulong_t)-1==index){
@@ -540,8 +480,7 @@ namespace dframework {
             }
         }
     }
-    */
-
+ 
     sp<Retval> URI::setAttribute(int type, int value){
         sp<Retval> retval;
         sp<Attr> attr = new Attr(type, value);
@@ -549,7 +488,7 @@ namespace dframework {
             return DFW_RETVAL_D(retval);
         return NULL;
     }
-
+ 
     sp<Retval> URI::setAttribute(int type, const char* value){
         sp<Retval> retval;
         sp<Attr> attr = new Attr(type, value);
@@ -557,7 +496,7 @@ namespace dframework {
             return DFW_RETVAL_D(retval);
         return NULL;
     }
-
+ 
     sp<Retval> URI::setAttribute(int type
                               , const char* name, const char* value){
         sp<Retval> retval;
@@ -566,16 +505,16 @@ namespace dframework {
             return DFW_RETVAL_D(retval);
         return NULL;
     }
-
+ 
     int URI::getDefaultPort(const char* scheme, int defaultPort){
         String s = scheme;
         return getDefaultPort(s, defaultPort);
     }
-
+ 
     int URI::getDefaultPort(const String& scheme, int defaultPort){
-        if(scheme.empty()) 
+        if(scheme.empty())
             return defaultPort;
-
+ 
         if(scheme.equals("http")){
             return 80;
         }else if(scheme.equals("file")){
@@ -625,34 +564,34 @@ namespace dframework {
         }else if(scheme.equals("mysql")){
             return 3306;
         }
-
+ 
         return defaultPort;
     }
-
+ 
     URI& URI::operator=(const char* uri){
         parse(uri);
         return *this;
     }
-
+ 
     URI& URI::operator=(const String& uri){
         parse(uri);
         return *this;
     }
-
+ 
     URI& URI::operator=(const URI& uri){
         set(uri);
         return *this;
     }
-
+ 
     URI& URI::operator=(sp<URI>& uri){
         set(uri);
         return *this;
     }
-
+ 
     bool URI::operator == (const URI &from){
         return (!((*this) != from));
     }
-
+ 
     bool URI::operator != (const URI &from){
         if( (m_sScheme == from.m_sScheme)
                 && (m_sHost == from.m_sHost)
@@ -666,15 +605,15 @@ namespace dframework {
         }
         return true;
     }
-
+ 
     bool URI::operator >  (const URI &from){
         return (!((*this) <= from));
     }
-
+ 
     bool URI::operator <  (const URI &from){
         return (!((*this) >= from));
     }
-
+ 
     bool URI::operator >= (const URI &from){
         if( m_sScheme < from.m_sScheme ) return false;
         if( m_sHost < from.m_sHost ) return false;
@@ -686,7 +625,7 @@ namespace dframework {
         if( m_sPass < from.m_sPass ) return false;
         return true;
     }
-
+ 
     bool URI::operator <= (const URI &from){
         if( m_sScheme > from.m_sScheme ) return false;
         if( m_sHost > from.m_sHost ) return false;
@@ -698,6 +637,5 @@ namespace dframework {
         if( m_sPass > from.m_sPass ) return false;
         return true;
     }
-
+ 
 };
-
