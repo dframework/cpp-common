@@ -38,10 +38,11 @@ LOCAL_STATIC_LIBRARIES :=        \
     libdframework-common-httpd   \
     libdframework-common-log     \
     libdframework-common-sql     \
-    libdframework-common-ssh2    \
     libcrypto                    \
-    libssl                       \
-    libssh2
+    libssl                       
+
+#    libssh2
+#    libdframework-common-ssh2    \
 
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
   LOCAL_STATIC_LIBRARIES +=      \

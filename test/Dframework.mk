@@ -20,11 +20,11 @@ else
     LOCAL_LDFLAGS := -pthread -ldl
 endif
 
-#LOCAL_STATIC_LIBRARIES := \
-#    libdframework-common
-
-LOCAL_SHARED_LIBRARIES := \
+LOCAL_STATIC_LIBRARIES := \
     libdframework-common
+
+#LOCAL_SHARED_LIBRARIES := \
+#    libdframework-common
 
 ########################################
 LOCAL_SRC_FILES := test.cpp

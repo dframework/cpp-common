@@ -68,9 +68,9 @@ ddk_build_target()
 echo ""
 echo " *** dframework cpp-common for android"
 echo ""
-ddk_build_target "x86"
-#ddk_build_target "x86_64"
-ddk_build_target "armv7"
+#ddk_build_target "x86"
+ddk_build_target "x86_64"
+#ddk_build_target "armv7"
 #ddk_build_target "arm64"
 
 echo ""

@@ -1,1 +1,2 @@
-LOCAL_SUBDIRS := packages lib test
+LOCAL_SUBDIRS := packages lib
+LOCAL_NO_SUBDIRS := test

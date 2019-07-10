@@ -2,6 +2,7 @@
 #include <dframework/io/DirBox.h>
 #include <dframework/net/URI.h>
 #include <dframework/net/Poll.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <utime.h>

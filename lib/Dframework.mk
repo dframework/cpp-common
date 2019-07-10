@@ -1,2 +1,3 @@
-LOCAL_NO_SUBDIRS := fscore-removed
+LOCAL_NO_SUBDIRS := fscore-removed ssh2
+
 
