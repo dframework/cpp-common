@@ -8,12 +8,15 @@ include_PATH := ${LOCAL_PATH}/../../include
 ifeq (${DDK_ENV_TARGET_OS}, "windows")
   libssh2_PATH := ${pkg_PATH}/libssh2/src-mingw
 elifeq (${DDK_ENV_TARGET_OS}, "android")
-  libssh2_PATH := ${pkg_PATH}/libssh2/src-${DDK_ENV_OSNAME}
+  libssh2_PATH := ${pkg_PATH}/libssh2/src-linux
+#  libssh2_PATH := ${pkg_PATH}/libssh2/src-${DDK_ENV_OSNAME}
 elifeq (${DDK_ENV_TARGET_OS}, "ios")
   libssh2_PATH := ${pkg_PATH}/libssh2/src-${DDK_ENV_OSNAME}
 else
   libssh2_PATH := ${pkg_PATH}/libssh2/src-${DDK_ENV_TARGET_OS}
 endif
+
+@echo "$libssh2_PATH"
 
 LOCAL_SRC_FILES :=          \
     SSH2.cpp                \
