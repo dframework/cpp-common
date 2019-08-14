@@ -365,13 +365,21 @@ namespace dframework {
         // host.name/
         // --------- ---------------
         // (1)     (2)(3)
+        char* php = (char*)hp;
+        String sHp = php;
         Regexp hp_exp("^([\\S]*?)([/]{1})([\\s\\S]*)"); // .:
-        retval = hp_exp.regexp(hp);
+        retval = hp_exp.regexp(php);
+        if( retval.has() ){
+            sHp.append("/");
+            php = (char*)sHp.toChars();
+            retval = hp_exp.regexp(php);
+        }
+
         if( !retval.has() ){
             ___parse_HP(hp_exp, hp);
             return NULL;
         }
- 
+
         return retval;
     }
  

@@ -358,7 +358,9 @@ namespace dframework {
             if( DFW_E_DISCONNECT==status){
                 return DFW_RETVAL_NEW_MSG(DFW_E_DISCONNECT, 0
                            , "Disconnected for reading"
-                             " in HttpConnection's readLine.");
+                             " in HttpConnection's readLine."
+                             " lastUrl: %s"
+                           , m_sLastUri.toChars() );
             }
 
             size -= r_size;

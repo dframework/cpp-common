@@ -105,11 +105,11 @@ namespace dframework {
         }else if(!m_sExp.length()){
             m_iErrorCode = -1;
             m_sErrorMessage = "RegExp string is empty.";
-            return DFW_RETVAL_NEW(DFW_E_REGEXP_NOT_PATTERN,0);
+            return DFW_RETVAL_NEW_MSG(DFW_E_REGEXP_NOT_PATTERN,0, "RegExp string is empty.");
         }else if(!m_sValue.length()){
             m_iErrorCode = -1;
             m_sErrorMessage = "Value string is empty.";
-            return DFW_RETVAL_NEW(DFW_E_INVAL,0);
+            return DFW_RETVAL_NEW_MSG(DFW_E_INVAL,0, "Value string is empty.");
         }
         
         const char* value = m_sValue.toChars();
@@ -123,7 +123,7 @@ namespace dframework {
         if (m_iMatchCount <= 0){
             m_iErrorCode = -1;
             m_sErrorMessage = "No match.";
-            return DFW_RETVAL_NEW(DFW_E_REGEXP_NOT_MATCH,0);
+            return DFW_RETVAL_NEW_MSG(DFW_E_REGEXP_NOT_MATCH, 0 , "No match exp: %s, value:%s" , m_sExp.toChars(), m_sValue.toChars());
         }
         
         m_iOffset = ::pcre2_get_ovector_pointer(
