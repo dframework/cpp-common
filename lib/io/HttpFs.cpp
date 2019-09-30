@@ -161,35 +161,40 @@ namespace dframework {
         }
 
         status = http->getStatus();
-        if( (path[strlen(path)-1]=='/') && (status == 200) )
+
+	sp<HttpRound> round = http->getLastRound();
+	if( !round.has() ){
+		return DFW_RETVAL_NEW_MSG(DFW_ERROR, EIO
+				, "No getattr, Has not last-round"
+				", path=%s, uri=%s, http-status=%d"
+				, path, oUri.toString().toChars(), status);
+	}
+	sp<NamedValue> clength
+	    = round->m_responseHeader->getHeader("Content-Length");
+
+        if( (path[strlen(path)-1]=='/') && (status == 200) ){
             status = 301;
+        }else if( status==200 && !clength.has() ){
+	    status = 301;
+        }
 
         switch( status ){
         case 200 :
             {
-                sp<HttpRound> round = http->getLastRound();
-                if( !round.has() ){
-                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, EIO
-                               , "No getattr, Has not last-round"
-                                 ", path=%s, uri=%s, http-status=%d"
-                               , path, oUri.toString().toChars(), status);
-                }
-                sp<NamedValue> modify
-                        = round->m_responseHeader->getHeader("Last-Modified");
-                sp<NamedValue> clength
-                        = round->m_responseHeader->getHeader("Content-Length");
-                if( !modify.has() ){
-                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, EIO
-                               , "No getattr, Has not last-modified"
-                                 ", path=%s, uri=%s, http-status=%d"
-                               , path, oUri.toString().toChars(), status);
-                }
-                if( !clength.has() ){
-                    return DFW_RETVAL_NEW_MSG(DFW_ERROR, EIO
-                               , "No getattr, Has not content-length"
-                                 ", path=%s, uri=%s, http-status=%d"
-                               , path, oUri.toString().toChars(), status);
-                }
+		sp<NamedValue> modify
+		    = round->m_responseHeader->getHeader("Last-Modified");
+		if( !modify.has() ){
+		    return DFW_RETVAL_NEW_MSG(DFW_ERROR, EIO
+				    , "No getattr, Has not last-modified"
+				    ", path=%s, uri=%s, http-status=%d"
+				    , path, oUri.toString().toChars(), status);
+	        }
+		if( !clength.has() ){
+		      return DFW_RETVAL_NEW_MSG(DFW_ERROR, EIO
+		      , "No getattr, Has not content-length"
+		      ", path=%s, uri=%s, http-status=%d"
+		      , path, oUri.toString().toChars(), status);
+		}
 
                 dfw_time_t time = 0;
                 ::memset(st, 0, sizeof(struct stat));
