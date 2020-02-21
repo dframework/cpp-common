@@ -13,7 +13,7 @@
 
 #define DFRAMEWORK_LIB_MAJOR 0
 #define DFRAMEWORK_LIB_MINOR 1
-#define DFRAMEWORK_LIB_PATCH 3
+#define DFRAMEWORK_LIB_PATCH 4
 
 
 #if defined(_WIN32) || defined(_WIN64)

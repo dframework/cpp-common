@@ -1,0 +1,55 @@
+
+3) 크로스 컴파일
+
+$ git clone https://github.com/akontsevich/openssl-android-build.git
+$ cd openssl-android-build
+$ export OPENSSL_VERSION="openssl-1.0.2o"
+$ ./generate-headers.sh
+
+# check my ndk home
+$ export ANDROID_NDK_HOME=~/Android/android-ndk-r10e
+$ ./build-android.sh 
+ 
+
+4) 결과
+
+./libs/android/
+├── arm64-v8a
+│   ├── libcrypto.a
+│   ├── libcrypto.so
+│   ├── libssl.a
+│   └── libssl.so
+├── armeabi
+│   ├── libcrypto.a
+│   ├── libcrypto.so
+│   ├── libssl.a
+│   └── libssl.so
+├── armeabi-v7a
+│   ├── libcrypto.a
+│   ├── libcrypto.so
+│   ├── libssl.a
+│   └── libssl.so
+├── mips
+│   ├── libcrypto.a
+│   ├── libcrypto.so
+│   ├── libssl.a
+│   └── libssl.so
+├── mips64
+│   ├── libcrypto.a
+│   ├── libcrypto.so
+│   ├── libssl.a
+│   └── libssl.so
+├── x86
+│   ├── libcrypto.a
+│   ├── libcrypto.so
+│   ├── libssl.a
+│   └── libssl.so
+└── x86_64
+    ├── libcrypto.a
+    ├── libcrypto.so
+    ├── libssl.a
+    └── libssl.so
+
+
+출처: https://whiteduck.tistory.com/149 [이헌제의 블로그]
+

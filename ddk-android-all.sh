@@ -55,6 +55,30 @@ sample()
   cd $D_PWD
 }
 
+ddk_build_libssh2()
+{
+    local libssh2path="packages/libssh2/src-linux"
+
+    cd $libssh2path
+    if [ $? -ne 0 ]; then
+        echo "Error:  cd packages/libssh2/src-linux"
+        exit 1
+    fi
+    echo "Enter {$libssh2path}"
+
+    ddk_build_target "x86"
+    ddk_build_target "x86_64"
+    ddk_build_target "armv7"
+    ddk_build_target "arm64"
+
+    cd $D_PWD
+    if [ $? -ne 0 ]; then
+        echo "Error:  cd {$D_PWD}"
+        exit 1
+    fi
+    echo "Leave {$libssh2path}"
+}
+
 ddk_build_target()
 {
     ddk-build --add-target=android-${1}
@@ -68,6 +92,9 @@ ddk_build_target()
 echo ""
 echo " *** dframework cpp-common for android"
 echo ""
+
+ddk_build_libssh2
+
 ddk_build_target "x86"
 ddk_build_target "x86_64"
 ddk_build_target "armv7"
