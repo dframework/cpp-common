@@ -6,6 +6,7 @@
 
 namespace dframework {
 
+#if defined(_WIN32)
     int win32_poll(struct pollfd *fds, int nfds, int timo)
     {
         struct timeval timeout, *toptr;
@@ -73,7 +74,7 @@ namespace dframework {
         }
         return rc;
     }
-
+#endif
 
     Poll::Poll(){
         m_used = 0;
