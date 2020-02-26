@@ -66,10 +66,10 @@ ddk_build_libssh2()
     fi
     echo "Enter {$libssh2path}"
 
+    ddk_build_target "armv7"
+    ddk_build_target "arm64"
     ddk_build_target "x86"
     ddk_build_target "x86_64"
-#    ddk_build_target "armv7"
-#    ddk_build_target "arm64"
 
     cd $D_PWD
     if [ $? -ne 0 ]; then
@@ -95,10 +95,10 @@ echo ""
 
 ddk_build_libssh2
 
+ddk_build_target "armv7"
+ddk_build_target "arm64"
 ddk_build_target "x86"
 ddk_build_target "x86_64"
-#ddk_build_target "armv7"
-#ddk_build_target "arm64"
 
 echo ""
 echo "Complete Android All ... OK"

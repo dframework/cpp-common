@@ -120,7 +120,9 @@
 #include "cryptlib.h"
 #include "bn_lcl.h"
 
-//#define MONT_WORD /* use the faster word-based algorithm */
+#if defined(OPENSSL_BN_ASM_MONT)
+#define MONT_WORD /* use the faster word-based algorithm */
+#endif
 
 #if defined(MONT_WORD) && defined(OPENSSL_BN_ASM_MONT) && (BN_BITS2<=32)
 /* This condition means we have a specific non-default build:
@@ -147,9 +149,8 @@ int BN_mod_mul_montgomery(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
 	{
 	BIGNUM *tmp;
 	int ret=0;
-#if 1
+
 #if defined(OPENSSL_BN_ASM_MONT) && defined(MONT_WORD)
-//#error "------"
 	int num = mont->N.top;
 
 	if (num>1 && a->top==num && b->top==num)
@@ -167,7 +168,6 @@ int BN_mod_mul_montgomery(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
 			return(1);
 			}
 		}
-#endif
 #endif
 	BN_CTX_start(ctx);
 	tmp = BN_CTX_get(ctx);
