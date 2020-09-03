@@ -46,6 +46,9 @@ namespace dframework {
         if(m_sock.has()){
             m_sock->close();
         }
+        if(m_resp.has() && m_resp->m_originFs.has()){
+            m_resp->m_originFs->close("");
+        }
     }
 
     void HttpdClient::setSocket(sp<ClientSocket>& sock){
