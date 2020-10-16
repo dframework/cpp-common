@@ -22,9 +22,10 @@
 /packages/openssl/ios/ios9.3-x86_64
 /packages/openssl/ios/OpenSSL-for-iPhone
 /packages/openssl/workspace
-/packages/openssl/windows/
 /packages/openssl/workspace.removed/
 /lib/fscore-removed
 /include/dframework/fscore-removed
 /xcode-workspace-ios/packages/__MACOSX/
 /packages/openssl/openssl-android-build/
+/packages/openssl/openssl-1.0.1r
+/packages/openssl/linux/x86_64/ssl/man
