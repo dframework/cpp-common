@@ -29,3 +29,4 @@
 /packages/openssl/openssl-android-build/
 /packages/openssl/openssl-1.0.1r
 /packages/openssl/linux/x86_64/ssl/man
+/packages/openssl/windows.origin/

@@ -97,8 +97,8 @@ extern "C" {
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define ENGINESDIR "/usr/local/ssl/lib/engines"
-#define OPENSSLDIR "/usr/local/ssl"
+#define ENGINESDIR "/opt/dframework/cpp-common/packages/openssl/workspace/build/usr/lib/engines"
+#define OPENSSLDIR "/opt/dframework/cpp-common/packages/openssl/workspace/build/usr/ssl"
 #endif
 #endif
 

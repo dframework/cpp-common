@@ -179,14 +179,14 @@ namespace dframework {
                     const char *p = data->m_oFileInfo.m_sExtension.toChars();
                     data->m_sType = HttpUtils::contentType(p);
                 }
-
+#ifndef _WIN32
                 if(data->m_oUri.getScheme().equals("File")){
                     Stat st;
                     retval =st.stat(data->m_oUri);
                     if(DFW_RETVAL_H(retval)) return DFW_RETVAL_D(retval);
                     data->m_nContentLength = (dfw_size_t)st.m_stat.st_size;
                 }
-
+#endif
                 data->m_sBuffer = String::format(
                         "%s\r\n" // boundary
                         "Content-Disposition: form-data; name=\"%s\"; "

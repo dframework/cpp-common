@@ -68,13 +68,13 @@ endif
 @if [ $? -ne 0 ]; then
 @    echo "ERROR: cp openssl-path/lib/libssl.a /build-dir/"
 @fi
-ifeq (${DDK_ENV_TARGET_OS}, "windows")
-  libssh2_PATH := ${LOCAL_PATH}/../packages/libssh2/${DDK_ENV_TARGET_OS}/${DDK_ENV_TARGET_CPU}
-@cp ${libssh2_PATH}/lib/libssh2.a ${DDK_ENV_TARGET_BUILD}/
-@if [ $? -ne 0 ]; then
-@    echo "ERROR: cp libssh2-path/lib/libssh2.a /build-dir/"
-@fi
-endif
+#ifeq (${DDK_ENV_TARGET_OS}, "windows")
+#  libssh2_PATH := ${LOCAL_PATH}/../packages/libssh2/${DDK_ENV_TARGET_OS}/${DDK_ENV_TARGET_CPU}
+#@cp ${libssh2_PATH}/lib/libssh2.a ${DDK_ENV_TARGET_BUILD}/
+#@if [ $? -ne 0 ]; then
+#@    echo "ERROR: cp libssh2-path/lib/libssh2.a /build-dir/"
+#@fi
+#endif
 
 ##############################################################
 # This is old

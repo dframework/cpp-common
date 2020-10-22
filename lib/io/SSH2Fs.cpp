@@ -45,8 +45,10 @@ namespace dframework {
             sPath = path;
         else
             sPath = String::format("%s%s", m_oUri->getPath().toChars(), path);
-        if( DFW_RET(retval, m_session->ftp_stat(sPath, st)) )
+#ifndef _WIN32
+        if( DFW_RET(retval, m_session->ftp_stat(sPath.toChars(), st)) )
             return DFW_RETVAL_D(retval);
+#endif
         return NULL;
     }
 

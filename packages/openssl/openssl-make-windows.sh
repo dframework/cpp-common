@@ -1,5 +1,7 @@
 #!/bin/sh
 
+
+
 openssl_exit(){
     if [ $1 -ne 0 ]; then
         echo "error: $2"
@@ -14,8 +16,9 @@ OPENSSL_NM="openssl-1.0.1r"
 OPENSSL_FN="${OPENSSL_NM}.tar.gz"
 OPENSSL_BD="${D_PWD}/${D_WORKSPACE}/build"
 
-D_TARGET="x86_64"
+#D_TARGET="x86_64"
 #D_TARGET="x86"
+D_TARGET=$1
 D_OSNAME="windows"
 
 
@@ -27,6 +30,10 @@ case ${D_TARGET} in
     ;;
     (x86_64)
         MINGW="x86_64-w64-mingw32"
+    ;;
+    (*)
+	echo "Not found target : x86 or x86_64"
+	exit 1
     ;;
 esac
 
@@ -57,20 +64,23 @@ sed -i 's,.*target already defined.*,$target=$_;,g' Configure
 openssl_exit $? "sed -i 's,.*target already defined.*,$target=$_;,g' Configure"
 
 #
+echo "MINGW: ${MINGW}"
 case ${MINGW} in
 (*i?86*) 
     TARGET=mingw
+    SHARED=shared
     export CFLAGS="${CFLAGS} -m32"
 ;;
 (*x86_64*)
-     TARGET=mingw64
+    TARGET=mingw64
+    SHARED=
 ;;
 (*) false;;
 esac
 
 #
-./Configure ${TARGET} shared --cross-compile-prefix=${MINGW}- --prefix=${OPENSSL_BD}/usr
-openssl_exit $? "./Configure ${TARGET} shared --cross-compile-prefix=${MINGW}- --prefix=${OPENSSL_BD}/usr"
+./Configure ${TARGET} ${SHARED} --cross-compile-prefix=${MINGW}- --prefix=${OPENSSL_BD}/usr
+openssl_exit $? "./Configure ${TARGET} ${SHARED} --cross-compile-prefix=${MINGW}- --prefix=${OPENSSL_BD}/usr"
 
 #
 make
@@ -98,7 +108,7 @@ mkdir -p ${D_OSNAME}/${D_TARGET}
 cp -R ${D_PWD}/${D_WORKSPACE}/build/usr/* ${D_OSNAME}/${D_TARGET}/
 
 
-#cp windows/x86/lib/libcrypto.a /opt/dframework/ddk/out/windows-x86/build/
+#cp windows/x86/lib/*.a /opt/dframework/ddk/out/windows-x86/build/
 #openssl_exit $? "cp windows/x86/lib/*.a /opt/dframework/ddk/out/windows-x86/build/"
 #cp windows/x86_64/lib/*.a /opt/dframework/ddk/out/windows-x86/build/
 #openssl_exit $? "cp windows/x86_64/lib/*.a /opt/dframework/ddk/out/windows-x86/build/"

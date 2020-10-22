@@ -11,7 +11,7 @@
 #else
 # include <winsock2.h>
 #endif
-#include <syslog.h>
+//#include <syslog.h>
 
 namespace dframework {
 

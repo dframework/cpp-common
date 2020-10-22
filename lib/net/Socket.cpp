@@ -26,13 +26,14 @@
 #include <dframework/log/Logger.h>
 
 
-/*#if defined(__MINGW32__) || defined(__MSYS__)
+#if defined(__MINGW32__) || defined(__MSYS__)
 extern "C" {
 int inet_pton4(const char *src, char *dst);
 int inet_pton6(const char *src, char *dst);
 int inet_pton(int af, const char *src, char *dst);
 }
-#endif*/
+#endif
+
 
 namespace dframework {
 
@@ -443,11 +444,11 @@ namespace dframework {
             case AF_INET6:
                 ::memset( (void *)&sa6, 0, sizeof(sa6));
                 sa6.sin6_family = m_iAddrType;
-//#if defined(__MINGW32__) || defined(__MSYS__)
-//                inet_pton(AF_INET6, m_sIp.toChars(), (char*)&(sa6.sin6_addr));
-//#else
+#if defined(__MINGW32__) || defined(__MSYS__)
+                inet_pton(AF_INET6, m_sIp.toChars(), (char*)&(sa6.sin6_addr));
+#else
                 inet_pton(AF_INET6, m_sIp.toChars(), &(sa6.sin6_addr));
-//#endif
+#endif
                 sa6.sin6_port = htons(m_iPort);
                 break;
             default:
@@ -797,7 +798,7 @@ namespace dframework {
 };
 
 
-/*#if defined(__MINGW32__) || defined(__MSYS__)
+#if defined(__MINGW32__) || defined(__MSYS__)
 
 #define NS_INADDRSZ  4
 #define NS_IN6ADDRSZ 16
@@ -962,5 +963,5 @@ int inet_pton6(const char *src, char *dst)
 }
 }
 
-#endif*/
+#endif
 
