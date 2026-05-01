@@ -8,6 +8,8 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES:=    \
     dlfcn.c
 
+LOCAL_CFLAGS += -fPIC
+
 LOCAL_INCLUDES :=   \
     ${include_PATH}
 

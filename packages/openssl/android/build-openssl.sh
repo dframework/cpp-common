@@ -6,7 +6,7 @@ D_ARM64="arm64"
 D_X86="x86"
 D_X86_64="x86_64"
 D_ORIGIN="origin-x86"
-            
+
 D_APPMK="jni/Application.mk"
 
 MKDIR(){
@@ -51,6 +51,13 @@ BUILD(){
                 exit 1
             fi
             ;;
+        "$D_ARM64")
+            echo "APP_ABI:= arm64-v8a" > $D_APPMK
+            if [ $? -ne 0 ]; then
+                echo "ERROR: APP_ABI:= arm64-v8a > $D_APPMK"
+                exit 1
+            fi
+            ;;
         "$D_X86")
             echo "APP_ABI:= x86" > $D_APPMK
             if [ $? -ne 0 ]; then
@@ -89,13 +96,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-#BUILD "armv7"
-#BUILD "x86"
+BUILD "armv7"
+BUILD "arm64"
+BUILD "x86"
 BUILD "x86_64"
 
-#COPY_OBJ "armeabi-v7a" "${D_ARMV7}"
-#COPY_OBJ "arm64-v8a" "${D_ARM64}"
-#COPY_OBJ "x86" "${D_X86}"
+COPY_OBJ "armeabi-v7a" "${D_ARMV7}"
+COPY_OBJ "arm64-v8a" "${D_ARM64}"
+COPY_OBJ "x86" "${D_X86}"
 COPY_OBJ "x86_64" "${D_X86_64}"
 
 echo " OK "

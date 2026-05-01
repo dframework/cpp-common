@@ -248,7 +248,7 @@ if [ "$D_MINGW" = "" ]; then
 else
     echo "$D_DEST_NM on $D_OSNAME for windows(mingw)..."
 fi
-
+return 1
 if test ! -d $D_DEST_SRC ; then
     mkdir -p $D_DEST_SRC 
     dest_exit $? "ERROR: mkdir -p $D_DEST_SRC at ${D_PWD}"

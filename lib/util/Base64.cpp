@@ -41,8 +41,8 @@ namespace dframework {
         const unsigned char *bufin;
         size_t nprbytes;
 #else
-        register const unsigned char *bufin;
-        register size_t nprbytes;
+        const unsigned char *bufin;
+        size_t nprbytes;
 #endif
 
 	bufin = (const unsigned char *) bufcoded;
@@ -63,9 +63,9 @@ namespace dframework {
         unsigned char *bufout;
         size_t nprbytes;
 #else
-        register const unsigned char *bufin;
-        register unsigned char *bufout;
-        register size_t nprbytes;
+        const unsigned char *bufin;
+        unsigned char *bufout;
+        size_t nprbytes;
 #endif
         
         bufin = (const dfw_byte_t*) bufcoded;

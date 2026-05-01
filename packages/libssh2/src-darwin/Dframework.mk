@@ -11,6 +11,9 @@ else
     LOCAL_INCLUDES += ${LOCAL_PATH}/../../openssl/${DDK_ENV_TARGET_OS}/${DDK_ENV_TARGET_CPU}/include
 endif
 
+@echo $LOCAL_INCLUDES
+
+
 LOCAL_CFLAGS := -fPIC -DHAVE_CONFIG_H=1
 
 LOCAL_MODULE := libssh2

@@ -11,3 +11,21 @@ git remote add origin-cpp-common https://github.com/dframework/cpp-common.git
 git push -u origin-cpp-common master
 
 test
+
+ANDROID
+    > cpp-common/packages/openssl/android/
+        build-openssl.sh
+
+    > cpp-common/packages/libssh2/src-linux
+        ddk-build --add-target=android-x86
+        ddk-build --add-target=android-x86_64
+        ddk-build --add-target=android-armv7
+        ddk-build --add-target=android-arm64
+    
+    > cpp-common
+        ddk-build --add-target=android-x86
+        ddk-build --add-target=android-x86_64
+        ddk-build --add-target=android-armv7
+        ddk-build --add-target=android-arm64
+
+    

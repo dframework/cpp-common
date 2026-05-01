@@ -1,5 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 
+LOCAL_CFLAGS += -fPIC
+
 # build with openssl utility
 #subdirs := $(addprefix $(LOCAL_PATH)/,$(addsuffix /Android.mk, \
 #		crypto \

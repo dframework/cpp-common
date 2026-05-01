@@ -325,7 +325,8 @@ make_ctr_evp (size_t keylen, EVP_CIPHER *aes_ctr_cipher)
     aes_ctr_cipher->key_len = keylen;
     aes_ctr_cipher->iv_len = 16;
     aes_ctr_cipher->init = aes_ctr_init;
-    aes_ctr_cipher->do_cipher = aes_ctr_do_cipher;
+    //aes_ctr_cipher->do_cipher = aes_ctr_do_cipher;
+    aes_ctr_cipher->do_cipher = (int (*)(EVP_CIPHER_CTX *, unsigned char *, const unsigned char *, unsigned int)) aes_ctr_do_cipher;
     aes_ctr_cipher->cleanup = aes_ctr_cleanup;
 
     return aes_ctr_cipher;
