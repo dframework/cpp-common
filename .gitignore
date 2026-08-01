@@ -29,6 +29,6 @@
 /xcode-workspace-ios/packages/__MACOSX/
 /packages/openssl/openssl-android-build/
 /packages/openssl/openssl-1.0.1r
-/packages/openssl/linux/x86_64/ssl/man
+/packages/openssl/linux/x86_64/ssl
 /packages/openssl/windows.origin/
 /packages/openssl/android-previous-version
