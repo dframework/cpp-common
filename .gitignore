@@ -4,6 +4,7 @@
 /packages/curl
 /packages/pcre2/pcre2-10.20.tar.gz
 /packages/pcre2/pcre2-10.20/
+/packages/libssh2-origin
 /packages/libssh2/src-mingw
 /packages/libssh2/workspace
 /packages/libssh2/ios/workspace
@@ -30,3 +31,4 @@
 /packages/openssl/openssl-1.0.1r
 /packages/openssl/linux/x86_64/ssl/man
 /packages/openssl/windows.origin/
+/packages/openssl/android-previous-version
