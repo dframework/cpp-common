@@ -92,12 +92,18 @@ namespace dframework {
         String sQuery;
         char* test;
         const char* buf = m_sBuffer.toChars();
+        if(!buf){
+            return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
+        }
         if( !(test = ::strstr((char*)buf, "\r\n")) ){
             return DFW_RETVAL_NEW(DFW_E_AGAIN, 0);
         }
 
         m_sRequestLine.set(buf, test-buf);
         buf = m_sRequestLine.toChars();
+        if( !buf ){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, HTTPD_STATUS_500, "Wrong request line : null");
+        }
 
         char* blank = ::strstr((char*)buf, " ");
         if( !blank || (blank==buf) ){
@@ -107,7 +113,9 @@ namespace dframework {
         }
 
         m_sMethod.set(buf, blank-buf);
-        buf = blank+1;
+        if(!(buf = blank+1)){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, HTTPD_STATUS_500, "Wrong request line : null");
+        }
 
         blank = ::strrchr((char*)buf, ' ');
         if( !blank || (blank==buf) ){
@@ -117,7 +125,9 @@ namespace dframework {
         }
 
         sTest.set(buf, blank-buf);
-        buf = blank+1;
+        if(!(buf = blank+1)){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, HTTPD_STATUS_500, "Wrong request line : null");
+        }
 
         if( DFW_RET(retval, HttpdUtil::urldecode(sQuery, sTest.toChars())) ){
             return DFW_RETVAL_D(retval);
@@ -148,7 +158,9 @@ namespace dframework {
                         );
         }
         m_sProtocol.set(buf, blank-buf);
-        buf = blank+1;
+        if(!(buf = blank+1)){
+            return DFW_RETVAL_NEW_MSG(DFW_ERROR, HTTPD_STATUS_500, "Wrong request line : null");
+        }
 
         m_sVersion.set(buf);
         m_sBuffer.shift(test-m_sBuffer.toChars()+2);
